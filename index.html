@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Apex Recruitment Agency: active job offers. Filter by company, language, graduation status or work mode and copy the full offer in one tap.">
+<title>Apex Recruitment Agency | Available Offers</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#d8dbdd;--card:#eceeef;--ink:#0b0b0c;--mute:#55595d;--line:#b9bec2;--acc:#0b0b0c;--acc-ink:#e6e8ea;--tag:#c6cacd;--hl:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#09090a;--card:#151517;--ink:#e3e5e7;--mute:#9a9ea3;--line:#2a2c2f;--acc:#c4c8cc;--acc-ink:#09090a;--tag:#232528;--hl:#fff}}
+:root[data-theme="dark"]{--bg:#09090a;--card:#151517;--ink:#e3e5e7;--mute:#9a9ea3;--line:#2a2c2f;--acc:#c4c8cc;--acc-ink:#09090a;--tag:#232528;--hl:#fff}
+*{box-sizing:border-box}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 "Instrument Sans",system-ui,sans-serif}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+header{padding:40px 0 28px}
+.brand{font:800 22px "Bricolage Grotesque",sans-serif;letter-spacing:-.01em}
+.brand span{color:var(--acc)}
+.owner{color:var(--mute);font-size:14px;margin-top:2px}
+h1{font:800 clamp(32px,6vw,56px)/1.05 "Bricolage Grotesque",sans-serif;letter-spacing:-.02em;margin:28px 0 10px;max-width:14em}
+.sub{color:var(--mute);max-width:36em;margin:0}
+.filters{display:flex;flex-wrap:wrap;gap:10px;margin:26px 0 6px}
+select,input{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-width:0}
+input{flex:1 1 220px}
+select:focus-visible,input:focus-visible,button:focus-visible{outline:3px solid var(--hl);outline-offset:1px}
+.count{display:flex;justify-content:space-between;color:var(--mute);font-size:14px;margin:14px 0}
+.count b{color:var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;padding-bottom:60px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;text-align:left;cursor:pointer;font:inherit;color:inherit;display:flex;flex-direction:column;gap:10px}
+.card:hover{border-color:var(--acc)}
+.card h3{font:700 19px/1.2 "Bricolage Grotesque",sans-serif;margin:0}
+.co{color:var(--mute);font-size:14px}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{background:var(--tag);border-radius:6px;padding:2px 9px;font-size:13px;font-weight:500}
+.pay{margin-top:auto;font-weight:600;font-size:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.sheet dd{overflow-wrap:anywhere}.sheet a{color:var(--ink)}
+.empty{grid-column:1/-1;padding:40px 0;color:var(--mute);text-align:center}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:flex-end;justify-content:center;z-index:5}
+.modal.open{display:flex}
+.sheet{background:var(--card);width:100%;max-width:620px;max-height:88%;overflow:auto;border-radius:18px 18px 0 0;padding:24px 22px calc(24px + env(safe-area-inset-bottom,0px));position:relative}
+@media(min-width:700px){.modal{align-items:center}.sheet{border-radius:18px}}
+.sheet h2{font:800 26px/1.1 "Bricolage Grotesque",sans-serif;margin:0 40px 6px 0}
+.sheet dl{margin:18px 0;display:grid;grid-template-columns:110px 1fr;gap:8px 14px}
+.sheet dt{color:var(--mute)}.sheet dd{margin:0}
+.x{position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:none;color:var(--ink);font-size:18px;cursor:pointer}
+.copy{width:100%;border:0;border-radius:12px;background:var(--acc);color:var(--acc-ink);font:600 16px inherit;padding:14px;cursor:pointer}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;opacity:0;pointer-events:none;transition:.25s;z-index:9}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.adminbtn{display:none;margin-top:14px;border:1px solid var(--ink);background:none;color:var(--ink);border-radius:10px;padding:8px 14px;font:600 14px inherit;cursor:pointer}
+.adminbtn.on{display:inline-block}
+.ar{display:flex;gap:8px;align-items:center;border-bottom:1px solid var(--line);padding:8px 0}
+.ar span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sm{border:1px solid var(--line);background:none;color:var(--ink);border-radius:8px;padding:6px 10px;font:inherit;font-size:14px;cursor:pointer}
+.sm.pri{background:var(--acc);color:var(--acc-ink);border-color:var(--acc)}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.fg .w{grid-column:1/-1}
+.fg label{font-size:13px;color:var(--mute);display:flex;flex-direction:column;gap:3px}
+.chk{flex-direction:row!important;gap:12px!important;flex-wrap:wrap;color:var(--ink)!important}
+.chk label{flex-direction:row;gap:5px;color:var(--ink)}
+footer{color:var(--mute);font-size:13px;padding:0 0 30px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="brand">APEX <span>Recruitment Agency</span></div>
+  <div class="owner">Agency owner: <b>Mahmod Roshdy</b></div>
+  <button class="adminbtn" id="admb">Admin: manage offers</button>
+  <h1>Find the right career. Get hired faster.</h1>
+  <p class="sub">All our active offers in one place. Filter by graduation status, language or work mode, then copy the full offer in one tap.</p>
+  <div class="filters">
+    <input id="q" type="search" placeholder="Search by position, company or location" aria-label="Search offers">
+    <select id="fco" aria-label="Company"><option value="">All companies</option></select>
+    <select id="fg" aria-label="Graduation status"><option value="">All graduation status</option><option>Grads</option><option>Undergrads</option><option>Dropouts</option><option>Gap years</option></select>
+    <select id="fl" aria-label="Language"><option value="">All languages</option><option>English</option><option>French</option><option>Spanish</option><option>Dutch</option><option>Portuguese</option><option>Italian</option></select>
+    <select id="fw" aria-label="Work mode"><option value="">All work modes</option><option>WFS</option><option>WFH</option><option>Hybrid</option></select>
+  </div>
+  <div class="count"><span><b id="n">0</b> offers shown</span><span>Copy-ready details</span></div>
+</header>
+<main class="grid" id="grid"></main>
+<footer>&copy; 2026 Apex Recruitment Agency &bull; Agency owner: Mahmod Roshdy</footer>
+</div>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mt">
+  <div class="sheet">
+    <button class="x" id="close" aria-label="Close">&#10005;</button>
+    <h2 id="mt"></h2><div class="co" id="mc"></div>
+    <dl id="md"></dl>
+    <button class="copy" id="copy">Copy full offer</button>
+  </div>
+</div>
+<div class="modal" id="adm" role="dialog" aria-modal="true" aria-label="Manage offers">
+  <div class="sheet">
+    <button class="x" id="aclose" aria-label="Close">&#10005;</button>
+    <h2>Manage offers</h2>
+    <div id="alist"></div>
+    <div id="aform" style="display:none">
+      <div class="fg" id="fgrid"></div>
+      <button class="sm pri" id="fsave">Save offer</button> <button class="sm" id="fcancel">Cancel</button>
+    </div>
+    <div id="abar" style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
+      <button class="sm" id="aadd">Add offer</button>
+      <button class="sm pri" id="apub">Publish changes</button>
+    </div>
+    <p class="co" id="anote">Changes go live for everyone when you press Publish changes.</p>
+  </div>
+</div>
+<div class="toast" id="toast">Offer copied</div>
+
+<script>
+var SRC="<!DOCTYPE html>\n"+document.documentElement.outerHTML;
+// Offers are stored between the two markers so Admin can update them.
+var OFFERS=/*D*/[{"c": "TTC", "t": "US Telesales", "pay": "12,000 EGP net + unlimited commissions + KPIs; paid testing period/bonus; monthly, quarterly, yearly bonuses", "sh": "3:00 PM–11:00 PM; fixed; 7 working hours; Sat/Sun off", "w": "WFS", "loc": "Makram Ebid, Nasr City", "exp": "Not required", "lang": "English B2+/C1", "grad": "Grads, undergrads, gap year, dropouts", "nat": "Egyptian only", "age": "18–28", "tr": "Transportation provided (back-way)", "iv": "Mon–Fri 3 PM–5 PM", "link": "", "note": "Optional benefits packages; friendly environment"}, {"c": "Total Trip Planners", "t": "Back Office", "pay": "12,000 EGP", "sh": "Not stated", "w": "WFS", "loc": "Masr El Gedida", "exp": "Not required", "lang": "English B2", "grad": "Grads, undergrads, dropouts, gap years", "nat": "Egyptian only", "age": "20–30", "tr": "One-way; girls door-to-door, males to pickup points", "iv": "Mon–Fri 6 PM–7 PM", "link": "", "note": "Apply via WhatsApp 01091332247; mention Back office Misr Gadida"}, {"c": "Crystal Reach", "t": "Telesales", "pay": "15,000 EGP basic + commission from 4,000 (unlimited) + bonus up to 8,000/month", "sh": "Fixed 3 PM–12 AM", "w": "WFS", "loc": "6th of October", "exp": "Not required", "lang": "English B2+ to C1", "grad": "Grads, undergrads, gap years, dropouts", "nat": "Egyptian only", "age": "18–30", "tr": "Girls back home only, door-to-door", "iv": "Mon–Fri 7 PM–10 PM", "link": "", "note": "Interview location: 6th of October"}, {"c": "Leadbull", "t": "Canadian Telesales [HVAC]", "pay": "15,000 EGP net + 5,000 KPIs + daily spiffs + quarterly incentives + annual profit share", "sh": "4 PM–1 AM; WFH available after 3 months", "w": "WFS", "loc": "Zahraa El Maadi", "exp": "Not required", "lang": "English B2+", "grad": "Grads, undergrads, dropouts, gap years", "nat": "Egyptians, females & males", "age": "19–35", "tr": "Not available right now", "iv": "Thu & Fri 8 PM–10 PM", "link": "https://maps.app.goo.gl/SKZHRHsYNo5htKDF9?g_st=aw", "note": ""}, {"c": "Geeky CX", "t": "Debt Settlement Sales", "pay": "15,000 EGP net basic + 4,000 EGP transportation + 25–75 USD/file commission; up to 2,000 USD commission", "sh": "5 PM–2 AM", "w": "WFS", "loc": "Sheikh Zayed", "exp": "Experience required; debt settlement/debt relief preferred, or CS/cold calling/telesales", "lang": "English B2+", "grad": "Graduates only; graduation certificate required; military docs for males", "nat": "Egyptians & foreigners", "age": "Max age 40–45", "tr": "Transportation allowance", "iv": "Online interviews (English accounts)", "link": "", "note": ""}, {"c": "Geeky CX", "t": "English Customer Service (Inbound/Outbound)", "pay": "18,000 EGP net + 100 USD KPIs + 4,000 EGP transportation = 27,000 EGP net total with KPIs", "sh": "7 PM–4 AM", "w": "WFS", "loc": "Sheikh Zayed", "exp": "Experience required; debt settlement/debt relief preferred, or general CS/cold calling/telesales", "lang": "English B2+", "grad": "Graduates only; graduation certificate required; military docs for males", "nat": "Egyptians & foreigners", "age": "Max age 40–45", "tr": "Transportation allowance", "iv": "Online interviews (English accounts)", "link": "", "note": ""}, {"c": "Geeky CX", "t": "English Back Office (Admin work & Emails)", "pay": "12,000 EGP net basic + 4,000 EGP transportation + 100 USD KPIs = 21,000 EGP net total with KPIs", "sh": "5 PM–2 AM", "w": "WFS", "loc": "Sheikh Zayed", "exp": "Experience required", "lang": "English B2", "grad": "Graduates only; graduation certificate required; military docs for males", "nat": "Egyptians & foreigners", "age": "Max age 40–45", "tr": "Transportation allowance", "iv": "Online interviews (English accounts)", "link": "", "note": ""}, {"c": "ACES", "t": "Cold-calling Telesales Agent", "pay": "12,000 EGP basic net + uncapped commission; promotion chance; insurance/profit share after 1 year", "sh": "3:30 PM–11:30 PM fixed; Sat/Sun off", "w": "WFS", "loc": "Abbassia, Syndicate of Applicators, 15th floor", "exp": "Not required", "lang": "English B2+", "grad": "Grads, undergrads, dropouts, gap years", "nat": "Egyptian only", "age": "18–26", "tr": "Girls door-to-door in listed areas at night; 1,500 EGP allowance for males/outside areas", "iv": "Company contacts qualified candidates", "link": "", "note": "https://forms.gle/6Z49HbCSrmcVs5Tx9"}, {"c": "TTEC", "t": "English Customer Service", "pay": "Gross 24,480 EGP; medical/social insurance; paid training; career growth", "sh": "Rotational shifts", "w": "WFS", "loc": "Maadi Technology Park", "exp": "Minimum 1 year customer service", "lang": "English C1", "grad": "Graduates only", "nat": "Egyptian nationals", "age": "", "tr": "Transportation provided", "iv": "", "link": "", "note": "Joining date stated as 24 Aug 2026"}, {"c": "TTEC", "t": "Dutch Sales Exp", "pay": "Up to 64,000 EGP gross/month + commission; medical/social insurance; paid training", "sh": "Rotational, 24/7; 8 hrs + 1 hr break; 5 days/2 days off", "w": "WFS", "loc": "Maadi", "exp": "Minimum 1 year sales", "lang": "Dutch B2+; English B2", "grad": "Graduates", "nat": "Egyptian only", "age": "Up to 45", "tr": "Transportation collection points; females door-to-door 10 PM–6 AM", "iv": "", "link": "", "note": "Military completed; ready 7 Oct"}, {"c": "TTEC", "t": "Portuguese Sales Exp", "pay": "Up to 42,000 EGP gross/month + commission", "sh": "Rotational 24/7; 5 days/2 days off; 8 hrs + 1 hr break", "w": "WFS", "loc": "Maadi Technology Village", "exp": "Minimum 1 year sales", "lang": "Portuguese B2+; English B2", "grad": "Graduates", "nat": "Egyptian only", "age": "21–45", "tr": "Transportation provided; females door-to-door 10 PM–6 AM", "iv": "Mon–Fri 11 AM–3 PM", "link": "https://maps.app.goo.gl/HBHLJSy4XxejTmXA8?g_st=iw", "note": "Military completed"}, {"c": "TTEC", "t": "Spanish Sales Exp", "pay": "Up to 28,500 EGP gross/month + commission", "sh": "Rotational 24/7; 5 days/2 days off; 8 hrs + 1 hr break", "w": "WFS", "loc": "Maadi", "exp": "Minimum 1 year sales", "lang": "Spanish B2+; English B2", "grad": "Graduates", "nat": "Egyptian only", "age": "Up to 45", "tr": "Transportation provided; females door-to-door 10 PM–6 AM", "iv": "Mon–Fri 11 AM–4 PM", "link": "", "note": "Military completed"}, {"c": "TTEC", "t": "French Sales Exp", "pay": "Up to 33,500 EGP gross/month + commission", "sh": "Rotational 24/7; 5 days/2 days off; 8 hrs + 1 hr break", "w": "WFS", "loc": "Maadi", "exp": "Minimum 1 year sales", "lang": "French B2+; English B2", "grad": "Graduates", "nat": "Egyptian only", "age": "Up to 45", "tr": "Transportation provided; females door-to-door 10 PM–6 AM", "iv": "Mon–Fri 11 AM–4 PM", "link": "", "note": "Military completed"}, {"c": "Alorica", "t": "English US Customer Support / Airline", "pay": "Up to 20,000 EGP gross; medical/social insurance; paid training", "sh": "Rotational; 5 days/2 days off", "w": "WFS", "loc": "Sheikh Zayed", "exp": "At least 6 months CS experience", "lang": "English B2", "grad": "Graduates and dropouts", "nat": "Egyptian only", "age": "18–40", "tr": "Transportation available", "iv": "", "link": "", "note": ""}, {"c": "eClerx", "t": "Customer Support", "pay": "15,500 EGP net basic + 2,300 night allowance + up to 3,200 KPI; total 20–21K net", "sh": "Rotational night/overnight", "w": "WFS", "loc": "Maadi Technology Park", "exp": "6 months–1 year BPO experience", "lang": "English B2", "grad": "Graduates only", "nat": "Egyptian only", "age": "21–38", "tr": "Door-to-door transportation", "iv": "Thu–Sun 2 PM", "link": "https://share.google/OQ5mIFnPA3ucWGBvL", "note": ""}, {"c": "Geeky CX", "t": "Spanish Customer Service", "pay": "18,000 EGP net basic + 100 USD KPIs + 4,000 EGP transportation + 10,000 EGP language allowance = 37,000 EGP net total", "sh": "7 PM–4 AM", "w": "WFS", "loc": "Sheikh Zayed", "exp": "Not stated", "lang": "English B2+ and Spanish B2+", "grad": "Grads, gap years & dropouts", "nat": "Egyptians & foreigners", "age": "18–45", "tr": "Transportation allowance", "iv": "", "link": "", "note": ""}, {"c": "Cxperts", "t": "Staffing Sales / Lead Generation", "pay": "15,000 EGP basic + 5,000 EGP KPIs + 2,200 EGP transportation allowance + 50–100 USD commission/doctor", "sh": "Rotational and overnight", "w": "WFS", "loc": "Mall El Boustan, Downtown/Tahrir", "exp": "1–2 years outbound sales/lead generation; medical/healthcare/staffing preferred", "lang": "English C1", "grad": "Not specified", "nat": "Not specified", "age": "18–30", "tr": "2,200 EGP allowance; no transportation provided", "iv": "", "link": "https://maps.app.goo.gl/EMd68voFzbBEHvuJ9", "note": ""}, {"c": "Teleperformance", "t": "English Call Center", "pay": "Up to 19,000 EGP; KPIs paid in Euro; paid training; medical/social insurance", "sh": "Not stated", "w": "WFS", "loc": "Not stated", "exp": "Not stated", "lang": "English B2/C1", "grad": "Graduates only", "nat": "Egyptians only", "age": "", "tr": "Transportation provided", "iv": "", "link": "", "note": ""}, {"c": "Teleperformance", "w": "WFS", "exp": "", "lang": "French B2, English B2", "grad": "Graduates", "nat": "Egyptians only", "age": "Up to 45", "link": "", "tr": "Provided for females only", "t": "French Technical Support – Voice (Bilingual)", "pay": "29,000 EGP net fixed monthly; medical & social insurance; paid training", "sh": "Morning shifts starting 9, 10, 11 am or 12 pm; rotational days off; 5 working days / 2 days off; 8 hours + 1 hour break", "loc": "City Walk", "iv": "Site interview at One Kattameya, Sun–Thu 11 AM–6 PM", "note": "Military service completed. Start date: 20/9. Interview location differs from work location."}, {"c": "Teleperformance", "w": "WFS", "exp": "", "lang": "French B2, English B2", "grad": "Graduates", "nat": "Egyptians only", "age": "Up to 45", "link": "", "tr": "Provided for females only", "t": "French Technical Support – Voice & Email (Bilingual)", "pay": "26,000 EGP net fixed monthly; medical & social insurance; paid training", "sh": "Fixed morning shift 10 AM–7 PM; Saturday & Sunday off; 5 working days / 2 days off", "loc": "One Kattameya", "iv": "Site interview at One Kattameya, Sun–Thu 10 AM–5 PM", "note": "Military service completed. Start date: 20/9. New launching account."}, {"c": "Telephonic", "t": "French & English Bilingual Customer Service", "pay": "Up to 30,000 EGP", "sh": "Not stated", "w": "WFS", "loc": "Nasr City", "exp": "Minimum 6 months experience", "lang": "French + English", "grad": "Not stated", "nat": "Not stated", "age": "", "tr": "Not stated", "iv": "", "link": "", "note": ""}, {"c": "EX", "t": "TeleSales Specialist", "pay": "8,000 EGP basic + target commission 2.5% / 4,500 at target + unlimited above target + semi-annual profit share from 8,000", "sh": "11 AM–7 PM; Sun–Thu on-site; Sat WFH if own PC", "w": "Hybrid", "loc": "Dokki, Giza", "exp": "1–4 years telesales; service selling mandatory", "lang": "English A2–B1", "grad": "Graduates only; graduation certificate; military docs for males", "nat": "Egyptian only", "age": "Up to 32", "tr": "Saturday WFH for own laptop/PC", "iv": "", "link": "https://docs.google.com/forms/d/e/1FAIpQLScm9wrUNUvCX3Dc2oT0HY9l2Rcxch5w-xMmSkVhKbCaKz-SjQ/viewform?usp=publish-editor", "note": "Joining first batch beginning October"}, {"c": "EX", "t": "Senior TeleSales", "pay": "10,000 EGP basic + target commission 3% / 6,500 at target + unlimited above target + semi-annual profit share from 10,000", "sh": "11 AM–7 PM; Sun–Thu on-site; Sat WFH if own PC", "w": "Hybrid", "loc": "Dokki, Giza", "exp": "3+ years telesales; Education/Training/EdTech sales mandatory; service selling mandatory", "lang": "English A2–B1", "grad": "Graduates only; graduation certificate; military docs for males", "nat": "Egyptian only", "age": "Up to 32", "tr": "Saturday WFH for own laptop/PC", "iv": "", "link": "https://docs.google.com/forms/d/e/1FAIpQLScm9wrUNUvCX3Dc2oT0HY9l2Rcxch5w-xMmSkVhKbCaKz-SjQ/viewform?usp=publish-editor", "note": "Joining first batch beginning October"}, {"c": "LPM", "t": "Sales Agent / Telesales", "pay": "20,000 EGP net + commission from 6,000 uncapped + semi-daily spiffs + weekly performance bonuses", "sh": "3:15 PM–12:30 AM fixed; Sat/Sun off; US federal holidays", "w": "WFS", "loc": "6th of October", "exp": "Not required", "lang": "English B2+", "grad": "Grads, undergrads, dropouts, gap years", "nat": "Egyptian only", "age": "Min 17–18, max 30", "tr": "Back-way; drop-off points for men, door-to-door for women", "iv": "Mon–Wed 7 PM–9 PM", "link": "https://maps.app.goo.gl/yA2Rra6EbGLGqBMu8?g_st=iw", "note": ""}, {"c": "VX Alex", "t": "Business Travel Consultant", "pay": "13,000 EGP including KPIs + uncapped commission (average starts $700+/month)", "sh": "5 PM–2 AM; WFH after 90 days based on performance", "w": "WFS", "loc": "Alexandria", "exp": "2+ years strong sales experience in English call center; aviation/travel plus", "lang": "English B2+/C1", "grad": "Grads, undergrads, dropouts, gap years", "nat": "Egyptian only", "age": "18–30", "tr": "No transportation", "iv": "Client slots", "link": "https://docs.google.com/forms/d/e/1FAIpQLSfClcKImFTj_xr4rDa16SyMDd7FxDXImP6RupmrTz1eAtOmDQ/viewform?usp=header", "note": "No cold calling; Amadeus/GDS major advantage"}, {"c": "LFB", "t": "Sales Coordinator", "pay": "12,000 EGP net including transportation allowance + paid training + social insurance + annual bonus + 10% annual increase based on performance", "sh": "8:30 AM–4:30 PM; Sun–Thu", "w": "WFS", "loc": "Abu Rawash, Giza", "exp": "1–3 years sales/project coordination/admin support; construction/architectural products a plus", "lang": "English B1", "grad": "Graduates only; Bachelor's in relevant field", "nat": "Egyptian only", "age": "Up to 35", "tr": "Included in salary", "iv": "", "link": "", "note": ""}, {"c": "LTS", "t": "Hotel Surveys – Outbound", "pay": "12,000 EGP base + 2,000 KPIs; after 3 months salary 15K; commission up to 30 EGP/transfer", "sh": "Shifts between 3 PM–2 AM", "w": "WFS", "loc": "El Nozha, Cairo", "exp": "CS experience is a plus", "lang": "English B2+", "grad": "Grads & undergrads", "nat": "Egyptian only", "age": "18–35", "tr": "Females after midnight", "iv": "", "link": "", "note": ""}, {"c": "LTS", "t": "Sales Agent – Inbound Vacation Packages", "pay": "16,000 EGP net + 12,000 EGP bonus every 3 months + uncapped commission (avg 20K/month)", "sh": "Rotational; starts 4 PM, last shift 9 PM; 2 fixed days off", "w": "WFS", "loc": "Sheraton-ElMatar", "exp": "6+ months sales/telesales", "lang": "English C1", "grad": "Grads & undergrads", "nat": "Egyptian only", "age": "18–35", "tr": "Females after midnight", "iv": "", "link": "", "note": ""}, {"c": "Alorica", "t": "French Bilingual Customer Service", "pay": "32,000 EGP gross basic; paid training; medical/social insurance", "sh": "Rotational; 5 days/2 days off; 8 hrs + 1 hr break", "w": "WFS", "loc": "Sheikh Zayed", "exp": "Not stated", "lang": "French + English B2", "grad": "Graduates & undergrads", "nat": "Egyptian only", "age": "Up to 35", "tr": "Transportation provided", "iv": "Mon–Fri online interviews", "link": "", "note": "Military completed; documents required"}, {"c": "Atain", "t": "English Travel Advisor – GDS", "pay": "20,000 EGP net", "sh": "Rotational; 5 days/2 days off; 8 hrs + 1 hr break", "w": "WFS", "loc": "Maadi Technology Park", "exp": "Minimum 6 months GDS + travel industry", "lang": "English C1", "grad": "Graduates", "nat": "Egyptian only", "age": "Up to 40", "tr": "Not stated", "iv": "Mon–Fri 11 AM–4 PM", "link": "https://maps.app.goo.gl/fG33WfEKBPR67nd37", "note": "GDS mandatory"}, {"c": "Atain", "t": "French Travel Advisor – GDS", "pay": "32,000 EGP net", "sh": "Rotational; 5 days/2 days off; 8 hrs + 1 hr break", "w": "WFS", "loc": "Maadi Technology Park", "exp": "Minimum 6 months GDS + travel industry", "lang": "French C1 + English B2", "grad": "Graduates", "nat": "Egyptian only", "age": "Up to 40", "tr": "Not stated", "iv": "Mon–Fri 11 AM–4 PM", "link": "https://maps.app.goo.gl/fG33WfEKBPR67nd37", "note": "GDS mandatory; bilingual"}, {"c": "Minister Fitness Pharma", "t": "Sales Agent", "pay": "10,000 EGP based on experience + commission + monthly incentives", "sh": "10 AM–6 PM fixed; Friday off", "w": "WFS", "loc": "New Cairo, 1st Settlement", "exp": "Minimum 1 year sales; females only", "lang": "Arabic account; English B1 preferred", "grad": "Graduates", "nat": "Egyptian only", "age": "Up to 35", "tr": "Not stated", "iv": "Wed & Thu 11 AM–4 PM", "link": "https://maps.app.goo.gl/4612ueGNYwJ2eiqZ7?st=ic", "note": "Female only"}, {"c": "Minister Fitness Pharma", "t": "Media Buyer", "pay": "Up to 15,000 EGP based on experience + monthly incentives + paid training", "sh": "10 AM–6 PM fixed; Friday off", "w": "WFS", "loc": "New Cairo, 1st Settlement", "exp": "Minimum 1 year media buying", "lang": "English B1", "grad": "Graduates", "nat": "Egyptian only", "age": "Up to 35", "tr": "Not stated", "iv": "Wed & Thu 11 AM–4 PM", "link": "https://maps.app.goo.gl/4612ueGNYwJ2eiqZ7?st=ic", "note": ""}, {"c": "Minister Fitness Pharma", "t": "Graphic Designer", "pay": "10,000 EGP+ based on experience + paid training; tools provided", "sh": "10 AM–6 PM fixed; Friday off", "w": "WFS", "loc": "New Cairo, 1st Settlement", "exp": "Minimum 1 year same field", "lang": "English B1", "grad": "Graduates", "nat": "Egyptian only", "age": "Up to 35", "tr": "Not stated", "iv": "Wed & Thu 11 AM–4 PM", "link": "https://maps.app.goo.gl/4612ueGNYwJ2eiqZ7?st=ic", "note": ""}, {"c": "Evolve Marketing LLC", "t": "PAS Patient Assistance Survey / Telemarketer", "pay": "Package up to 20,000 EGP: 10K basic+KPIs + 2.2K–10K commission + spiffs/bonuses", "sh": "4 PM–12 AM fixed; Sat/Sun off; 6-month contract", "w": "WFS", "loc": "Heliopolis", "exp": "Not specified", "lang": "English B2+", "grad": "Grads, undergrads, gap year, dropouts", "nat": "Egyptian only", "age": "Up to 29", "tr": "Female transportation via meeting points after training", "iv": "", "link": "", "note": "Clear military status for males"}, {"c": "Vintrin Clinic", "t": "Sales Representative – Night/Overnight", "pay": "17,500 EGP net + commission; after 3 months 20,000 EGP net + 5,000 KPIs + commission", "sh": "10 PM–7 AM; Sun–Thu + 1st Saturday/month", "w": "WFS", "loc": "Heliopolis", "exp": "2+ years sales; medical tourism preferred", "lang": "English C1", "grad": "Graduates", "nat": "Foreigners & Egyptians", "age": "Up to 30", "tr": "Not stated", "iv": "Sun–Wed 3 PM–8 PM after acceptance", "link": "", "note": "Dentists highly preferred; training 15 days paid upon passing"}, {"c": "WINIRIX", "t": "Appointment Setter", "pay": "12,000 EGP net + 2,000 EGP allowance + USD-based commission; weekly team commission", "sh": "5 PM–2 AM; Mon–Fri", "w": "WFS", "loc": "Nasr City", "exp": "B2 English + call center/cold calling experience; B2+ with no experience for students/fresh grads", "lang": "B2/B2+ English", "grad": "Students, fresh grads, grads, dropouts, gap years", "nat": "Egyptians & foreigners", "age": "20–35", "tr": "No transportation", "iv": "Slots with client", "link": "https://docs.google.com/forms/d/e/1FAIpQLSe2wGd-y3X7AGq9iNwYyrpJHjgxthWnSlb8mA_RvFsh-Q5IEg/viewform?usp=publish-editor", "note": "Training 4–5 days at 250 EGP/day; probation 10 days at 250 EGP/day"}, {"c": "TTEC", "t": "Italian Sales Exp", "pay": "Up to 32,900 EGP gross + transportation/mobile allowance + bonuses", "sh": "Rotational 9 hours; 2 days off", "w": "WFS", "loc": "Maadi Technology Park", "exp": "1–2 years sales", "lang": "Italian C1 + English C1", "grad": "Graduates", "nat": "Egyptian only", "age": "", "tr": "Transportation allowance/provided", "iv": "", "link": "", "note": "Appears as an open offer in Sub Agencies Offers"}, {"c": "UCC", "t": "Call Center Agent – US Account", "pay": "15,000 EGP basic + commission on every qualified transfer + daily bonuses", "sh": "Fixed shift 5 PM–2 AM", "w": "WFS", "loc": "Zahraa El Maadi", "exp": "Debt settlement experience is required", "lang": "English C1", "grad": "Grads, undergrads, gap year, dropouts", "nat": "Egyptians & foreigners", "age": "16–30", "tr": "", "iv": "Site interview, Mon–Fri 7:00–8:30 PM", "link": "https://maps.app.goo.gl/ZMzDEjL14QQ78UmS8", "note": "Paid training: 1 month."}, {"c": "Contact Center Source", "t": "Lead Verification Agent (Sales)", "pay": "12,000 EGP net base + 3,000 KPIs + uncapped commission", "sh": "Fixed shift 6 PM–3 AM, Mon–Fri; Sat & Sun off", "w": "WFS", "loc": "Nasr City", "exp": "Not required", "lang": "English C1", "grad": "Grads, undergrads, gap year, dropouts", "nat": "Egyptians only", "age": "20–30", "tr": "", "iv": "Mon–Fri, anytime after 7 PM", "link": "https://share.google/MywwdbjHZ906S60dn", "note": "Paid training (1 month); paid days off after probation."}, {"c": "Dial Expert", "t": "US Financial Advisor / Closer Account", "pay": "18K EGP net guaranteed + commission from deal #1; 25 deals = 43K, 30 deals = 63K, 45+ deals = up to 108K EGP total; daily & weekly performance bonuses, SPIFs & competitions; salary growth based on performance", "sh": "4 PM–1 AM, Mon–Fri; 9-hour shift including 1-hour break", "w": "Hybrid", "loc": "One Katameya, Cairo", "exp": "Sales / closing / call center experience; US banking or financial services is a plus", "lang": "Fluent / near-native English", "grad": "Grads, undergrads, gap year, dropouts", "nat": "Egyptian Only", "age": "18 - 40", "tr": "Not stated", "iv": "", "link": "", "note": "Hybrid for Cairo residents; remote for candidates outside Cairo. Strong objection handling skills required."}, {"grad": "Grads, undergrads, gap year, dropouts", "nat": "Egyptian Only", "age": "18 - 40", "tr": "Not stated", "iv": "", "link": "", "c": "REZ", "t": "Real Estate Cold Caller", "w": "WFH", "loc": "Work from home", "pay": "Basic $250 + $100 KPIs bonus + extra $100 for every 20 leads above target", "sh": "Full time; 9-hour shift (8 working hours + 1-hour break); shifts 5 PM–2 AM or 6 PM–3 AM; Mon–Fri, Sat & Sun off; paid American holidays", "exp": "Real estate cold calling experience is a must", "lang": "English B2+/C1", "note": "Commitment and consistency required."}, {"grad": "Grads, undergrads, gap year, dropouts", "nat": "Egyptian Only", "age": "18 - 40", "tr": "Not stated", "iv": "", "link": "", "c": "REZ", "t": "Elite Cold Caller & Appointment Setter", "w": "Hybrid", "loc": "Alexandria", "pay": "$3–$7 per hour + uncapped commission; paid holidays and incentives", "sh": "", "exp": "2+ years outbound sales / cold calling", "lang": "English B2+", "note": "WFH or on-site. Strong objection handling and communication required."}, {"grad": "Grads, undergrads, gap year, dropouts", "nat": "Egyptian Only", "age": "18 - 40", "tr": "Not stated", "iv": "", "link": "", "c": "VertexX LLC", "t": "Business Travel Consultant (Batch 6)", "w": "WFS", "loc": "Alexandria (Wabour El Maya)", "pay": "Base 13,000 EGP including KPIs + uncapped commission (floor average $700+/month; top closers $2,000–$4,000+ monthly)", "sh": "5 PM–2 AM", "exp": "2+ years of strong sales experience in an English-speaking call center; aviation, travel or Amadeus/GDS knowledge is a plus", "lang": "English", "note": "Not cold calling: high-ticket consultative aviation sales with premium leads. WFH eligible after 90 days of proven performance. To apply, send your CV and a voice note introducing yourself."}]/*E*/;
+var LANGS=["English","French","Spanish","Dutch","Portuguese","Italian"];
+var ROWS=[["loc","Location"],["w","Work mode"],["pay","Salary / package"],["sh","Working hours"],["exp","Experience"],["lang","Language and level"],["grad","Graduation status"],["nat","Nationality"],["age","Age"],["tr","Transportation"],["iv","Interview"],["link","Form / maps link"],["note","Notes"]];
+var FIELDS=[["c","Company"],["t","Position"],["loc","Location"],["pay","Salary / package"],["sh","Working hours"],["exp","Experience"],["lang","Language and level"],["grad","Graduation status"],["nat","Nationality"],["age","Age"],["tr","Transportation"],["iv","Interview date / time"],["link","Form / maps link"],["note","Notes"]];
+function esc(x){return String(x==null?"":x).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+var $=function(i){return document.getElementById(i)},cur=null;
+function shown(v){return !!v&&!/^(not stated|not specified)$/i.test(v)}
+function langs(o){var s=(o.lang||"").toLowerCase();return LANGS.filter(function(l){return s.indexOf(l.toLowerCase())>-1})}
+function grads(o){var s=(o.grad||"").toLowerCase().replace(/undergrad\w*|students?/g,"#u"),r=[];
+  if(/grad/.test(s))r.push("Grads");if(s.indexOf("#u")>-1)r.push("Undergrads");if(/dropout/.test(s))r.push("Dropouts");if(/gap/.test(s))r.push("Gap years");return r}
+function fillCo(){
+  var sel=$("fco"),v=sel.value,cs=[];
+  OFFERS.forEach(function(o){if(o.c&&cs.indexOf(o.c)<0)cs.push(o.c)});cs.sort();
+  sel.innerHTML='<option value="">All companies</option>'+cs.map(function(c){return '<option>'+esc(c)+'</option>'}).join("");
+  sel.value=cs.indexOf(v)>-1?v:"";
+}
+function match(o){
+  var q=$("q").value.toLowerCase(),co=$("fco").value,g=$("fg").value,l=$("fl").value,w=$("fw").value;
+  return (!q||(o.t+" "+o.c+" "+o.loc).toLowerCase().indexOf(q)>-1)&&(!co||o.c===co)&&(!g||grads(o).indexOf(g)>-1)&&(!l||langs(o).indexOf(l)>-1)&&(!w||o.w===w);
+}
+function render(){
+  var list=OFFERS.filter(match),h="";
+  list.forEach(function(o){
+    h+='<button class="card" data-i="'+OFFERS.indexOf(o)+'"><h3>'+esc(o.t)+'</h3><div class="co">'+esc(o.c)+(shown(o.loc)?' &middot; '+esc(o.loc):'')+'</div><div class="tags"><span class="tag">'+esc(o.w)+'</span>'+langs(o).map(function(x){return '<span class="tag">'+x+'</span>'}).join("")+grads(o).map(function(x){return '<span class="tag">'+x+'</span>'}).join("")+'</div><div class="pay">'+esc(o.pay)+'</div></button>';
+  });
+  $("grid").innerHTML=h||'<div class="empty">No offers match these filters. Clear a filter to see more.</div>';
+  $("n").textContent=list.length;
+}
+function text(o){
+  return o.t+" - "+o.c+"\n"+ROWS.filter(function(r){return shown(o[r[0]])}).map(function(r){return r[1]+": "+o[r[0]]}).join("\n");
+}
+function open_(i){
+  var o=OFFERS[i];cur=o;
+  $("mt").textContent=o.t;$("mc").textContent=o.c;
+  $("md").innerHTML=ROWS.filter(function(r){return shown(o[r[0]])}).map(function(r){
+    var v=o[r[0]],d=esc(v);
+    if(r[0]==="link"&&/^https?:\/\//.test(v))d='<a href="'+esc(v)+'" target="_blank" rel="noopener">Open link</a>';
+    return "<dt>"+r[1]+"</dt><dd>"+d+"</dd>"}).join("");
+  $("modal").classList.add("open");
+}
+function toast(m){var t=$("toast");t.textContent=m;t.classList.add("show");setTimeout(function(){t.classList.remove("show")},1800)}
+function copy(){
+  var s=text(cur);
+  function ok(){toast("Offer copied")}
+  function fb(){var a=document.createElement("textarea");a.value=s;document.body.appendChild(a);a.select();try{document.execCommand("copy");ok()}catch(e){toast("Copy failed. Select the text manually.")}a.remove()}
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(s).then(ok,fb)}else fb();
+}
+["q","fco","fg","fl","fw"].forEach(function(i){$(i).addEventListener("input",render)});
+$("grid").addEventListener("click",function(e){var c=e.target.closest(".card");if(c)open_(c.dataset.i)});
+$("close").onclick=function(){$("modal").classList.remove("open")};
+$("modal").addEventListener("click",function(e){if(e.target===this)this.classList.remove("open")});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"){$("modal").classList.remove("open");$("adm").classList.remove("open")}});
+$("copy").onclick=copy;
+fillCo();render();
+
+// ---- Live offers from Google Sheet ----
+// Paste the "Publish to web" CSV link between the quotes. Leave it empty to use the offers saved in this file.
+var SHEET_URL="https://docs.google.com/spreadsheets/d/1HJ8X35XIMYZoDQwoOSkvjhuU7HduyXPwOR15GGMNe8c/gviz/tq?tqx=out:csv&sheet=Offers";
+function parseCSV(t){var rows=[],r=[],f="",q=false,i,ch;
+  for(i=0;i<t.length;i++){ch=t[i];
+    if(q){if(ch==='"'){if(t[i+1]==='"'){f+='"';i++}else q=false}else f+=ch}
+    else if(ch==='"')q=true;
+    else if(ch===","){r.push(f);f=""}
+    else if(ch==="\n"||ch==="\r"){if(ch==="\r"&&t[i+1]==="\n")i++;r.push(f);f="";rows.push(r);r=[]}
+    else f+=ch}
+  if(f!==""||r.length){r.push(f);rows.push(r)}return rows}
+var MAP={"status":"status","company":"c","position":"t","work mode":"w","location":"loc","salary / package":"pay","working hours":"sh","experience":"exp","language and level":"lang","graduation status":"grad","nationality":"nat","age":"age","transportation":"tr","interview":"iv","link":"link","notes":"note"};
+function fromCSV(t){
+  var rows=parseCSV(t);if(rows.length<2)return [];
+  var hd=rows[0].map(function(h){return MAP[h.trim().toLowerCase()]||null}),out=[];
+  for(var i=1;i<rows.length;i++){var o={};
+    rows[i].forEach(function(v,j){if(hd[j])o[hd[j]]=v.trim()});
+    if(/^active$/i.test(o.status||"")&&o.t&&o.c){var w=(o.w||"").toUpperCase();o.w=w==="HYBRID"?"Hybrid":(w==="WFH"?"WFH":"WFS");out.push(o)}}
+  return out}
+function loadSheet(){
+  if(!SHEET_URL)return;
+  fetch(SHEET_URL+(SHEET_URL.indexOf("?")>-1?"&":"?")+"t="+Date.now())
+    .then(function(r){if(!r.ok)throw 0;return r.text()})
+    .then(function(t){var out=fromCSV(t);if(!out.length)throw 0;OFFERS=out;fillCo();render()})
+    .catch(function(){});
+}
+loadSheet();
+
+// ---- Admin (visible only to people who can edit this artifact) ----
+var edIdx=-1,dirty=false;
+$("fgrid").innerHTML=FIELDS.map(function(f){return '<label'+(["t","c","loc"].indexOf(f[0])<0?' class="w"':'')+'>'+f[1]+'<input id="f_'+f[0]+'"></label>'}).join("")+'<label>Work mode<select id="f_w"><option>WFS</option><option>WFH</option><option>Hybrid</option></select></label>';
+function alist(){
+  $("alist").innerHTML=OFFERS.map(function(o,i){return '<div class="ar"><span>'+esc(o.t)+' &middot; '+esc(o.c)+'</span><button class="sm" data-e="'+i+'">Edit</button><button class="sm" data-d="'+i+'">Delete</button></div>'}).join("")||'<p class="co">No offers yet. Add the first one.</p>';
+}
+function showForm(i){
+  edIdx=i;var o=i>-1?OFFERS[i]:{w:"WFS"};
+  FIELDS.forEach(function(f){$("f_"+f[0]).value=o[f[0]]||""});$("f_w").value=o.w||"WFS";
+  $("aform").style.display="block";$("abar").style.display="none";$("alist").style.display="none";
+}
+function hideForm(){$("aform").style.display="none";$("abar").style.display="flex";$("alist").style.display="block"}
+function saveForm(){
+  var o={};FIELDS.forEach(function(f){o[f[0]]=$("f_"+f[0]).value.trim()});o.w=$("f_w").value;
+  if(!o.t||!o.c){toast("Add a company and a position first");return}
+  if(edIdx>-1)OFFERS[edIdx]=o;else OFFERS.unshift(o);
+  dirty=true;hideForm();alist();fillCo();render();
+}
+async function publish(){
+  try{
+    var a=await window.claude.use("artifact");
+    if(!a){toast("Publishing is not available here");return}
+    var j=JSON.stringify(OFFERS).replace(/</g,"\\u003c");
+    var html=SRC.replace(new RegExp("/\\*"+"D\\*/[\\s\\S]*?/\\*"+"E\\*/"),function(){return "/*"+"D*/"+j+"/*"+"E*/"});
+    await a.publish(html);
+  }catch(e){toast("Could not publish. Try again.")}
+}
+$("admb").onclick=function(){alist();$("adm").classList.add("open")};
+$("aclose").onclick=function(){$("adm").classList.remove("open")};
+$("aadd").onclick=function(){showForm(-1)};
+$("fsave").onclick=saveForm;$("fcancel").onclick=hideForm;
+$("apub").onclick=function(){if(!dirty){toast("No changes to publish");return}publish()};
+$("alist").addEventListener("click",function(e){
+  var b=e.target.closest("button");if(!b)return;
+  if(b.dataset.e!==undefined)showForm(+b.dataset.e);
+  else if(b.dataset.d!==undefined&&confirm("Delete this offer?")){OFFERS.splice(+b.dataset.d,1);dirty=true;alist();fillCo();render()}
+});
+(async function(){
+  try{
+    if(!window.claude)return;
+    var u=await window.claude.use("user");
+    if(u&&u.canEdit())$("admb").classList.add("on");
+  }catch(e){}
+})();
+</script>
+</body>
+</html>
