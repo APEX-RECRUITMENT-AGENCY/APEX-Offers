@@ -167,6 +167,7 @@ function teamHTML(){
     var n=S.apps.filter(function(a){return a.recruiter_id===p.id}).length;
     h+='<div class="card"><div class="row"><span class="name" style="flex:1">'+esc(p.full_name)+'</span><span class="badge">'+T("ro")[p.role]+'</span></div>'+
     '<div class="mute">'+(p.parent_id?T("reportsTo")+": "+esc(nameOf(p.parent_id))+" · ":"")+n+" "+T("count")+" · "+(p.active?'<span class="ok">'+T("active")+'</span>':'<span class="bad">'+T("disabled")+'</span>')+'</div>'+
+    ((owner&&p.role!=="owner"||S.me.role==="unit_manager"&&RANK[p.role]>1)?'<div class="grid2" style="margin-top:8px"><div><label class="mute">'+(lang==="ar"?"الدور":"Role")+'</label><select data-role="'+p.id+'">'+(owner?["unit_manager","team_leader","recruiter"]:["team_leader","recruiter"]).map(function(r){return'<option value="'+r+'"'+(p.role===r?" selected":"")+'>'+T("ro")[r]+'</option>'}).join("")+'</select></div><div><label class="mute">'+T("reportsTo")+'</label><select data-par="'+p.id+'">'+S.team.filter(function(x){return x.id!==p.id&&RANK[x.role]<RANK[p.role]}).map(function(x){return'<option value="'+x.id+'"'+(p.parent_id===x.id?" selected":"")+'>'+esc(x.full_name)+' ('+T("ro")[x.role]+')</option>'}).join("")+'</select></div></div>':'')+
     '<div class="row" style="margin-top:8px"><button class="btn sm" data-copy="'+esc(base()+"index.html?ref="+p.ref_code)+'">'+T("copy")+' '+T("myLink").split(" (")[0]+'</button>'+
     (owner&&p.role!=="owner"?'<button class="btn sm" data-toggle="'+p.id+'">'+(p.active?T("disable"):T("enable"))+'</button>':'')+'</div></div>';
   });
@@ -218,6 +219,17 @@ document.addEventListener("click",async function(e){
 document.addEventListener("change",async function(e){
   var t=e.target;
   if(t.id==="ir"){fillParents();return}
+  if(t.dataset.role||t.dataset.par){
+    var pid=t.dataset.role||t.dataset.par,pr=S.team.find(function(x){return x.id===pid}),patch={};
+    var nr=t.dataset.role?t.value:pr.role,np=t.dataset.par?t.value:pr.parent_id,ar=lang==="ar";
+    var kids=S.team.filter(function(x){return x.parent_id===pid&&RANK[x.role]<=RANK[nr]});
+    if(kids.length){toast(ar?"الشخص ده تحته ناس، انقلهم الأول":"This person has people under them, move them first");renderList();return}
+    var par=S.team.find(function(x){return x.id===np});
+    if(!par||RANK[par.role]>=RANK[nr]){np=S.me.id}
+    var rr=await sb.rpc("change_role",{p_id:pid,p_role:nr,p_parent:np});
+    if(rr.error)toast(rr.error.message);else{pr.role=nr;pr.parent_id=np;toast(T("saved"))}
+    renderList();return;
+  }
   if(t.dataset.st){if(await upd(t.dataset.st,{status:t.value}))renderList()}
   else if(t.dataset.rc){if(await upd(t.dataset.rc,{recruiter_id:t.value||null}))toast(T("saved"))}
   else if(t.dataset.nt){if(await upd(t.dataset.nt,{notes:t.value}))toast(T("saved"))}
