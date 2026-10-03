@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Apex Recruitment Agency: active job offers. Filter by company, language, graduation status or work mode and copy the full offer in one tap.">
 <title>Apex Recruitment Agency | Available Offers</title>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media=\'all\'">
 <style>
 :root{--bg:#d8dbdd;--card:#eceeef;--ink:#0b0b0c;--mute:#55595d;--line:#b9bec2;--acc:#0b0b0c;--acc-ink:#e6e8ea;--tag:#c6cacd;--hl:#fff}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#09090a;--card:#151517;--ink:#e3e5e7;--mute:#9a9ea3;--line:#2a2c2f;--acc:#c4c8cc;--acc-ink:#09090a;--tag:#232528;--hl:#fff}}
@@ -59,6 +59,10 @@ select:focus-visible,input:focus-visible,button:focus-visible{outline:3px solid 
 .fg label{font-size:13px;color:var(--mute);display:flex;flex-direction:column;gap:3px}
 .chk{flex-direction:row!important;gap:12px!important;flex-wrap:wrap;color:var(--ink)!important}
 .chk label{flex-direction:row;gap:5px;color:var(--ink)}
+.apply{display:none;width:100%;margin-top:10px;border:1px solid var(--ink);background:none;color:var(--ink);border-radius:12px;font-family:inherit;font-weight:600;font-size:16px;padding:14px;cursor:pointer}
+.fm label{display:block;font-size:13px;color:var(--mute);margin:12px 0 4px}
+.fm input,.fm select{width:100%}
+#a_m{margin:12px 0 0;font-weight:600}
 footer{color:var(--mute);font-size:13px;padding:0 0 30px}
 </style>
 </head>
@@ -89,6 +93,7 @@ footer{color:var(--mute);font-size:13px;padding:0 0 30px}
     <h2 id="mt"></h2><div class="co" id="mc"></div>
     <dl id="md"></dl>
     <button class="copy" id="copy">Copy full offer</button>
+    <button class="apply" id="applyBtn">Apply for this job &middot; قدّم على الوظيفة</button>
   </div>
 </div>
 <div class="modal" id="adm" role="dialog" aria-modal="true" aria-label="Manage offers">
@@ -107,8 +112,26 @@ footer{color:var(--mute);font-size:13px;padding:0 0 30px}
     <p class="co" id="anote">Changes go live for everyone when you press Publish changes.</p>
   </div>
 </div>
+<div class="modal" id="apm" role="dialog" aria-modal="true" aria-label="Apply">
+  <div class="sheet">
+    <button class="x" id="apx" aria-label="Close">&#10005;</button>
+    <h2>Apply &middot; التقديم</h2><div class="co" id="apj"></div>
+    <form id="apf" class="fm" autocomplete="on">
+      <label for="a_n">Full name &middot; الاسم بالكامل</label><input id="a_n" required minlength="2" maxlength="120" autocomplete="name">
+      <label for="a_p">Phone (WhatsApp) &middot; رقم الموبايل</label><input id="a_p" type="tel" required minlength="8" maxlength="20" inputmode="tel" autocomplete="tel" dir="ltr">
+      <label for="a_a">Age &middot; السن</label><input id="a_a" type="number" min="15" max="70" inputmode="numeric">
+      <label for="a_g">Graduation status &middot; حالة التخرج</label><select id="a_g"><option value="Grads">Graduate &middot; خريج</option><option value="Undergrads">Student &middot; طالب</option><option value="Dropouts">Dropout &middot; تارك الدراسة</option><option value="Gap year">Gap year &middot; سنة فجوة</option></select>
+      <label for="a_e">English level &middot; مستوى الإنجليزي</label><select id="a_e"><option>B1</option><option selected>B2</option><option>C1</option><option>C2 / Native</option><option>A2 or lower</option></select>
+      <input id="a_h" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px">
+      <button class="copy" type="submit" id="a_s" style="margin-top:18px">Send &middot; إرسال</button>
+    </form>
+    <p id="a_m" role="status"></p>
+  </div>
+</div>
 <div class="toast" id="toast">Offer copied</div>
 
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
 <script>
 var SRC="<!DOCTYPE html>\n"+document.documentElement.outerHTML;
 // Offers are stored between the two markers so Admin can update them.
@@ -188,9 +211,10 @@ function fromCSV(t){
   return out}
 function loadSheet(){
   if(!SHEET_URL)return;
+  try{var c=localStorage.getItem("apexCSV");if(c){var co=fromCSV(c);if(co.length){OFFERS=co;fillCo();render()}}}catch(e){}
   fetch(SHEET_URL+(SHEET_URL.indexOf("?")>-1?"&":"?")+"t="+Date.now())
     .then(function(r){if(!r.ok)throw 0;return r.text()})
-    .then(function(t){var out=fromCSV(t);if(!out.length)throw 0;OFFERS=out;fillCo();render()})
+    .then(function(t){var out=fromCSV(t);if(!out.length)throw 0;OFFERS=out;fillCo();render();try{localStorage.setItem("apexCSV",t)}catch(e){}})
     .catch(function(){});
 }
 loadSheet();
@@ -239,6 +263,35 @@ $("alist").addEventListener("click",function(e){
     if(u&&u.canEdit())$("admb").classList.add("on");
   }catch(e){}
 })();
+</script>
+<script>
+window.addEventListener("load",function(){
+  var CF=window.APEX_CONFIG||{},sbc=null,g=function(i){return document.getElementById(i)};
+  try{var rf=new URLSearchParams(location.search).get("ref");if(rf)localStorage.setItem("apexRef",rf.replace(/[^A-Za-z0-9]/g,"").slice(0,20))}catch(e){}
+  try{if(CF.SUPABASE_URL&&CF.SUPABASE_ANON_KEY&&window.supabase)sbc=window.supabase.createClient(CF.SUPABASE_URL,CF.SUPABASE_ANON_KEY)}catch(e){}
+  if(!sbc)return;
+  var ab=g("applyBtn"),apm=g("apm"),msg=g("a_m"),btn=g("a_s");
+  ab.style.display="block";
+  ab.onclick=function(){
+    if(!cur)return;
+    g("apj").textContent=cur.t+" \u00b7 "+cur.c;msg.textContent="";msg.className="";btn.disabled=false;
+    g("modal").classList.remove("open");apm.classList.add("open");
+  };
+  g("apx").onclick=function(){apm.classList.remove("open")};
+  apm.addEventListener("click",function(e){if(e.target===apm)apm.classList.remove("open")});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")apm.classList.remove("open")});
+  g("apf").addEventListener("submit",async function(e){
+    e.preventDefault();
+    if(g("a_h").value){msg.textContent="Sent \u00b7 \u062a\u0645 \u0627\u0644\u0625\u0631\u0633\u0627\u0644";return}
+    btn.disabled=true;msg.className="";msg.textContent="...";
+    var ref="";try{ref=localStorage.getItem("apexRef")||""}catch(x){}
+    var age=parseInt(g("a_a").value,10);
+    var r=await sbc.rpc("submit_application",{p_name:g("a_n").value.trim(),p_phone:g("a_p").value.trim(),p_age:isNaN(age)?null:age,p_grad:g("a_g").value,p_english:g("a_e").value,p_company:cur.c,p_title:cur.t,p_ref:ref});
+    if(r.error){btn.disabled=false;msg.textContent="Could not send. Check your data and try again \u00b7 \u062d\u0627\u0648\u0644 \u062a\u0627\u0646\u064a";return}
+    msg.textContent="Sent! We will contact you on WhatsApp \u00b7 \u062a\u0645 \u0627\u0644\u0625\u0631\u0633\u0627\u0644\u060c \u0647\u0646\u062a\u0648\u0627\u0635\u0644 \u0645\u0639\u0627\u0643 \u0639\u0644\u0649 \u0648\u0627\u062a\u0633\u0627\u0628";
+    g("apf").reset();
+  });
+});
 </script>
 </body>
 </html>
