@@ -153,6 +153,7 @@ function appsHTML(){
     h+='<div class="card" data-id="'+a.id+'"><div class="row"><span class="name" style="flex:1">'+esc(a.full_name)+'</span><span class="mute">'+fmt(a.created_at)+'</span></div>'+
     '<div class="mute">'+esc(a.job_company||"")+' · '+esc(a.job_title||"")+'</div>'+
     '<div class="row" style="margin:8px 0"><a class="btn sm" href="tel:'+esc(a.phone)+'" dir="ltr">'+T("call")+' '+esc(a.phone)+'</a><a class="btn sm" target="_blank" rel="noopener" href="https://wa.me/'+waNum(a.phone)+'">'+T("wa")+'</a></div>'+
+    (a.voice_path?'<div class="row" style="margin:8px 0" id="v_'+a.id+'"><button class="btn sm" data-voice="'+esc(a.voice_path)+'" data-vid="'+a.id+'">&#127908; '+(lang==="ar"?"فويس نوت":"Voice note")+(a.voice_secs?" ("+a.voice_secs+"s)":"")+'</button></div>':'')+
     '<div class="mute">'+(a.age?T("age")+": "+a.age+" · ":"")+(a.graduation?T("grad")+": "+esc(a.graduation)+" · ":"")+(a.english_level?T("eng")+": "+esc(a.english_level):"")+'</div>'+
     '<div class="grid2"><select data-st="'+a.id+'">'+ST.map(function(s){return'<option value="'+s+'"'+(a.status===s?" selected":"")+'>'+T("st")[s]+'</option>'}).join("")+'</select>'+
     (owner?'<select data-rc="'+a.id+'"><option value="">'+T("unassigned")+'</option>'+S.team.map(function(p){return'<option value="'+p.id+'"'+(a.recruiter_id===p.id?" selected":"")+'>'+esc(p.full_name)+'</option>'}).join("")+'</select>':'<div class="mute">'+T("assign")+': '+esc(nameOf(a.recruiter_id))+'</div>')+'</div>'+
@@ -193,7 +194,8 @@ async function upd(id,patch){
   var i=S.apps.findIndex(function(x){return x.id===id});if(i>-1)S.apps[i]=r.data;return true;
 }
 document.addEventListener("click",async function(e){
-  var b=e.target.closest("[data-act],[data-tab],[data-f],[data-copy],[data-toggle]");if(!b)return;
+  var b=e.target.closest("[data-act],[data-tab],[data-f],[data-copy],[data-toggle],[data-voice]");if(!b)return;
+  if(b.dataset.voice){var vs=await sb.storage.from("voice").createSignedUrl(b.dataset.voice,3600);if(vs.error){toast(vs.error.message);return}var box=document.getElementById("v_"+b.dataset.vid);box.innerHTML='<audio controls autoplay preload="auto" style="width:100%" src="'+vs.data.signedUrl+'"></audio>';return}
   if(b.dataset.tab){S.tab=b.dataset.tab;render();return}
   if(b.dataset.f!==undefined&&b.classList.contains("chip")){S.filter=b.dataset.f;renderList();return}
   if(b.dataset.copy){copy(b.dataset.copy);return}
