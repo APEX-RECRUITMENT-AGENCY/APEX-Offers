@@ -7,9 +7,7 @@
 <title>Apex Recruitment Agency | Available Offers</title>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media=\'all\'">
 <style>
-:root{--bg:#d8dbdd;--card:#eceeef;--ink:#0b0b0c;--mute:#55595d;--line:#b9bec2;--acc:#0b0b0c;--acc-ink:#e6e8ea;--tag:#c6cacd;--hl:#fff}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#09090a;--card:#151517;--ink:#e3e5e7;--mute:#9a9ea3;--line:#2a2c2f;--acc:#c4c8cc;--acc-ink:#09090a;--tag:#232528;--hl:#fff}}
-:root[data-theme="dark"]{--bg:#09090a;--card:#151517;--ink:#e3e5e7;--mute:#9a9ea3;--line:#2a2c2f;--acc:#c4c8cc;--acc-ink:#09090a;--tag:#232528;--hl:#fff}
+:root{--bg:#0a0a0b;--card:#141416;--ink:#e6e8ea;--mute:#9a9ea3;--line:#2b2d31;--acc:#d91616;--acc-ink:#fff;--tag:#232528;--hl:#c4c8cc;--bad:#ff8a80;--ok:#6fd08c;color-scheme:dark}
 *{box-sizing:border-box}
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
@@ -63,13 +61,33 @@ select:focus-visible,input:focus-visible,button:focus-visible{outline:3px solid 
 .fm label{display:block;font-size:13px;color:var(--mute);margin:12px 0 4px}
 .fm input,.fm select,.fm textarea{width:100%;font:inherit;background:var(--bg2,#111);color:inherit;border:1px solid var(--line,#333);border-radius:10px;padding:10px;box-sizing:border-box;resize:vertical}
 #a_m{margin:12px 0 0;font-weight:600}
+.logo{height:54px;width:auto;border-radius:12px;border:1px solid var(--line);display:block}
+.brandrow{display:flex;align-items:center;gap:14px}
+.card:hover,.chip:hover{border-color:var(--acc)}
+.copy:hover,.sm.pri:hover{filter:brightness(1.12)}
+.apply{border-color:var(--acc)!important;color:var(--ink)}
+.tag{border:1px solid #3a2224}
+html{background:var(--bg)}body{min-height:100vh;background:radial-gradient(1200px 500px at 50% -10%,#1d1112 0,transparent 60%) no-repeat,var(--bg)}
 footer{color:var(--mute);font-size:13px;padding:0 0 30px}
+/* Apex red/black/silver */
+body::before{content:"";display:block;height:5px;background:linear-gradient(90deg,#7a0a0a,#ff2a2a 40%,#c4c8cc 70%,#7a0a0a)}
+header{border-bottom:2px solid var(--acc);margin-bottom:6px}
+.logo{height:56px;border:1px solid #8a8f94;box-shadow:0 0 18px rgba(217,22,22,.45)}
+.emo{font-size:22px;letter-spacing:2px;filter:drop-shadow(0 0 6px rgba(217,22,22,.7));white-space:nowrap}
+.card{border-left:3px solid var(--acc);background:linear-gradient(180deg,#1a1415,#111113)}
+.tag{background:#2a1214;border:1px solid #5a1c1f;color:#f0d6d6}
+h1{background:linear-gradient(90deg,#fff,#aeb3b8 60%,#ff3b3b);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.brand span{color:#ff2a2a}
+select,input,textarea{border-color:#3a2a2c}
+select:focus,input:focus,textarea:focus{border-color:var(--acc)}
+.copy,.btn.pri,.sm.pri,.tab.on{background:linear-gradient(180deg,#f02a2a,#a50f0f);border-color:#ff4a4a;color:#fff;box-shadow:0 2px 10px rgba(217,22,22,.35)}
 </style>
+<link rel="icon" type="image/svg+xml" href="logo.svg?v=2">
 </head>
 <body>
 <div class="wrap">
 <header>
-  <div class="brand">APEX <span>Recruitment Agency</span></div>
+  <div class="brandrow"><img class="logo" src="logo.svg?v=2" alt="Apex"><div class="brand">APEX <span>Recruitment Agency</span> <span class="emo">🕷️🕸️</span></div></div>
   <div class="owner">Agency owner: <b>Mahmod Roshdy</b></div>
   <button class="adminbtn" id="admb">Admin: manage offers</button>
   <h1>Find the right career. Get hired faster.</h1>

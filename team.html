@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
 <title>Apex Team</title>
+<link rel="icon" type="image/svg+xml" href="logo.svg?v=2">
 <style>
-:root{--bg:#d8dbdd;--card:#eceeef;--ink:#0b0b0c;--mute:#55595d;--line:#b9bec2;--acc:#0b0b0c;--acc-ink:#e6e8ea;--tag:#c6cacd;--hl:#fff;--bad:#b3261e;--ok:#1b7a3c}
-@media (prefers-color-scheme:dark){:root{--bg:#09090a;--card:#151517;--ink:#e3e5e7;--mute:#9a9ea3;--line:#2a2c2f;--acc:#c4c8cc;--acc-ink:#09090a;--tag:#232528;--hl:#fff;--bad:#ff8a80;--ok:#6fd08c}}
+:root{--bg:#0a0a0b;--card:#141416;--ink:#e6e8ea;--mute:#9a9ea3;--line:#2b2d31;--acc:#d91616;--acc-ink:#fff;--tag:#232528;--hl:#c4c8cc;--bad:#ff8a80;--ok:#6fd08c;color-scheme:dark}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
 .wrap{max-width:960px;margin:0 auto;padding:0 16px 60px}
@@ -19,6 +19,16 @@ textarea{resize:vertical;min-height:60px}
 :focus-visible{outline:3px solid var(--hl);outline-offset:1px}
 .btn{border:1px solid var(--ink);background:none;border-radius:10px;padding:8px 14px;cursor:pointer;font-weight:600}
 .btn.pri{background:var(--acc);color:var(--acc-ink);border-color:var(--acc)}
+.logo{height:46px;width:auto;border-radius:10px;border:1px solid var(--line);display:block}
+.brandrow{display:flex;align-items:center;gap:12px}
+a{color:#c4c8cc}
+.btn:hover,.tab:hover,.chip:hover{border-color:var(--acc)}
+.btn.pri:hover,.copy:hover,.sm.pri:hover{filter:brightness(1.12)}
+.chip.on,.tab.on{border-color:var(--acc)}
+.card:hover{border-color:var(--acc)}
+h1,h2{letter-spacing:.01em}
+html{background:var(--bg)}body{min-height:100vh;background:radial-gradient(1200px 500px at 50% -10%,#1d1112 0,transparent 60%) no-repeat,var(--bg)}
+
 .btn.sm{padding:5px 10px;font-size:14px;font-weight:500}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
 .box{max-width:420px;margin:30px auto}
@@ -42,11 +52,23 @@ a{color:var(--ink)}
 .bad{color:var(--bad)}.ok{color:var(--ok)}
 .badge{display:inline-block;background:var(--tag);border-radius:6px;padding:1px 8px;font-size:13px}
 .sep{height:1px;background:var(--line);margin:10px 0}
+/* Apex red/black/silver */
+body::before{content:"";display:block;height:5px;background:linear-gradient(90deg,#7a0a0a,#ff2a2a 40%,#c4c8cc 70%,#7a0a0a)}
+header{border-bottom:2px solid var(--acc);margin-bottom:6px}
+.logo{height:56px;border:1px solid #8a8f94;box-shadow:0 0 18px rgba(217,22,22,.45)}
+.emo{font-size:22px;letter-spacing:2px;filter:drop-shadow(0 0 6px rgba(217,22,22,.7));white-space:nowrap}
+.card{border-left:3px solid var(--acc);background:linear-gradient(180deg,#1a1415,#111113)}
+.tag{background:#2a1214;border:1px solid #5a1c1f;color:#f0d6d6}
+h1{background:linear-gradient(90deg,#fff,#aeb3b8 60%,#ff3b3b);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.brand span{color:#ff2a2a}
+select,input,textarea{border-color:#3a2a2c}
+select:focus,input:focus,textarea:focus{border-color:var(--acc)}
+.copy,.btn.pri,.sm.pri,.tab.on{background:linear-gradient(180deg,#f02a2a,#a50f0f);border-color:#ff4a4a;color:#fff;box-shadow:0 2px 10px rgba(217,22,22,.35)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header><div class="brand">APEX · <span id="ttl"></span></div><button class="btn sm" id="lg"></button><button class="btn sm" id="out" style="display:none"></button></header>
+  <header><div class="brandrow" style="flex:1"><img class="logo" src="logo.svg?v=2" alt="Apex"><div class="brand" style="flex:none">APEX · <span id="ttl" style="color:var(--acc)"></span> <span class="emo">🕷️🕸️</span></div></div><button class="btn sm" id="lg"></button><button class="btn sm" id="out" style="display:none"></button></header>
   <main id="app"></main>
 </div>
 <div class="toast" id="toast"></div>
@@ -117,7 +139,7 @@ function render(){
   if(S.me)renderList();
 }
 function authView(){
-  return '<div class="card box"><h2>'+T("login")+'</h2>'+(urlCode?'<p class="ok">'+T("code")+': <b>'+esc(urlCode)+'</b></p>':'')+
+  return '<div class="card box"><img src="logo.svg?v=2" alt="Apex Recruiting" style="width:150px;height:150px;border-radius:16px;display:block;margin:0 auto 14px;border:1px solid var(--line)"><h2>'+T("login")+'</h2>'+(urlCode?'<p class="ok">'+T("code")+': <b>'+esc(urlCode)+'</b></p>':'')+
   '<label>'+T("email")+'</label><input id="em" type="email" autocomplete="email" dir="ltr">'+
   '<label>'+T("password")+'</label><input id="pw" type="password" autocomplete="current-password" dir="ltr">'+
   (S.msg?'<p class="ok">'+esc(S.msg)+'</p>':'')+
