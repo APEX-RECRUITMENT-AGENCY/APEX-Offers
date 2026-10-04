@@ -187,8 +187,23 @@ function appsHTML(){
   });
   return h;
 }
+function unitsHTML(){
+  var ar=lang==="ar",by=function(r){return S.team.filter(function(x){return x.role===r})},kids=function(id,r){return S.team.filter(function(x){return x.parent_id===id&&x.role===r})};
+  var ums=by("unit_manager"),h='';
+  var pill=function(p){return'<div class="mute" style="padding:2px 0">'+esc(p.full_name)+(p.active?'':' ('+T("disabled")+')')+'</div>'};
+  ums.forEach(function(u,i){
+    var tls=kids(u.id,"team_leader"),direct=kids(u.id,"recruiter"),n=direct.length;tls.forEach(function(t){n+=kids(t.id,"recruiter").length});
+    h+='<div class="card"><div class="row"><span class="name" style="flex:1">'+(ar?"يونيت ":"Unit ")+(i+1)+' · '+esc(u.full_name)+'</span><span class="badge">'+T("ro").unit_manager+'</span></div><div class="mute">'+tls.length+' '+(ar?"تيم ليدر":"team leaders")+' · '+n+' '+(ar?"ريكروتر":"recruiters")+'</div>';
+    tls.forEach(function(t){h+='<div style="margin-top:8px;padding-inline-start:12px;border-inline-start:2px solid var(--acc)"><b>'+esc(t.full_name)+'</b> <span class="mute">('+T("ro").team_leader+')</span>'+kids(t.id,"recruiter").map(function(r){return'<div class="mute" style="padding-inline-start:14px">· '+esc(r.full_name)+'</div>'}).join("")+'</div>'});
+    if(direct.length)h+='<div style="margin-top:8px;padding-inline-start:12px"><span class="mute">'+(ar?"ريكروتر مباشر:":"Direct recruiters:")+'</span>'+direct.map(pill).join("")+'</div>';
+    h+='</div>';
+  });
+  var free=S.team.filter(function(x){return(x.role==="team_leader"||x.role==="recruiter")&&x.parent_id&&(S.team.find(function(y){return y.id===x.parent_id})||{}).role==="owner"});
+  if(free.length)h+='<div class="card"><div class="name">'+(ar?"من غير يونيت":"Not in a unit")+' ('+free.length+')</div>'+free.map(function(p){return'<div class="mute">'+esc(p.full_name)+' · '+T("ro")[p.role]+'</div>'}).join("")+(ums.length&&S.me.role==="owner"?'<button class="btn pri sm" style="margin-top:10px" data-act="distribute">'+(ar?"وزّعهم تلقائي على اليونتات":"Auto-distribute to units")+'</button>':'')+'</div>';
+  return h||'<p class="mute">'+(ar?"لسه مفيش يونتات.":"No units yet.")+'</p>';
+}
 function teamHTML(){
-  var h="",owner=S.me.role==="owner";
+  var h=unitsHTML(),owner=S.me.role==="owner";
   S.team.slice().sort(function(a,b){return RANK[a.role]-RANK[b.role]}).forEach(function(p){
     var n=S.apps.filter(function(a){return a.recruiter_id===p.id}).length;
     h+='<div class="card"><div class="row"><span class="name" style="flex:1">'+esc(p.full_name)+'</span><span class="badge">'+T("ro")[p.role]+'</span></div>'+
@@ -237,6 +252,20 @@ document.addEventListener("click",async function(e){
     var nm=$("nm").value.trim(),cd=$("cd").value.trim();if(nm.length<2){toast(T("name"));return}
     var r3=cd?await sb.rpc("redeem_invite",{p_code:cd,p_name:nm}):await sb.rpc("claim_owner",{p_name:nm});
     if(r3.error)toast(errMsg(r3.error));else boot();
+  }
+  else if(a==="distribute"){
+    var ar2=lang==="ar",ow=S.me.id,fr=function(r){return S.team.filter(function(x){return x.role===r&&x.parent_id===ow})};
+    var ums=S.team.filter(function(x){return x.role==="unit_manager"&&x.active});if(!ums.length){toast(ar2?"مفيش Unit Manager":"No unit managers");return}
+    var ntl=fr("team_leader").length,nrc=fr("recruiter").length;if(!ntl&&!nrc){return}
+    if(!confirm(ar2?"هيتوزع "+ntl+" تيم ليدر و"+nrc+" ريكروتر على اليونتات. تكمّل؟":"Distribute "+ntl+" team leaders and "+nrc+" recruiters across units?"))return;
+    var cnt=function(id,r){return S.team.filter(function(x){return x.parent_id===id&&x.role===r}).length},fail=0;
+    async function mv(p,par){var rr=await sb.rpc("change_role",{p_id:p.id,p_role:p.role,p_parent:par.id});if(rr.error)fail++;else p.parent_id=par.id}
+    for(var t of fr("team_leader")){ums.sort(function(x,y){return cnt(x.id,"team_leader")-cnt(y.id,"team_leader")});await mv(t,ums[0])}
+    var tls=S.team.filter(function(x){return x.role==="team_leader"&&x.active&&x.parent_id!==ow});
+    for(var r of fr("recruiter")){
+      var pool=tls.length?tls:ums;pool.sort(function(x,y){return cnt(x.id,"recruiter")-cnt(y.id,"recruiter")});await mv(r,pool[0])
+    }
+    toast(fail?(ar2?"فشل "+fail+" نقل":fail+" failed"):(ar2?"اتوزعوا":"Done"));render();
   }
   else if(a==="mkinvite"){
     var role=$("ir").value,par=$("ip").value;if(!par)return;
