@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
 <title>Apex Team</title>
-<link rel="icon" type="image/svg+xml" href="logo.svg?v=2">
+<link rel="icon" type="image/png" href="logo.png?v=3">
 <style>
 :root{--bg:#0a0a0b;--card:#141416;--ink:#e6e8ea;--mute:#9a9ea3;--line:#2b2d31;--acc:#d91616;--acc-ink:#fff;--tag:#232528;--hl:#c4c8cc;--bad:#ff8a80;--ok:#6fd08c;color-scheme:dark}
 *{box-sizing:border-box}
@@ -68,7 +68,7 @@ select:focus,input:focus,textarea:focus{border-color:var(--acc)}
 </head>
 <body>
 <div class="wrap">
-  <header><div class="brandrow" style="flex:1"><img class="logo" src="logo.svg?v=2" alt="Apex"><div class="brand" style="flex:none">APEX · <span id="ttl" style="color:var(--acc)"></span> <span class="emo">🕷️🕸️</span></div></div><button class="btn sm" id="lg"></button><button class="btn sm" id="out" style="display:none"></button></header>
+  <header><div class="brandrow" style="flex:1"><img class="logo" src="logo.png?v=3" alt="Apex"><div class="brand" style="flex:none">APEX · <span id="ttl" style="color:var(--acc)"></span> <span class="emo">🕷️🕸️</span></div></div><button class="btn sm" id="lg"></button><button class="btn sm" id="out" style="display:none"></button></header>
   <main id="app"></main>
 </div>
 <div class="toast" id="toast"></div>
@@ -139,7 +139,7 @@ function render(){
   if(S.me)renderList();
 }
 function authView(){
-  return '<div class="card box"><img src="logo.svg?v=2" alt="Apex Recruiting" style="width:150px;height:150px;border-radius:16px;display:block;margin:0 auto 14px;border:1px solid var(--line)"><h2>'+T("login")+'</h2>'+(urlCode?'<p class="ok">'+T("code")+': <b>'+esc(urlCode)+'</b></p>':'')+
+  return '<div class="card box"><img src="logo.png?v=3" alt="Apex Recruiting" style="width:150px;height:150px;border-radius:16px;display:block;margin:0 auto 14px;border:1px solid var(--line)"><h2>'+T("login")+'</h2>'+(urlCode?'<p class="ok">'+T("code")+': <b>'+esc(urlCode)+'</b></p>':'')+
   '<label>'+T("email")+'</label><input id="em" type="email" autocomplete="email" dir="ltr">'+
   '<label>'+T("password")+'</label><input id="pw" type="password" autocomplete="current-password" dir="ltr">'+
   (S.msg?'<p class="ok">'+esc(S.msg)+'</p>':'')+
