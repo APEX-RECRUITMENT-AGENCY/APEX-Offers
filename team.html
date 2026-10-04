@@ -203,8 +203,16 @@ function unitsHTML(){
   return h||'<p class="mute">'+(ar?"لسه مفيش يونتات.":"No units yet.")+'</p>';
 }
 function teamHTML(){
-  var h=unitsHTML(),owner=S.me.role==="owner";
-  S.team.slice().sort(function(a,b){return RANK[a.role]-RANK[b.role]}).forEach(function(p){
+  var tq=(S.tq||"").trim().toLowerCase(),ar0=lang==="ar";
+  var h='<input id="tq" placeholder="'+esc(ar0?"ابحث عن عضو بالاسم أو الدور أو اليونيت":"Search team by name, role or unit")+'" value="'+esc(S.tq||"")+'" style="margin-bottom:10px">'+(tq?"":unitsHTML()),owner=S.me.role==="owner";
+  var shown=S.team.slice().sort(function(a,b){return RANK[a.role]-RANK[b.role]}).filter(function(p){
+    if(!tq)return true;
+    var par=S.team.find(function(x){return x.id===p.parent_id})||{};
+    var hay=[p.full_name,T("ro")[p.role],p.unit_name,par.full_name,par.unit_name].join(" ").toLowerCase();
+    return hay.indexOf(tq)>-1;
+  });
+  if(tq&&!shown.length)return h+'<p class="mute">'+T("none")+'</p>';
+  shown.forEach(function(p){
     var n=S.apps.filter(function(a){return a.recruiter_id===p.id}).length;
     h+='<div class="card"><div class="row"><span class="name" style="flex:1">'+esc(p.full_name)+'</span><span class="badge">'+T("ro")[p.role]+'</span></div>'+
     '<div class="mute">'+(p.parent_id?T("reportsTo")+": "+esc(nameOf(p.parent_id))+" · ":"")+n+" "+T("count")+" · "+(p.active?'<span class="ok">'+T("active")+'</span>':'<span class="bad">'+T("disabled")+'</span>')+'</div>'+
@@ -293,7 +301,8 @@ document.addEventListener("change",async function(e){
   else if(t.dataset.iv){if(await upd(t.dataset.iv,{interview_at:t.value?new Date(t.value).toISOString():null}))toast(T("saved"))}
   else if(t.dataset.nt){if(await upd(t.dataset.nt,{notes:t.value}))toast(T("saved"))}
 });
-document.addEventListener("input",function(e){if(e.target.id==="q"){S.q=e.target.value;var el=$("list"),pos=e.target.selectionStart;renderList();var q=$("q");if(q){q.focus();try{q.setSelectionRange(pos,pos)}catch(x){}}}});
+document.addEventListener("input",function(e){if(e.target.id==="tq"){S.tq=e.target.value;var pos2=e.target.selectionStart;renderList();var q2=$("tq");if(q2){q2.focus();try{q2.setSelectionRange(pos2,pos2)}catch(x){}}return}
+if(e.target.id==="q"){S.q=e.target.value;var el=$("list"),pos=e.target.selectionStart;renderList();var q=$("q");if(q){q.focus();try{q.setSelectionRange(pos,pos)}catch(x){}}}});
 $("lg").onclick=function(){lang=lang==="ar"?"en":"ar";try{localStorage.setItem("apexLang",lang)}catch(e){}render()};
 $("out").onclick=async function(){await sb.auth.signOut();S.session=null;S.me=null;render()};
 if(sb)sb.auth.onAuthStateChange(function(ev){if(ev==="SIGNED_OUT"){S.session=null;S.me=null;render()}});
