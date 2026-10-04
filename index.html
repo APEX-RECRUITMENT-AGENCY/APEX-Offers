@@ -111,7 +111,7 @@ select:focus,input:focus,textarea:focus{border-color:var(--acc)}
     <h2 id="mt"></h2><div class="co" id="mc"></div>
     <dl id="md"></dl>
     <button class="copy" id="copy">Copy full offer</button>
-    <button class="apply" id="applyBtn">Apply for this job &middot; قدّم على الوظيفة</button>
+    <button class="apply" id="applyBtn">Apply through your recruiter &middot; قدّم عن طريق الريكروتر</button>
   </div>
 </div>
 <div class="modal" id="adm" role="dialog" aria-modal="true" aria-label="Manage offers">
@@ -142,7 +142,7 @@ select:focus,input:focus,textarea:focus{border-color:var(--acc)}
       <label for="a_a">Age &middot; السن</label><input id="a_a" type="number" min="15" max="70" inputmode="numeric">
       <label for="a_g">Graduation status &middot; حالة التخرج</label><select id="a_g"><option value="Grads">Graduate &middot; خريج</option><option value="Undergrads">Student &middot; طالب</option><option value="Dropouts">Dropout &middot; تارك الدراسة</option><option value="Gap year">Gap year &middot; سنة فجوة</option></select>
       <label for="a_e">English level &middot; مستوى الإنجليزي</label><select id="a_e"><option>B1</option><option selected>B2</option><option>C1</option><option>C2 / Native</option><option>A2 or lower</option></select>
-      <label for="a_r">Recruiter code &middot; كود الريكروتر</label><input id="a_r" required maxlength="20" autocomplete="off" dir="ltr" placeholder="e.g. 3fa9c21b">
+      <label for="a_r">Your recruiter &middot; الريكروتر بتاعك</label><input id="a_r" readonly dir="ltr" style="opacity:.85"><input type="hidden" id="a_rc">
       <label>Voice note, at least 1 minute &middot; فويس نوت دقيقة على الأقل</label>
       <p class="co" style="margin:0 0 8px">Introduce yourself in English: your experience, why this job, your best achievement. &middot; اتكلم عن نفسك بالإنجليزي: خبرتك، ليه الوظيفة دي، وأفضل إنجاز ليك.</p>
       <div style="display:flex;gap:10px;align-items:center"><button type="button" class="copy" id="v_b" style="margin:0;flex:1">&#127908; Start recording &middot; ابدأ التسجيل</button><span id="v_t" dir="ltr" style="min-width:64px;text-align:center;font-variant-numeric:tabular-nums">0:00 / 1:00</span></div>
@@ -297,9 +297,21 @@ window.addEventListener("load",function(){
   if(!sbc)return;
   var ab=g("applyBtn"),apm=g("apm"),msg=g("a_m"),btn=g("a_s");
   ab.style.display="block";
-  ab.onclick=function(){
+  var refCache={};
+  async function checkRef(){
+    var r="";try{r=localStorage.getItem("apexRef")||""}catch(x){}
+    if(!r)return null;
+    if(refCache.r===r)return refCache.n;
+    var x=await sbc.rpc("ref_name",{p_ref:r}),n=(x&&!x.error&&x.data)?x.data:null;
+    refCache={r:r,n:n};if(!n&&!x.error){try{localStorage.removeItem("apexRef")}catch(e){}}
+    return n;
+  }
+  ab.onclick=async function(){
     if(!cur)return;
-    g("apj").textContent=cur.t+" \u00b7 "+cur.c;try{g("a_r").value=localStorage.getItem("apexRef")||""}catch(x){}msg.textContent="";msg.className="";btn.disabled=false;
+    var rn=await checkRef();
+    if(!rn){toast("Apply only through your recruiter's link. Ask your recruiter for it \u00b7 \u0627\u0644\u062a\u0642\u062f\u064a\u0645 \u0645\u0646 \u062e\u0644\u0627\u0644 \u0631\u0627\u0628\u0637 \u0627\u0644\u0631\u064a\u0643\u0631\u0648\u062a\u0631 \u0628\u062a\u0627\u0639\u0643 \u0641\u0642\u0637");return}
+    g("a_r").value=rn;try{g("a_rc").value=localStorage.getItem("apexRef")||""}catch(x){}
+    g("apj").textContent=cur.t+" \u00b7 "+cur.c;msg.textContent="";msg.className="";btn.disabled=false;
     g("modal").classList.remove("open");apm.classList.add("open");
   };
   var vRec=null,vCh=[],vBlob=null,vSecs=0,vT0=0,vTk=null,vStr=null,vMime="",MINS=60,MAXS=180;
@@ -337,7 +349,7 @@ window.addEventListener("load",function(){
     var ext=/mp4/.test(vMime)?".m4a":/ogg/.test(vMime)?".ogg":".webm",vp=(window.crypto&&crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random().toString(16).slice(2))+ext;
     var up=await sbc.storage.from("voice").upload(vp,vBlob,{contentType:vMime.split(";")[0]});
     if(up.error){btn.disabled=false;msg.textContent="Voice upload failed, try again · فشل رفع الفويس، حاول تاني";return}
-    var ref=g("a_r").value.replace(/[^A-Za-z0-9]/g,"").toLowerCase();if(!ref){msg.className="";msg.textContent="Recruiter code is required \u00b7 \u0644\u0627\u0632\u0645 \u0643\u0648\u062f \u0627\u0644\u0631\u064a\u0643\u0631\u0648\u062a\u0631";return}
+    var ref=g("a_rc").value.replace(/[^A-Za-z0-9]/g,"").toLowerCase();if(!ref){msg.className="";msg.textContent="Recruiter code is required \u00b7 \u0644\u0627\u0632\u0645 \u0643\u0648\u062f \u0627\u0644\u0631\u064a\u0643\u0631\u0648\u062a\u0631";return}
     var age=parseInt(g("a_a").value,10);
     var r=await sbc.rpc("submit_application",{p_name:g("a_n").value.trim(),p_phone:g("a_p").value.trim(),p_age:isNaN(age)?null:age,p_grad:g("a_g").value,p_english:g("a_e").value,p_company:cur.c,p_title:cur.t,p_ref:ref,p_voice:vp,p_voice_secs:vSecs,p_email:g("a_m2").value.trim(),p_experience:g("a_x").value.trim()});
     if(r.error&&/recruiter code/i.test(r.error.message||"")){btn.disabled=false;msg.textContent="Invalid recruiter code, ask your recruiter \u00b7 \u0643\u0648\u062f \u0627\u0644\u0631\u064a\u0643\u0631\u0648\u062a\u0631 \u063a\u0644\u0637\u060c \u0627\u0633\u0623\u0644 \u0627\u0644\u0631\u064a\u0643\u0631\u0648\u062a\u0631 \u0628\u062a\u0627\u0639\u0643";return}
