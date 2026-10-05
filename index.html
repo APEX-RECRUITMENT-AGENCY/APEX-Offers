@@ -147,10 +147,17 @@ select:focus,input:focus,textarea:focus{border-color:var(--acc)}
       <label for="a_g">Graduation status &middot; حالة التخرج</label><select id="a_g"><option value="Grads">Graduate &middot; خريج</option><option value="Undergrads">Student &middot; طالب</option><option value="Dropouts">Dropout &middot; تارك الدراسة</option><option value="Gap year">Gap year &middot; سنة فجوة</option></select>
       <label for="a_e">English level &middot; مستوى الإنجليزي</label><select id="a_e"><option>B1</option><option selected>B2</option><option>C1</option><option>C2 / Native</option><option>A2 or lower</option></select>
       <label for="a_r">Your recruiter &middot; الريكروتر بتاعك</label><input id="a_r" readonly dir="ltr" style="opacity:.85"><input type="hidden" id="a_rc">
-      <label>Voice note, at least 1 minute &middot; فويس نوت دقيقة على الأقل</label>
+      <label>Voice note (choose one) &middot; فويس نوت (اختار واحد)</label>
+      <div style="display:flex;gap:8px;margin:0 0 10px"><button type="button" class="copy" id="vm_c" style="margin:0;flex:1">&#127908; Candidate records &middot; المرشح يسجّل</button><button type="button" class="copy" id="vm_r" style="margin:0;flex:1;opacity:.55">&#128279; Recruiter link &middot; لينك الريكروتر</button></div>
+      <div id="vbox_c">
       <p class="co" style="margin:0 0 8px">Introduce yourself in English: your experience, why this job, your best achievement. &middot; اتكلم عن نفسك بالإنجليزي: خبرتك، ليه الوظيفة دي، وأفضل إنجاز ليك.</p>
       <div style="display:flex;gap:10px;align-items:center"><button type="button" class="copy" id="v_b" style="margin:0;flex:1">&#127908; Start recording &middot; ابدأ التسجيل</button><span id="v_t" dir="ltr" style="min-width:64px;text-align:center;font-variant-numeric:tabular-nums">0:00 / 1:00</span></div>
       <audio id="v_a" controls style="width:100%;margin-top:8px;display:none"></audio>
+      </div>
+      <div id="vbox_r" style="display:none">
+        <p class="co" style="margin:0 0 8px">Recruiter: record the candidate (at least 1 minute) on Vocaroo, then paste the link here. &middot; الريكروتر: سجّل المرشح دقيقة على الأقل على Vocaroo وحط اللينك هنا.</p>
+        <input id="a_vl" type="url" maxlength="200" dir="ltr" placeholder="https://vocaroo.com/..." autocomplete="off">
+      </div>
       <input id="a_h" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px">
       <button class="copy" type="submit" id="a_s" style="margin-top:18px">Send &middot; إرسال</button>
     </form>
@@ -319,7 +326,9 @@ window.addEventListener("load",function(){
     g("modal").classList.remove("open");apm.classList.add("open");
   };
   var vRec=null,vCh=[],vBlob=null,vSecs=0,vT0=0,vTk=null,vStr=null,vMime="",MINS=60,MAXS=180;
-  var vb=g("v_b"),vt=g("v_t"),va=g("v_a");
+  var vb=g("v_b"),vt=g("v_t"),va=g("v_a"),vMode="c";
+  function setMode(m){vMode=m;g("vbox_c").style.display=m==="c"?"":"none";g("vbox_r").style.display=m==="r"?"":"none";g("vm_c").style.opacity=m==="c"?"":".55";g("vm_r").style.opacity=m==="r"?"":".55";if(m==="r")vStop();msg.textContent=""}
+  g("vm_c").onclick=function(){setMode("c")};g("vm_r").onclick=function(){setMode("r")};
   function fm(n){return Math.floor(n/60)+":"+("0"+(n%60)).slice(-2)}
   function vStop(){if(vRec&&vRec.state!=="inactive")vRec.stop()}
   vb.onclick=async function(){
@@ -348,18 +357,21 @@ window.addEventListener("load",function(){
   g("apf").addEventListener("submit",async function(e){
     e.preventDefault();
     if(g("a_h").value){msg.textContent="Sent \u00b7 \u062a\u0645 \u0627\u0644\u0625\u0631\u0633\u0627\u0644";return}
-    if(!vBlob||vSecs<MINS){msg.className="";msg.textContent="Please record a voice note of at least 1 minute · سجل فويس دقيقة على الأقل";return}
+    var vlink="";
+    if(vMode==="r"){vlink=g("a_vl").value.trim();if(!/^https:\/\/(www\.)?(vocaroo\.com|voca\.ro)\/[A-Za-z0-9_-]+/i.test(vlink)){msg.className="";msg.textContent="Paste a valid Vocaroo link · حط لينك Vocaroo صحيح";return}}
+    else if(!vBlob||vSecs<MINS){msg.className="";msg.textContent="Please record a voice note of at least 1 minute · سجل فويس دقيقة على الأقل";return}
     btn.disabled=true;msg.className="";msg.textContent="Uploading... · جاري الرفع";
-    var ext=/mp4/.test(vMime)?".m4a":/ogg/.test(vMime)?".ogg":".webm",vp=(window.crypto&&crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random().toString(16).slice(2))+ext;
+    var vp="",ext=/mp4/.test(vMime)?".m4a":/ogg/.test(vMime)?".ogg":".webm",ext2="";
+    if(vMode==="c"){ext2=ext;vp=(window.crypto&&crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random().toString(16).slice(2))+ext;
     var up=await sbc.storage.from("voice").upload(vp,vBlob,{contentType:vMime.split(";")[0]});
-    if(up.error){btn.disabled=false;msg.textContent="Voice upload failed, try again · فشل رفع الفويس، حاول تاني";return}
+    if(up.error){btn.disabled=false;msg.textContent="Voice upload failed, try again · فشل رفع الفويس، حاول تاني";return}}
     var ref=g("a_rc").value.replace(/[^A-Za-z0-9]/g,"").toLowerCase();if(!ref){msg.className="";msg.textContent="Recruiter code is required \u00b7 \u0644\u0627\u0632\u0645 \u0643\u0648\u062f \u0627\u0644\u0631\u064a\u0643\u0631\u0648\u062a\u0631";return}
     var age=parseInt(g("a_a").value,10);
-    var r=await sbc.rpc("submit_application",{p_name:g("a_n").value.trim(),p_phone:g("a_p").value.trim(),p_age:isNaN(age)?null:age,p_grad:g("a_g").value,p_english:g("a_e").value,p_company:cur.c,p_title:cur.t,p_ref:ref,p_voice:vp,p_voice_secs:vSecs,p_email:g("a_m2").value.trim(),p_experience:g("a_x").value.trim()});
+    var r=await sbc.rpc("submit_application",{p_name:g("a_n").value.trim(),p_phone:g("a_p").value.trim(),p_age:isNaN(age)?null:age,p_grad:g("a_g").value,p_english:g("a_e").value,p_company:cur.c,p_title:cur.t,p_ref:ref,p_voice:vp,p_voice_secs:vMode==="c"?vSecs:0,p_voice_link:vMode==="r"?vlink:null,p_email:g("a_m2").value.trim(),p_experience:g("a_x").value.trim()});
     if(r.error&&/recruiter code/i.test(r.error.message||"")){btn.disabled=false;msg.textContent="Invalid recruiter code, ask your recruiter \u00b7 \u0643\u0648\u062f \u0627\u0644\u0631\u064a\u0643\u0631\u0648\u062a\u0631 \u063a\u0644\u0637\u060c \u0627\u0633\u0623\u0644 \u0627\u0644\u0631\u064a\u0643\u0631\u0648\u062a\u0631 \u0628\u062a\u0627\u0639\u0643";return}
     if(r.error){btn.disabled=false;msg.textContent="Could not send. Check your data and try again \u00b7 \u062d\u0627\u0648\u0644 \u062a\u0627\u0646\u064a";return}
     msg.textContent="Sent! We will contact you on WhatsApp \u00b7 \u062a\u0645 \u0627\u0644\u0625\u0631\u0633\u0627\u0644\u060c \u0647\u0646\u062a\u0648\u0627\u0635\u0644 \u0645\u0639\u0627\u0643 \u0639\u0644\u0649 \u0648\u0627\u062a\u0633\u0627\u0628";
-    g("apf").reset();vBlob=null;vSecs=0;va.style.display="none";vt.textContent="0:00 / 1:00";vb.innerHTML="&#127908; Start recording &middot; ابدأ التسجيل";
+    g("apf").reset();setMode("c");vBlob=null;vSecs=0;va.style.display="none";vt.textContent="0:00 / 1:00";vb.innerHTML="&#127908; Start recording &middot; ابدأ التسجيل";
   });
 });
 </script>

@@ -169,6 +169,7 @@ function startPoll(){
 }
 function vlabel(k){var ar=lang==="ar",m={pending:ar?"في الانتظار":"Pending",accepted:ar?"مقبول":"Accepted",rejected:ar?"مرفوض":"Rejected",repeat:ar?"إعادة":"Repeat"};return m[k]||k}
 function nTitle(n){var ar=lang==="ar",k=n.kind;if(k==="announcement")return"\ud83d\udce2 "+(n.cand_name||"");return(k==="accepted"?"\u2705 ":k==="rejected"?"\u274c ":"\ud83d\udd01 ")+(ar?"الفويس نوت بتاع ":"Voice note of ")+(n.cand_name||"")+": "+vlabel(k)}
+function voiceBtn(a,lbl){var ar=lang==="ar";if(a.voice_link&&/^https:\/\/(www\.)?(vocaroo\.com|voca\.ro)\//i.test(a.voice_link))return'<a class="btn sm" href="'+esc(a.voice_link)+'" target="_blank" rel="noopener noreferrer">&#127908; '+(ar?"افتح لينك Vocaroo":"Open Vocaroo link")+'</a>';if(a.voice_path)return'<button class="btn sm" data-voice="'+esc(a.voice_path)+'" data-vid="'+a.id+'">&#127908; '+lbl+(a.voice_secs?" ("+a.voice_secs+"s)":"")+'</button>';return''}
 function voiceHTML(){
   var ar=lang==="ar",list=(S.vq||[]).slice(),cnt={};
   list.forEach(function(a){var vs0=a.voice_status||"pending";cnt[vs0]=(cnt[vs0]||0)+1});
@@ -180,7 +181,7 @@ function voiceHTML(){
     h+='<div class="card"><div class="row"><span class="name" style="flex:1">'+esc(a.full_name)+'</span><span class="mute">'+fmt(a.created_at)+'</span></div>'+
     '<div class="mute">'+esc(a.job_company||"")+' · '+esc(a.job_title||"")+'</div>'+
     '<div class="mute">'+(ar?"الريكروتر: ":"Recruiter: ")+esc(a.recruiter_name||(ar?"غير معيّن":"Unassigned"))+(a.english_level?' · '+esc(a.english_level):'')+'</div>'+
-    '<div class="row" style="margin:8px 0" id="v_'+a.id+'"><button class="btn sm" data-voice="'+esc(a.voice_path)+'" data-vid="'+a.id+'">&#127908; '+(ar?"شغّل الفويس":"Play voice")+(a.voice_secs?" ("+a.voice_secs+"s)":"")+'</button></div>'+
+    '<div class="row" style="margin:8px 0" id="v_'+a.id+'">'+voiceBtn(a,ar?"شغّل الفويس":"Play voice")+'</div>'+
     (a.experience?'<div class="mute">'+(ar?"الخبرة: ":"Experience: ")+esc(a.experience)+'</div>':'')+
     '<textarea data-vn="'+a.id+'" placeholder="'+(ar?"ملاحظة للريكروتر (اختياري)":"Note for the recruiter (optional)")+'" style="margin-top:8px">'+esc(a.voice_note||"")+'</textarea>'+
     '<div class="row" style="margin-top:8px"><button class="btn sm" data-vst="accepted" data-vid="'+a.id+'">&#9989; '+vlabel("accepted")+'</button><button class="btn sm" data-vst="rejected" data-vid="'+a.id+'">&#10060; '+vlabel("rejected")+'</button><button class="btn sm" data-vst="repeat" data-vid="'+a.id+'">&#128257; '+vlabel("repeat")+'</button></div></div>';
@@ -252,7 +253,7 @@ function appsHTML(){
     '<div class="mute">'+esc(a.job_company||"")+' · '+esc(a.job_title||"")+'</div>'+
     '<div class="row" style="margin:8px 0"><a class="btn sm" href="tel:'+esc(a.phone)+'" dir="ltr">'+T("call")+' '+esc(a.phone)+'</a><a class="btn sm" target="_blank" rel="noopener" href="https://wa.me/'+waNum(a.phone)+'">'+T("wa")+'</a></div>'+
     (a.email?'<div class="mute" dir="ltr" style="text-align:start">'+esc(a.email)+'</div>':'')+(a.experience?'<div class="mute" style="margin-top:4px">'+(lang==="ar"?"الخبرة: ":"Experience: ")+esc(a.experience)+'</div>':'')+
-    (a.voice_path?'<div class="row" style="margin:8px 0" id="v_'+a.id+'"><button class="btn sm" data-voice="'+esc(a.voice_path)+'" data-vid="'+a.id+'">&#127908; '+(lang==="ar"?"فويس نوت":"Voice note")+(a.voice_secs?" ("+a.voice_secs+"s)":"")+'</button><span class="badge">'+vlabel(a.voice_status||"pending")+'</span></div>':'')+
+    ((a.voice_path||a.voice_link)?'<div class="row" style="margin:8px 0" id="v_'+a.id+'">'+voiceBtn(a,lang==="ar"?"فويس نوت":"Voice note")+'<span class="badge">'+vlabel(a.voice_status||"pending")+'</span></div>':'')+
     '<div class="mute">'+(a.age?T("age")+": "+a.age+" · ":"")+(a.graduation?T("grad")+": "+esc(a.graduation)+" · ":"")+(a.english_level?T("eng")+": "+esc(a.english_level):"")+'</div>'+
     '<div class="grid2"><select data-st="'+a.id+'">'+ST.map(function(s){return'<option value="'+s+'"'+(a.status===s?" selected":"")+'>'+T("st")[s]+'</option>'}).join("")+'</select>'+
     (boss?'<select data-rc="'+a.id+'"><option value="">'+T("unassigned")+'</option>'+S.team.map(function(p){return'<option value="'+p.id+'"'+(a.recruiter_id===p.id?" selected":"")+'>'+esc(p.full_name)+'</option>'}).join("")+'</select>':'<div class="mute">'+T("assign")+': '+esc(nameOf(a.recruiter_id))+'</div>')+'</div>'+
