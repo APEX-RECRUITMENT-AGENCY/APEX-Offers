@@ -381,8 +381,8 @@ window.addEventListener("load",function(){
       msg.className="";msg.textContent="Checking your voice note... · بنفحص التسجيل";
       checkVoice(nb).then(function(res){
         if(!res.ok){va.style.display="none";msg.className="";msg.textContent=res.m;return}
-        vBlob=res.wav||nb;if(res.wav)vMime="audio/wav";va.src=URL.createObjectURL(vBlob);va.style.display="block";
-        msg.className="";msg.textContent="Recorded "+fm(vSecs)+" ✓ · تم التسجيل";
+        vBlob=res.wav||nb;if(res.wav)vMime="audio/wav";vb.style.display="none";va.src=URL.createObjectURL(vBlob);va.style.display="block";
+        msg.className="";msg.textContent="Recorded "+fm(vSecs)+" ✓ Final, you can not re-record · تم التسجيل (نهائي، مفيش إعادة تسجيل)";
       });
     };
     vT0=Date.now();vRec.start(1000);
@@ -409,7 +409,7 @@ window.addEventListener("load",function(){
     if(r.error&&/recruiter code/i.test(r.error.message||"")){btn.disabled=false;msg.textContent="Invalid recruiter code, ask your recruiter \u00b7 \u0643\u0648\u062f \u0627\u0644\u0631\u064a\u0643\u0631\u0648\u062a\u0631 \u063a\u0644\u0637\u060c \u0627\u0633\u0623\u0644 \u0627\u0644\u0631\u064a\u0643\u0631\u0648\u062a\u0631 \u0628\u062a\u0627\u0639\u0643";return}
     if(r.error){btn.disabled=false;msg.textContent="Could not send. Check your data and try again \u00b7 \u062d\u0627\u0648\u0644 \u062a\u0627\u0646\u064a";return}
     msg.textContent="Sent! We will contact you on WhatsApp \u00b7 \u062a\u0645 \u0627\u0644\u0625\u0631\u0633\u0627\u0644\u060c \u0647\u0646\u062a\u0648\u0627\u0635\u0644 \u0645\u0639\u0627\u0643 \u0639\u0644\u0649 \u0648\u0627\u062a\u0633\u0627\u0628";
-    g("apf").reset();setMode("c");vBlob=null;vSecs=0;va.style.display="none";vt.textContent="0:00 / 1:00";vb.innerHTML="&#127908; Start recording &middot; ابدأ التسجيل";
+    g("apf").reset();setMode("c");vb.style.display="";vBlob=null;vSecs=0;va.style.display="none";vt.textContent="0:00 / 1:00";vb.innerHTML="&#127908; Start recording &middot; ابدأ التسجيل";
   });
 });
 </script>
