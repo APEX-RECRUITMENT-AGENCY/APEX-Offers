@@ -181,13 +181,13 @@ function aiBox(a){
       ((d.flags&&d.flags.length)?'<div>\u26a0\ufe0f '+esc(d.flags.join(", "))+'</div>':'')+'</div>'}
   if(a.ai_status==="error")return'<div class="mute" style="margin:8px 0">\u26a0\ufe0f '+(ar?"التقييم التلقائي فشل: ":"AI evaluation failed: ")+esc(a.ai_summary||"")+' <button class="btn sm" data-aiev="'+a.id+'">'+(ar?"جرّب تاني":"Retry")+'</button></div>';
   return'<div class="mute" style="margin:8px 0">\ud83e\udd16 '+(ar?"جاري التقييم التلقائي...":"AI evaluation running...")+'</div>'}
-function errTxt(e){var c=e&&e.context&&e.context.status;return (c?"HTTP "+c+" ":"")+String((e&&e.message)||e||"error").slice(0,120)}
+async function errTxt(e){var c=e&&e.context&&e.context.status,d="";try{if(e&&e.context&&e.context.json){var j=await e.context.json();d=j&&(j.error||j.message||j.msg)||""}}catch(x){}return (c?"HTTP "+c+" ":"")+String(d||(e&&e.message)||e||"error").slice(0,160)}
 async function autoEval(){
   if(S.aiBusy||!sb||!isRev())return;
   var todo=(S.vq||[]).filter(function(a){return a.voice_path&&!a.ai_status&&(a.voice_status||"pending")==="pending"&&!(S.aiTried||{})[a.id]}).slice(0,3);
   if(!todo.length)return;
   S.aiBusy=true;S.aiTried=S.aiTried||{};S.aiFail=S.aiFail||{};
-  for(var i=0;i<todo.length;i++){S.aiTried[todo[i].id]=1;var fr=null;try{fr=await sb.functions.invoke("evaluate-voice",{body:{app_id:todo[i].id}})}catch(e){fr={error:e}}if(fr&&fr.error)S.aiFail[todo[i].id]=errTxt(fr.error)}
+  for(var i=0;i<todo.length;i++){S.aiTried[todo[i].id]=1;var fr=null;try{fr=await sb.functions.invoke("evaluate-voice",{body:{app_id:todo[i].id}})}catch(e){fr={error:e}}if(fr&&fr.error)S.aiFail[todo[i].id]=await errTxt(fr.error)}
   S.aiBusy=false;await loadVQ();(S.vq||[]).forEach(function(a){if(S.aiFail[a.id]&&!a.ai_status){a.ai_status="error";a.ai_summary=S.aiFail[a.id]}});if(S.tab==="vr")renderList();autoEval()}
 async function loadPQ(){if(!S.me||S.me.role!=="owner"){S.pq=[];return}var r=await sb.rpc("panel_queue");if(!r.error&&r.data)S.pq=r.data}
 function plabel(k){var ar=lang==="ar",m={pending:ar?"لسه متضافش":"Not added yet",missing:ar?"لسه ناقص تفاصيل":"Missing details",added:ar?"Added \u2705":"Added \u2705"};return m[k]||k}
@@ -361,7 +361,7 @@ document.addEventListener("click",async function(e){
   if(b.dataset.anpost){var at=$("an_t").value.trim(),ab2=$("an_b").value.trim();if(at.length<2||ab2.length<2){toast(lang==="ar"?"اكتب العنوان والخبر":"Write a title and message");return}var ar3=await sb.rpc("post_announcement",{p_title:at,p_body:ab2});if(ar3.error){toast(ar3.error.message);return}await loadAnns();renderList();toast(lang==="ar"?"اتنشر واتبعت للكل":"Posted");return}
   if(b.dataset.andel){if(!confirm(lang==="ar"?"تمسح الخبر ده؟":"Delete this announcement?"))return;var dd=await sb.from("announcements").delete().eq("id",b.dataset.andel).select();if(dd.error||!dd.data||!dd.data.length){toast(dd.error?dd.error.message:"Not allowed");return}S.anns=S.anns.filter(function(x){return x.id!==b.dataset.andel});renderList();return}
   if(b.dataset.rv){var rp=S.team.find(function(x){return x.id===b.dataset.rv});var rr2=await sb.from("profiles").update({can_review:!rp.can_review}).eq("id",rp.id).select();if(rr2.error||!rr2.data||!rr2.data.length){toast(rr2.error?rr2.error.message:"Not allowed");return}rp.can_review=!rp.can_review;renderList();toast(T("saved"));return}
-  if(b.dataset.aiev){S.aiTried=S.aiTried||{};S.aiTried[b.dataset.aiev]=1;var ra=(S.vq||[]).find(function(x){return x.id===b.dataset.aiev});if(ra)ra.ai_status=null;renderList();S.aiFail=S.aiFail||{};delete S.aiFail[b.dataset.aiev];var rr=null;try{rr=await sb.functions.invoke("evaluate-voice",{body:{app_id:b.dataset.aiev}})}catch(x){rr={error:x}}if(rr&&rr.error)S.aiFail[b.dataset.aiev]=errTxt(rr.error);await loadVQ();(S.vq||[]).forEach(function(a){if(S.aiFail[a.id]&&!a.ai_status){a.ai_status="error";a.ai_summary=S.aiFail[a.id]}});renderList();return}
+  if(b.dataset.aiev){S.aiTried=S.aiTried||{};S.aiTried[b.dataset.aiev]=1;var ra=(S.vq||[]).find(function(x){return x.id===b.dataset.aiev});if(ra)ra.ai_status=null;renderList();S.aiFail=S.aiFail||{};delete S.aiFail[b.dataset.aiev];var rr=null;try{rr=await sb.functions.invoke("evaluate-voice",{body:{app_id:b.dataset.aiev}})}catch(x){rr={error:x}}if(rr&&rr.error)S.aiFail[b.dataset.aiev]=await errTxt(rr.error);await loadVQ();(S.vq||[]).forEach(function(a){if(S.aiFail[a.id]&&!a.ai_status){a.ai_status="error";a.ai_summary=S.aiFail[a.id]}});renderList();return}
   if(b.dataset.pf){S.pf=b.dataset.pf;renderList();return}
   if(b.dataset.pst){var pr=await sb.rpc("set_panel_status",{p_app:b.dataset.pid,p_status:b.dataset.pst});if(pr.error){toast(pr.error.message);return}var pa=(S.pq||[]).find(function(x){return x.id===b.dataset.pid});if(pa)pa.panel_status=b.dataset.pst;renderList();return}
   if(b.dataset.vf){S.vf=b.dataset.vf;renderList();return}
