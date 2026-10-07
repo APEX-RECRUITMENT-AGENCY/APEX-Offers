@@ -377,6 +377,7 @@ document.addEventListener("click",async function(e){
   if(b.dataset.toggle){var p=S.team.find(function(x){return x.id===b.dataset.toggle});var r=await sb.from("profiles").update({active:!p.active}).eq("id",p.id);if(r.error)toast(r.error.message);else{p.active=!p.active;renderList()}return}
   var a=b.dataset.act;
   if(a==="copylink")copy(base()+"index.html?ref="+S.me.ref_code);
+  else if((a==="login"||a==="signup")&&(!$("em").value.trim()||!$("pw").value)){toast(lang==="en"?"Enter your email and password":"اكتب الإيميل وكلمة السر")}
   else if(a==="login"){var r1=await sb.auth.signInWithPassword({email:$("em").value.trim(),password:$("pw").value});if(r1.error)toast(r1.error.message);else boot()}
   else if(a==="signup"){var r2=await sb.auth.signUp({email:$("em").value.trim(),password:$("pw").value});if(r2.error)toast(r2.error.message);else if(!r2.data.session){S.msg=T("confirm");render()}else boot()}
   else if(a==="finish"){
