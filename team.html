@@ -37,6 +37,12 @@ html{background:var(--bg)}body{min-height:100vh;background:radial-gradient(1200p
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .tabs{display:flex;gap:6px;margin:4px 0 14px;overflow-x:auto}
 .tab{border:1px solid var(--line);background:none;border-radius:999px;padding:7px 16px;cursor:pointer;white-space:nowrap}
+.tab.ntb{display:inline-flex;align-items:center;gap:8px;font-size:18px;font-weight:700;padding:10px 20px;border:2px solid #ff4a4a;background:linear-gradient(180deg,#f02a2a,#a50f0f);color:#fff;box-shadow:0 2px 12px rgba(217,22,22,.5);position:sticky;inset-inline-start:0;z-index:2}
+.ntb .bell{font-size:24px;line-height:1}.ntb .ntl{font-size:16px}
+.ntb .ntc:not(:empty){background:#fff;color:#d91616;border-radius:999px;min-width:26px;height:26px;line-height:26px;text-align:center;font-size:15px;font-weight:800;padding:0 6px}
+.ntb.has .bell{animation:bellr 1.4s ease-in-out infinite;transform-origin:50% 0}
+@keyframes bellr{0%,60%,100%{transform:rotate(0)}10%{transform:rotate(18deg)}20%{transform:rotate(-16deg)}30%{transform:rotate(12deg)}40%{transform:rotate(-8deg)}50%{transform:rotate(4deg)}}
+.tab.ntb.on{outline:3px solid #fff}
 .tab.on{background:var(--acc);color:var(--acc-ink);border-color:var(--acc)}
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
 .chip{border:1px solid var(--line);background:none;border-radius:8px;padding:4px 10px;font-size:14px;cursor:pointer}
@@ -149,7 +155,7 @@ function annHTML(){
 }
 async function loadVQ(){if(!isRev()){S.vq=[];return}var r=await sb.rpc("voice_queue");if(!r.error&&r.data)S.vq=r.data}
 function unreadN(){return S.notifs.filter(function(n){return!n.read}).length}
-function setNtCount(){var e=$("ntc");if(e)e.textContent=unreadN()?" ("+unreadN()+")":"";document.title=(unreadN()?"("+unreadN()+") ":"")+"Apex Team"}
+function setNtCount(){var e=$("ntc");if(e){e.textContent=unreadN()?unreadN():"";var bt=e.parentNode;if(bt)bt.classList.toggle("has",!!unreadN())}document.title=(unreadN()?"("+unreadN()+") ":"")+"Apex Team"}
 function startPoll(){
   if(pollT)return;
   pollT=setInterval(async function(){
@@ -262,12 +268,11 @@ function appView(){
   var me=S.me,h='<div class="card"><div class="name">'+esc(me.full_name)+' <span class="badge">'+T("ro")[me.role]+'</span></div>'+
   '<p class="mute" style="margin:8px 0 2px">'+T("myLink")+'</p><div class="link" dir="ltr">'+esc(base()+"index.html?ref="+me.ref_code)+'</div>'+
   '<button class="btn sm" data-act="copylink">'+T("copy")+'</button></div>';
-  h+='<div class="tabs"><button class="tab'+(S.tab==="apps"?" on":"")+'" data-tab="apps">'+T("cand")+' ('+S.apps.length+')</button>'+
+  h+='<div class="tabs">'+'<button class="tab ntb'+(S.tab==="nt"?" on":"")+(unreadN()?" has":"")+'" data-tab="nt" aria-label="Notifications"><span class="bell">&#128276;</span><span id="ntc" class="ntc">'+(unreadN()?unreadN():"")+'</span><span class="ntl">'+(lang==="ar"?"الإشعارات":"Alerts")+'</span></button>'+'<button class="tab'+(S.tab==="apps"?" on":"")+'" data-tab="apps">'+T("cand")+' ('+S.apps.length+')</button>'+
   '<button class="tab'+(S.tab==="team"?" on":"")+'" data-tab="team">'+T("team")+' ('+S.team.length+')</button>'+
   (isRev()?'<button class="tab'+(S.tab==="vr"?" on":"")+'" data-tab="vr">&#127908; '+(lang==="ar"?"مراجعة الفويس":"Voice review")+' ('+(S.vq||[]).filter(function(a){return(a.voice_status||"pending")==="pending"}).length+')</button>':'')+
   (S.me&&S.me.role==="owner"?'<button class="tab'+(S.tab==="pn"?" on":"")+'" data-tab="pn">&#128196; ADDED TO PANEL ('+(S.pq||[]).filter(function(a){return(a.panel_status||"pending")!=="added"}).length+')</button>':'')+
   '<button class="tab'+(S.tab==="an"?" on":"")+'" data-tab="an">&#128226; '+(lang==="ar"?"الأخبار":"News")+'</button>'+
-  '<button class="tab'+(S.tab==="nt"?" on":"")+'" data-tab="nt">&#128276;<span id="ntc">'+(unreadN()?" ("+unreadN()+")":"")+'</span></button>'+
   (INV[me.role].length?'<button class="tab'+(S.tab==="inv"?" on":"")+'" data-tab="inv">'+T("invites")+'</button>':'')+'</div>';
   h+='<div id="list"></div>';return h;
 }
