@@ -4,41 +4,62 @@
 <style>
 :root{--bg:#0a0a0b;--card:#141416;--tx:#f2f2f3;--mu:#a5a5ab;--acc:#d91616;--bd:#2a2a2e}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;line-height:1.6;padding:20px 14px 40px}
-.w{max-width:560px;margin:0 auto}
+.w{max-width:600px;margin:0 auto}
 header{text-align:center;border-bottom:2px solid var(--acc);padding-bottom:14px;margin-bottom:14px}
 header img{width:72px;height:72px;border-radius:18px;border:1px solid var(--bd)}
 h1{margin:8px 0 2px;font-size:22px}header p{margin:0;color:var(--mu);font-size:14px}
-input{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--bd);background:var(--card);color:var(--tx);font-size:16px;margin-bottom:6px}
+input{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--bd);background:var(--card);color:var(--tx);font-size:16px;margin-bottom:8px}
+.b{background:linear-gradient(180deg,#f02a2a,#a50f0f);border:0;color:#fff;font-weight:700;border-radius:10px;padding:10px 14px;font-size:14px;cursor:pointer}
+.b.s{background:none;border:1px solid var(--bd);color:var(--tx);font-weight:600;padding:6px 12px;font-size:13px}
+.bar{display:flex;gap:8px;margin-bottom:6px}.bar .b{flex:1}
 h2{font-size:15px;color:#ff6b6b;margin:18px 0 8px}
-.r{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;gap:10px;align-items:center}
-.n{font-weight:700}.j{color:var(--mu);font-size:13px}
+.r{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px 14px;margin-bottom:10px}
+.top{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:6px}
+.n{font-weight:700;font-size:17px}
 .t{background:linear-gradient(180deg,#f02a2a,#a50f0f);border-radius:10px;padding:4px 12px;font-weight:700;white-space:nowrap;direction:ltr}
-.m{text-align:center;color:var(--mu);padding:30px 0}
+.f{display:flex;justify-content:space-between;gap:10px;font-size:14px;padding:3px 0;border-top:1px dashed var(--bd)}
+.f span:first-child{color:var(--mu);white-space:nowrap}.f span:last-child{text-align:left;word-break:break-all;direction:ltr}
+.e{color:#6b6b72}.m{text-align:center;color:var(--mu);padding:30px 0}
+a{color:#ff8a8a}
 </style></head><body><div class="w">
 <header><img src="icon-192.png" alt="Apex"><h1>مواعيد الانترفيو</h1><p>Apex Recruitment Agency</p></header>
-<input id="q" placeholder="ابحث بالاسم..." autocomplete="off">
+<input id="q" placeholder="ابحث بالاسم أو الرقم..." autocomplete="off"><div class="bar"><button class="b" id="ca">نسخ الكل للشيت</button></div>
 <div id="l" class="m">جاري التحميل...</div>
 </div>
 <script src="config.js"></script>
 <script>
-var all=[];
+var all=[],shown=[];
 function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
 var fd=new Intl.DateTimeFormat("ar-EG",{timeZone:"Africa/Cairo",weekday:"long",day:"numeric",month:"long"});
 var ft=new Intl.DateTimeFormat("en-US",{timeZone:"Africa/Cairo",hour:"numeric",minute:"2-digit",hour12:true});
 var fk=new Intl.DateTimeFormat("en-CA",{timeZone:"Africa/Cairo"});
+var fs=new Intl.DateTimeFormat("en-GB",{timeZone:"Africa/Cairo",day:"numeric",month:"numeric"});
+function row(r){var d=new Date(r.interview_at);
+  return [fs.format(d).replace(/^0/,""),ft.format(d),r.full_name||"",r.phone||"",r.email||"",r.english_level||"","",r.recruiter_name||"",r.leader_name||"",r.voice_link||""]}
+function tsv(r){return row(r).map(function(x){return String(x).replace(/[\t\r\n]+/g," ")}).join("\t")}
+function cp(t){if(navigator.clipboard&&navigator.clipboard.writeText)return navigator.clipboard.writeText(t);var a=document.createElement("textarea");a.value=t;document.body.appendChild(a);a.select();try{document.execCommand("copy")}catch(e){}a.remove();return Promise.resolve()}
+function fld(k,v){return '<div class="f"><span>'+k+'</span><span>'+(v?esc(v):'<i class="e">—</i>')+'</span></div>'}
 function draw(){
   var q=document.getElementById("q").value.trim().toLowerCase(),el=document.getElementById("l");
-  var rows=all.filter(function(r){return!q||String(r.full_name).toLowerCase().indexOf(q)>-1});
-  if(!rows.length){el.className="m";el.textContent=all.length?"مفيش نتيجة":"مفيش مواعيد حاليا";return}
+  shown=all.filter(function(r){return!q||(String(r.full_name)+" "+String(r.phone)).toLowerCase().indexOf(q)>-1});
+  if(!shown.length){el.className="m";el.textContent=all.length?"مفيش نتيجة":"مفيش مواعيد حاليا";return}
   el.className="";var h="",last="";
-  rows.forEach(function(r){var d=new Date(r.interview_at),k=fk.format(d);
+  shown.forEach(function(r,i){var d=new Date(r.interview_at),k=fk.format(d);
     if(k!==last){h+="<h2>"+esc(fd.format(d))+"</h2>";last=k}
-    h+='<div class="r"><div><div class="n">'+esc(r.full_name)+'</div><div class="j">'+esc([r.job_title,r.job_company].filter(Boolean).join(" - "))+'</div></div><div class="t">'+esc(ft.format(d))+'</div></div>'});
+    var v=r.voice_link?'<a href="'+esc(r.voice_link)+'" target="_blank" rel="noopener">فتح الفويس</a>':"";
+    h+='<div class="r"><div class="top"><div class="n">'+esc(r.full_name)+'</div><div class="t">'+esc(ft.format(d))+'</div></div>'
+     +fld("الرقم",r.phone)+fld("الإيميل",r.email)+fld("المستوى",r.english_level)+fld("الوظيفة",[r.job_title,r.job_company].filter(Boolean).join(" - "))
+     +fld("Client feedback","")+fld("الريكروتر",r.recruiter_name)+fld("التيم ليدر",r.leader_name)
+     +'<div class="f"><span>الفويس</span><span>'+(v||'<i class="e">—</i>')+'</span></div>'
+     +'<div style="margin-top:8px"><button class="b s" data-i="'+i+'">نسخ الصف</button></div></div>'});
   el.innerHTML=h}
 function load(){
-  var c=window.APEX_CONFIG;
-  fetch(c.SUPABASE_URL+"/rest/v1/rpc/public_interviews",{method:"POST",headers:{apikey:c.SUPABASE_ANON_KEY,Authorization:"Bearer "+c.SUPABASE_ANON_KEY,"Content-Type":"application/json"},body:"{}"})
+  var c=window.APEX_CONFIG,key=new URLSearchParams(location.search).get("k")||"";
+  fetch(c.SUPABASE_URL+"/rest/v1/rpc/public_interviews",{method:"POST",headers:{apikey:c.SUPABASE_ANON_KEY,Authorization:"Bearer "+c.SUPABASE_ANON_KEY,"Content-Type":"application/json"},body:JSON.stringify({p_key:key})})
   .then(function(r){return r.json()}).then(function(d){if(!Array.isArray(d))throw 0;all=d;draw()})
-  .catch(function(){document.getElementById("l").textContent="تعذر التحميل، جرّب تاني"})}
-document.getElementById("q").addEventListener("input",draw);load();setInterval(load,60000);
+  .catch(function(){document.getElementById("l").className="m";document.getElementById("l").textContent="اللينك غير صحيح أو تعذر التحميل"})}
+document.getElementById("q").addEventListener("input",draw);
+document.getElementById("ca").onclick=function(){var b=this;cp(shown.map(tsv).join("\n")).then(function(){b.textContent="تم النسخ ✅";setTimeout(function(){b.textContent="نسخ الكل للشيت"},1500)})};
+document.getElementById("l").addEventListener("click",function(e){var b=e.target.closest("[data-i]");if(!b)return;cp(tsv(shown[+b.dataset.i])).then(function(){b.textContent="تم ✅";setTimeout(function(){b.textContent="نسخ الصف"},1200)})});
+load();setInterval(load,60000);
 </script></body></html>
