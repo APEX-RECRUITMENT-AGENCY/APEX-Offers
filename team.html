@@ -185,12 +185,14 @@ function aiBox(a){
   var ar=lang==="ar";
   if(!a.voice_path)return'';
   if(a.ai_status==="done"){
-    var d=a.ai_detail||a.ai_result||{},rc={accept:ar?"يُنصح بالقبول":"Suggest accept",review:ar?"محتاج مراجعتك":"Needs your review",reject:ar?"يُنصح بالرفض":"Suggest reject"},ic=a.ai_reco==="accept"?"\ud83d\udfe2":a.ai_reco==="reject"?"\ud83d\udd34":"\ud83d\udfe1";
-    return'<div class="mute" style="margin:8px 0;padding:8px;border:1px solid var(--line);border-radius:10px">'+ic+' <b>\ud83e\udd16 '+esc(a.ai_level||a.ai_cefr||"")+' \u00b7 '+(a.ai_score||0)+'/100 \u00b7 '+(rc[a.ai_reco]||"")+'</b>'+
-      '<div>'+esc(a.ai_summary||d.summary||"")+'</div>'+
+    var d=a.ai_detail||{},rc={accept:ar?"يُنصح بالقبول":"Suggest accept",review:ar?"محتاج مراجعتك":"Needs your review",reject:ar?"يُنصح بالرفض":"Suggest reject"},ic=a.ai_reco==="accept"?"\ud83d\udfe2":a.ai_reco==="reject"?"\ud83d\udd34":"\ud83d\udfe1";
+    return'<div class="mute" style="margin:8px 0;padding:8px;border:1px solid var(--line);border-radius:10px">'+ic+' <b>\ud83e\udd16 '+esc(a.ai_level||"")+' \u00b7 '+(a.ai_score||0)+'/100 \u00b7 '+(rc[a.ai_reco]||"")+'</b>'+
+      '<div>'+esc(a.ai_summary||"")+'</div>'+
       '<div>'+(ar?"طلاقة ":"Fluency ")+(d.fluency||"-")+' \u00b7 '+(ar?"نطق ":"Pron. ")+(d.pronunciation||"-")+' \u00b7 '+(ar?"قواعد ":"Grammar ")+(d.grammar_vocab||"-")+' \u00b7 '+(ar?"وضوح ":"Clarity ")+(d.clarity||"-")+'</div>'+
-      ((d.flags&&d.flags.length)?'<div>\u26a0\ufe0f '+esc(d.flags.join(", "))+'</div>':'')+'</div>'}
-  if(a.ai_status==="error")return'<div class="mute" style="margin:8px 0">\u26a0\ufe0f '+(ar?"التقييم التلقائي فشل: ":"AI evaluation failed: ")+esc(a.ai_summary||a.ai_error||"")+' <button class="btn sm" data-aiev="'+a.id+'">'+(ar?"جرّب تاني":"Retry")+'</button></div>';
+      ((d.flags&&d.flags.length)?'<div>\u26a0\ufe0f '+esc(d.flags.join(", "))+'</div>':'')+
+      (d.main_language?'<div>\ud83d\udde3\ufe0f '+esc(d.main_language)+((d.other_languages&&d.other_languages.length)?' \u00b7 '+esc(d.other_languages.map(function(o){return o.language+" "+o.cefr}).join(", ")):'')+'</div>':'')+
+      (d.transcript?'<details style="margin-top:6px"><summary>'+(ar?"النص المفرّغ":"Transcript")+'</summary><div dir="auto" style="white-space:pre-wrap;margin-top:4px">'+esc(d.transcript)+'</div></details>':'')+'</div>'}
+  if(a.ai_status==="error")return'<div class="mute" style="margin:8px 0">\u26a0\ufe0f '+(ar?"التقييم التلقائي فشل: ":"AI evaluation failed: ")+esc(a.ai_summary||"")+' <button class="btn sm" data-aiev="'+a.id+'">'+(ar?"جرّب تاني":"Retry")+'</button></div>';
   return'<div class="mute" style="margin:8px 0">\ud83e\udd16 '+(ar?"جاري التقييم التلقائي...":"AI evaluation running...")+'</div>'}
 async function errTxt(e){var c=e&&e.context&&e.context.status,d="";try{if(e&&e.context&&e.context.json){var j=await e.context.json();d=j&&(j.error||j.message||j.msg)||""}}catch(x){}return (c?"HTTP "+c+" ":"")+String(d||(e&&e.message)||e||"error").slice(0,160)}
 async function autoEval(){
