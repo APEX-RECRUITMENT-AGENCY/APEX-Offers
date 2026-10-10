@@ -95,18 +95,18 @@ cand:"Candidates",team:"Team",invites:"Invites",search:"Search name, phone or jo
 newInvite:"New invite",role:"Role",reportsTo:"Reports to",create:"Create code",unused:"Unused",used:"Used",link:"Registration link",active:"Active",disabled:"Disabled",disable:"Disable",enable:"Enable",call:"Call",wa:"WhatsApp",count:"candidates",
 confirm:"Account created. Open the confirmation email, then log in.",badCode:"Invalid or already used code.",ownerExists:"An owner already exists. Enter an invite code.",already:"This account is already set up or disabled. Contact the owner.",noCfg:"The system is not connected yet. Fill in config.js.",
 age:"Age",grad:"Graduation",eng:"English",job:"Job",del:"Delete",
-st:{new:"New",contacted:"Contacted",interview:"Interview",accepted:"Accepted",hired:"Hired",rejected:"Rejected",no_answer:"No answer"},
+st:{new:"New",contacted:"Contacted",interview:"Interview",accepted:"Accepted",validated:"Validated",hired:"Hired",rejected:"Rejected",no_answer:"No answer"},
 ro:{owner:"Owner",admin:"Admin",unit_manager:"Unit Manager",team_leader:"Team Leader",recruiter:"Recruiter"}},
 ar:{title:"الفريق",login:"دخول",signup:"حساب جديد",email:"الإيميل",password:"كلمة السر",name:"الاسم بالكامل",code:"كود الدعوة",ownerHint:"سيب الكود فاضي فقط لو انت أول حساب (المالك).",finish:"إنهاء التسجيل",logout:"خروج",lang:"English",
 cand:"المرشحين",team:"الفريق",invites:"الدعوات",search:"ابحث بالاسم أو الرقم أو الوظيفة",all:"الكل",none:"مفيش مرشحين لسه.",notes:"ملاحظات",saved:"اتحفظ",copy:"نسخ",copied:"اتنسخ",myLink:"لينكك الخاص (المرشحين اللي يقدموا منه بيتسجلوا ليك)",assign:"الريكروتر",unassigned:"غير معيّن",
 newInvite:"دعوة جديدة",role:"الوظيفة",reportsTo:"يتبع",create:"إنشاء كود",unused:"غير مستخدم",used:"مستخدم",link:"لينك التسجيل",active:"شغال",disabled:"موقوف",disable:"إيقاف",enable:"تشغيل",call:"اتصال",wa:"واتساب",count:"مرشح",
 confirm:"اتعمل الحساب. افتح إيميل التأكيد وبعدها سجّل دخول.",badCode:"الكود غلط أو اتستخدم قبل كده.",ownerExists:"المالك موجود بالفعل. اكتب كود الدعوة.",already:"الحساب ده متسجل بالفعل أو موقوف. كلّم المالك.",noCfg:"النظام لسه مش متوصل. املا ملف config.js.",
 age:"السن",grad:"التخرج",eng:"الإنجليزي",job:"الوظيفة",del:"حذف",
-st:{new:"جديد",contacted:"تم التواصل",interview:"انترفيو",accepted:"مقبول",hired:"اتعيّن",rejected:"مرفوض",no_answer:"مردش"},
+st:{new:"جديد",contacted:"تم التواصل",interview:"انترفيو",accepted:"مقبول",validated:"تم التحقق",hired:"اتعيّن",rejected:"مرفوض",no_answer:"مردش"},
 ro:{owner:"المالك",admin:"أدمن",unit_manager:"يونيت مانجر",team_leader:"تيم ليدر",recruiter:"ريكروتر"}}};
 var lang="en";try{lang=localStorage.getItem("apexLang")||"en"}catch(e){}
 function T(k){return(I[lang][k]!=null?I[lang][k]:I.en[k])||k}
-var ST=["new","contacted","interview","accepted","hired","rejected","no_answer"];
+var ST=["new","contacted","interview","accepted","validated","hired","rejected","no_answer"];
 var RANK={owner:0,admin:1,unit_manager:2,team_leader:3,recruiter:4};
 var INV={owner:["admin","unit_manager","team_leader","recruiter"],admin:["unit_manager","team_leader","recruiter"],unit_manager:["team_leader","recruiter"],team_leader:["recruiter"],recruiter:[]};
 var S={session:null,me:null,team:[],apps:[],invites:[],notifs:[],anns:[],vq:[],pq:[],pf:"pending",vf:"pending",tab:"apps",filter:"",q:"",msg:"",cand:null,rf:""};
@@ -176,8 +176,8 @@ function startPoll(){
     setNtCount();
   },20000);
 }
-function vlabel(k){var ar=lang==="ar",m={pending:ar?"في الانتظار":"Pending",accepted:ar?"مقبول":"Accepted",rejected:ar?"مرفوض":"Rejected",repeat:ar?"إعادة":"Repeat"};return m[k]||k}
-function nTitle(n){var ar=lang==="ar",k=n.kind;if(k==="announcement")return"\ud83d\udce2 "+(n.cand_name||"");return(k==="accepted"?"\u2705 ":k==="rejected"?"\u274c ":"\ud83d\udd01 ")+(ar?"الفويس نوت بتاع ":"Voice note of ")+(n.cand_name||"")+": "+vlabel(k)}
+function vlabel(k){var ar=lang==="ar",m={pending:ar?"في الانتظار":"Pending",accepted:ar?"مقبول":"Accepted",rejected:ar?"مرفوض":"Rejected",repeat:ar?"إعادة":"Repeat",dup_lang:ar?"تكرار ولغة معلّقة":"Duplicate and language pending"};return m[k]||k}
+function nTitle(n){var ar=lang==="ar",k=n.kind;if(k==="announcement")return"\ud83d\udce2 "+(n.cand_name||"");return(k==="accepted"?"\u2705 ":k==="rejected"?"\u274c ":k==="dup_lang"?"\u23f3 ":"\ud83d\udd01 ")+(ar?"الفويس نوت بتاع ":"Voice note of ")+(n.cand_name||"")+": "+vlabel(k)}
 function voiceBtn1(a,lbl){var ar=lang==="ar";if(a.voice_link&&/^https:\/\/(www\.)?(vocaroo\.com|voca\.ro)\//i.test(a.voice_link))return'<a class="btn sm" href="'+esc(a.voice_link)+'" target="_blank" rel="noopener noreferrer">&#127908; '+(ar?"افتح لينك Vocaroo":"Open Vocaroo link")+'</a>';if(a.voice_path)return'<button class="btn sm" data-voice="'+esc(a.voice_path)+'" data-vid="'+a.id+'">&#127908; '+lbl+(a.voice_secs?" ("+a.voice_secs+"s)":"")+'</button> <button class="btn sm" data-pdl="'+esc(a.voice_path)+'">&#11015; '+(ar?"تحميل":"Download")+'</button>';return''}
 function voiceBtn(a,lbl){var h=voiceBtn1(a,lbl);if(!(a.voice_path2||a.voice_link2))return h;var ar=lang==="ar",L=a.voice_lang||"2",b2;
   if(a.voice_link2&&/^https:\/\/(www\.)?(vocaroo\.com|voca\.ro)\//i.test(a.voice_link2))b2='<a class="btn sm" href="'+esc(a.voice_link2)+'" target="_blank" rel="noopener noreferrer">&#127908; '+esc(L)+' Vocaroo</a>';
@@ -230,7 +230,7 @@ function panelHTML(){
 function voiceHTML(){
   var ar=lang==="ar",list=(S.vq||[]).slice(),cnt={};
   list.forEach(function(a){var vs0=a.voice_status||"pending";cnt[vs0]=(cnt[vs0]||0)+1});
-  var h='<div class="chips">'+["pending","accepted","rejected","repeat"].map(function(k){return'<button class="chip'+(S.vf===k?" on":"")+'" data-vf="'+k+'">'+vlabel(k)+' '+(cnt[k]||0)+'</button>'}).join("")+'</div>';
+  var h='<div class="chips">'+["pending","dup_lang","accepted","rejected","repeat"].map(function(k){return'<button class="chip'+(S.vf===k?" on":"")+'" data-vf="'+k+'">'+vlabel(k)+' '+(cnt[k]||0)+'</button>'}).join("")+'</div>';
   var rows=list.filter(function(a){return(a.voice_status||"pending")===S.vf});
   if(!rows.length)return h+'<p class="mute">'+(ar?"مفيش فويس نوت هنا.":"No voice notes here.")+'</p>';
   rows.sort(function(a,b){return S.vf==="pending"?new Date(a.created_at)-new Date(b.created_at):new Date(b.voice_reviewed_at||b.created_at)-new Date(a.voice_reviewed_at||a.created_at)});
@@ -242,7 +242,7 @@ function voiceHTML(){
     aiBox(a)+
     (a.experience?'<div class="mute">'+(ar?"الخبرة: ":"Experience: ")+esc(a.experience)+'</div>':'')+
     '<textarea data-vn="'+a.id+'" placeholder="'+(ar?"ملاحظة للريكروتر (اختياري)":"Note for the recruiter (optional)")+'" style="margin-top:8px">'+esc(a.voice_note||"")+'</textarea>'+
-    '<div class="row" style="margin-top:8px"><button class="btn sm" data-vst="accepted" data-vid="'+a.id+'">&#9989; '+vlabel("accepted")+'</button><button class="btn sm" data-vst="rejected" data-vid="'+a.id+'">&#10060; '+vlabel("rejected")+'</button><button class="btn sm" data-vst="repeat" data-vid="'+a.id+'">&#128257; '+vlabel("repeat")+'</button></div></div>';
+    '<div class="row" style="margin-top:8px"><button class="btn sm" data-vst="accepted" data-vid="'+a.id+'">&#9989; '+vlabel("accepted")+'</button><button class="btn sm" data-vst="rejected" data-vid="'+a.id+'">&#10060; '+vlabel("rejected")+'</button><button class="btn sm" data-vst="repeat" data-vid="'+a.id+'">&#128257; '+vlabel("repeat")+'</button><button class="btn sm" data-vst="dup_lang" data-vid="'+a.id+'">&#9203; '+vlabel("dup_lang")+'</button></div></div>';
   });
   return h;
 }
