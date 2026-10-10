@@ -141,6 +141,7 @@ async function loadData(){
   await loadAnns();await loadVQ();await loadPQ();startPoll();
 }
 var pollT=null;
+function canDis(p){var m=S.me.role;if(!p||p.id===S.me.id||p.role==="owner")return false;if(m==="owner")return true;return RANK[p.role]>RANK[m]&&m!=="recruiter"}
 function isTop(){return isBoss()}
 function isBoss(){return!!S.me&&(S.me.role==="owner"||S.me.role==="admin")}
 function ownerId(){var o=S.team.find(function(x){return x.role==="owner"});return o?o.id:S.me.id}
@@ -454,9 +455,9 @@ function teamHTML(){
     var n=S.apps.filter(function(a){return a.recruiter_id===p.id}).length;
     h+='<div class="card"><div class="row"><span class="name" style="flex:1">'+esc(p.full_name)+'</span><span class="badge">'+T("ro")[p.role]+'</span></div>'+
     '<div class="mute">'+(p.parent_id?T("reportsTo")+": "+esc(nameOf(p.parent_id))+" · ":"")+n+" "+T("count")+" · "+(p.active?'<span class="ok">'+T("active")+'</span>':'<span class="bad">'+T("disabled")+'</span>')+'</div>'+
-    ((owner&&p.role!=="owner"||S.me.role==="admin"&&RANK[p.role]>RANK.admin||S.me.role==="unit_manager"&&RANK[p.role]>RANK.unit_manager)?'<div class="grid2" style="margin-top:8px"><div><label class="mute">'+(lang==="ar"?"الدور":"Role")+'</label><select data-role="'+p.id+'">'+(owner?["admin","unit_manager","team_leader","recruiter"]:S.me.role==="admin"?["unit_manager","team_leader","recruiter"]:["team_leader","recruiter"]).map(function(r){return'<option value="'+r+'"'+(p.role===r?" selected":"")+'>'+T("ro")[r]+'</option>'}).join("")+'</select></div><div><label class="mute">'+T("reportsTo")+'</label><select data-par="'+p.id+'">'+S.team.filter(function(x){return x.id!==p.id&&RANK[x.role]<RANK[p.role]}).map(function(x){return'<option value="'+x.id+'"'+(p.parent_id===x.id?" selected":"")+'>'+esc(x.full_name)+' ('+T("ro")[x.role]+')</option>'}).join("")+'</select></div></div>':'')+
+    ((owner&&p.role!=="owner"||S.me.role==="admin"&&RANK[p.role]>RANK.admin||S.me.role==="unit_manager"&&RANK[p.role]>RANK.unit_manager||S.me.role==="team_leader"&&RANK[p.role]>RANK.team_leader)?'<div class="grid2" style="margin-top:8px"><div><label class="mute">'+(lang==="ar"?"الدور":"Role")+'</label><select data-role="'+p.id+'">'+(owner?["admin","unit_manager","team_leader","recruiter"]:S.me.role==="admin"?["unit_manager","team_leader","recruiter"]:S.me.role==="team_leader"?["recruiter"]:["team_leader","recruiter"]).map(function(r){return'<option value="'+r+'"'+(p.role===r?" selected":"")+'>'+T("ro")[r]+'</option>'}).join("")+'</select></div><div><label class="mute">'+T("reportsTo")+'</label><select data-par="'+p.id+'">'+S.team.filter(function(x){return x.id!==p.id&&RANK[x.role]<RANK[p.role]}).map(function(x){return'<option value="'+x.id+'"'+(p.parent_id===x.id?" selected":"")+'>'+esc(x.full_name)+' ('+T("ro")[x.role]+')</option>'}).join("")+'</select></div></div>':'')+
     '<div class="row" style="margin-top:8px"><button class="btn sm" data-copy="'+esc(base()+"index.html?ref="+p.ref_code)+'">'+T("copy")+' '+T("myLink").split(" (")[0]+'</button>'+
-    (owner&&p.role!=="owner"?'<button class="btn sm" data-rv="'+p.id+'">&#127908; '+(lang==="ar"?"صلاحية الفويس: ":"Voice access: ")+(p.can_review?(lang==="ar"?"مفعّلة":"ON"):(lang==="ar"?"مقفولة":"OFF"))+'</button>':'')+(owner&&p.role!=="owner"?'<button class="btn sm" data-toggle="'+p.id+'">'+(p.active?T("disable"):T("enable"))+'</button>':'')+'</div></div>';
+    (owner&&p.role!=="owner"?'<button class="btn sm" data-rv="'+p.id+'">&#127908; '+(lang==="ar"?"صلاحية الفويس: ":"Voice access: ")+(p.can_review?(lang==="ar"?"مفعّلة":"ON"):(lang==="ar"?"مقفولة":"OFF"))+'</button>':'')+(canDis(p)?'<button class="btn sm" data-toggle="'+p.id+'">'+(p.active?T("disable"):T("enable"))+'</button>':'')+'</div></div>';
   });
   return h;
 }
@@ -507,7 +508,7 @@ document.addEventListener("click",async function(e){
   if(b.dataset.tab){S.tab=b.dataset.tab;S.gq="";if(S.tab==="vr")await loadVQ();if(S.tab==="pn")await loadPQ();if(S.tab==="an")await loadAnns();render();return}
   if(b.dataset.f!==undefined&&b.classList.contains("chip")){S.filter=b.dataset.f;renderList();return}
   if(b.dataset.copy){copy(b.dataset.copy);return}
-  if(b.dataset.toggle){var p=S.team.find(function(x){return x.id===b.dataset.toggle});var r=await sb.from("profiles").update({active:!p.active}).eq("id",p.id);if(r.error)toast(r.error.message);else{p.active=!p.active;renderList()}return}
+  if(b.dataset.toggle){var p=S.team.find(function(x){return x.id===b.dataset.toggle});var r=await sb.rpc("set_active",{p_id:p.id,p_active:!p.active});if(r.error)toast(r.error.message);else{p.active=!p.active;renderList()}return}
   var a=b.dataset.act;
   if(a==="copylink")copy(base()+"index.html?ref="+S.me.ref_code);
   else if((a==="login"||a==="signup")&&(!$("em").value.trim()||!$("pw").value)){toast(lang==="en"?"Enter your email and password":"اكتب الإيميل وكلمة السر")}
