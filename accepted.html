@@ -31,8 +31,8 @@ try{sb=window.supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY)}catc
 var S={user:null,rows:[],q:"",open:false,edit:null};
 function $(i){return document.getElementById(i)}
 function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
-var TX={en:{add:"Add candidate",name:"Candidate name",phone:"Phone",email:"Email",rec:"Recruiter",tl:"Team leader",um:"Unit manager",ts:"Training starts",te:"Training ends",cd:"Commission date",save:"Save",cancel:"Cancel",search:"Search by name, phone, recruiter...",none:"No candidates yet.",login:"Log in",pw:"Password",out:"Log out",saved:"Saved",del:"Delete",edit:"Edit",sure:"Delete this candidate?",need:"Enter the candidate name",due:"Commission due",soon:"Commission soon",lang:"عربي",ttl:"Accepted Candidates",bad:"Check the dates: training end must be after the start"},
-ar:{add:"إضافة كانديديت",name:"اسم الكانديديت",phone:"الرقم",email:"الإيميل",rec:"الريكروتر",tl:"التيم ليدر",um:"اليونيت مانجر",ts:"بداية التدريب",te:"نهاية التدريب",cd:"معاد الكوميشن",save:"حفظ",cancel:"إلغاء",search:"ابحث بالاسم أو الرقم أو الريكروتر...",none:"مفيش كانديديت لسه.",login:"دخول",pw:"كلمة السر",out:"خروج",saved:"اتحفظ",del:"مسح",edit:"تعديل",sure:"تمسح الكانديديت ده؟",need:"اكتب اسم الكانديديت",due:"الكوميشن مستحق",soon:"الكوميشن قرب",lang:"English",ttl:"الكانديديت المقبولين",bad:"راجع التواريخ: نهاية التدريب لازم تبقى بعد البداية"}};
+var TX={en:{add:"Add candidate",name:"Candidate name",phone:"Phone",email:"Email",offer:"Offer name",rec:"Recruiter",tl:"Team leader",um:"Unit manager",ts:"Training starts",te:"Training ends",cd:"Commission date",save:"Save",cancel:"Cancel",search:"Search by name, phone, recruiter...",none:"No candidates yet.",login:"Log in",pw:"Password",out:"Log out",saved:"Saved",del:"Delete",edit:"Edit",sure:"Delete this candidate?",need:"Enter the candidate name",due:"Commission due",soon:"Commission soon",lang:"عربي",ttl:"Accepted Candidates",bad:"Check the dates: training end must be after the start"},
+ar:{add:"إضافة كانديديت",name:"اسم الكانديديت",phone:"الرقم",email:"الإيميل",offer:"اسم الأوفر",rec:"الريكروتر",tl:"التيم ليدر",um:"اليونيت مانجر",ts:"بداية التدريب",te:"نهاية التدريب",cd:"معاد الكوميشن",save:"حفظ",cancel:"إلغاء",search:"ابحث بالاسم أو الرقم أو الريكروتر...",none:"مفيش كانديديت لسه.",login:"دخول",pw:"كلمة السر",out:"خروج",saved:"اتحفظ",del:"مسح",edit:"تعديل",sure:"تمسح الكانديديت ده؟",need:"اكتب اسم الكانديديت",due:"الكوميشن مستحق",soon:"الكوميشن قرب",lang:"English",ttl:"الكانديديت المقبولين",bad:"راجع التواريخ: نهاية التدريب لازم تبقى بعد البداية"}};
 function T(k){return TX[lang][k]}
 function toast(m){var t=$("toast");t.textContent=m;t.style.display="block";clearTimeout(toast.t);toast.t=setTimeout(function(){t.style.display="none"},2600)}
 function fd(v){if(!v)return"";var p=v.split("-");return p[2]+"/"+p[1]+"/"+p[0]}
@@ -43,15 +43,15 @@ function form(){var r=S.edit||{};
   function inp(id,l,t,v,ex){return '<label>'+l+'</label><input id="'+id+'" type="'+(t||"text")+'" value="'+esc(v||"")+'" autocomplete="off" '+(ex||"")+'>'}
   return '<div class="card">'+inp("f_n",T("name"),"text",r.full_name)+
   '<div class="g2"><div>'+inp("f_p",T("phone"),"tel",r.phone,'dir="ltr"')+'</div><div>'+inp("f_e",T("email"),"email",r.email,'dir="ltr"')+'</div></div>'+
-  inp("f_r",T("rec"),"text",r.recruiter_name)+inp("f_t",T("tl"),"text",r.leader_name)+inp("f_u",T("um"),"text",r.unit_manager_name)+
+  inp("f_o",T("offer"),"text",r.offer_name)+inp("f_r",T("rec"),"text",r.recruiter_name)+inp("f_t",T("tl"),"text",r.leader_name)+inp("f_u",T("um"),"text",r.unit_manager_name)+
   '<div class="g2"><div>'+inp("f_ts",T("ts"),"date",r.training_start,'dir="ltr"')+'</div><div>'+inp("f_te",T("te"),"date",r.training_end,'dir="ltr"')+'</div></div>'+
   inp("f_cd",T("cd"),"date",r.commission_date,'dir="ltr"')+
   '<div class="row" style="justify-content:flex-start"><button class="btn pri" data-a="save">'+T("save")+'</button><button class="btn" data-a="cancel">'+T("cancel")+'</button></div></div>'}
-function cards(){var q=S.q.trim().toLowerCase(),L=S.rows.filter(function(r){return!q||[r.full_name,r.phone,r.email,r.recruiter_name,r.leader_name,r.unit_manager_name].join(" ").toLowerCase().indexOf(q)>-1});
+function cards(){var q=S.q.trim().toLowerCase(),L=S.rows.filter(function(r){return!q||[r.full_name,r.offer_name,r.phone,r.email,r.recruiter_name,r.leader_name,r.unit_manager_name].join(" ").toLowerCase().indexOf(q)>-1});
   if(!L.length)return'<p class="m">'+T("none")+'</p>';
   return L.map(function(r){var tag="";if(r.commission_date){var d=diffDays(r.commission_date);tag=d<=0?'<span class="tag ok">'+T("due")+'</span>':d<=7?'<span class="tag w">'+T("soon")+' · '+d+'d</span>':''}
     return '<div class="card"><div class="row"><span class="n">'+esc(r.full_name)+'</span>'+tag+'</div>'+
-    fld(T("phone"),r.phone)+fld(T("email"),r.email)+fld(T("rec"),r.recruiter_name)+fld(T("tl"),r.leader_name)+fld(T("um"),r.unit_manager_name)+
+    fld(T("offer"),r.offer_name)+fld(T("phone"),r.phone)+fld(T("email"),r.email)+fld(T("rec"),r.recruiter_name)+fld(T("tl"),r.leader_name)+fld(T("um"),r.unit_manager_name)+
     fld(T("ts"),fd(r.training_start))+fld(T("te"),fd(r.training_end))+fld(T("cd"),fd(r.commission_date))+
     '<div class="row" style="margin-top:8px;justify-content:flex-start"><button class="btn sm" data-a="edit" data-id="'+r.id+'">'+T("edit")+'</button>'+(S.boss?'<button class="btn sm" data-a="del" data-id="'+r.id+'" style="color:#ff8a80">'+T("del")+'</button>':'')+'</div></div>'}).join("")}
 function render(){document.documentElement.lang=lang;document.documentElement.dir=lang==="ar"?"rtl":"ltr";
@@ -72,7 +72,7 @@ document.addEventListener("click",async function(e){var b=e.target.closest("[dat
   else if(a==="del"){if(!confirm(T("sure")))return;var d=await sb.from("accepted_candidates").delete().eq("id",b.dataset.id);if(d.error){toast(d.error.message);return}await load();render()}
   else if(a==="save"){var n=$("f_n").value.trim();if(n.length<2){toast(T("need"));return}
     var ts=$("f_ts").value||null,te=$("f_te").value||null;if(ts&&te&&te<ts){toast(T("bad"));return}
-    var row={full_name:n.slice(0,120),phone:$("f_p").value.trim().slice(0,30)||null,email:$("f_e").value.trim().slice(0,160)||null,recruiter_name:$("f_r").value.trim().slice(0,120)||null,leader_name:$("f_t").value.trim().slice(0,120)||null,unit_manager_name:$("f_u").value.trim().slice(0,120)||null,training_start:ts,training_end:te,commission_date:$("f_cd").value||null};
+    var row={full_name:n.slice(0,120),phone:$("f_p").value.trim().slice(0,30)||null,email:$("f_e").value.trim().slice(0,160)||null,offer_name:$("f_o").value.trim().slice(0,160)||null,recruiter_name:$("f_r").value.trim().slice(0,120)||null,leader_name:$("f_t").value.trim().slice(0,120)||null,unit_manager_name:$("f_u").value.trim().slice(0,120)||null,training_start:ts,training_end:te,commission_date:$("f_cd").value||null};
     b.disabled=true;var res=S.edit?await sb.from("accepted_candidates").update(row).eq("id",S.edit.id):await sb.from("accepted_candidates").insert(row);
     if(res.error){toast(res.error.message);b.disabled=false;return}
     S.open=false;S.edit=null;await load();render();toast(T("saved"))}});
