@@ -137,6 +137,7 @@ async function loadData(){
     sb.from("applications").select("*").order("created_at",{ascending:false}).limit(1000),
     INV[S.me.role].length?sb.from("invite_codes").select("*").order("created_at",{ascending:false}).limit(200):Promise.resolve({data:[]})]);
   S.team=a[0].data||[];S.apps=a[1].data||[];S.invites=a[2].data||[];
+  S.pd={};try{var pdr=await sb.from("profile_details").select("*");(pdr.data||[]).forEach(function(x){S.pd[x.user_id]=x})}catch(e){}
   var nr=await sb.from("notifications").select("*").order("created_at",{ascending:false}).limit(60);S.notifs=nr.data||[];
   await loadAnns();await loadVQ();await loadPQ();startPoll();
 }
@@ -400,7 +401,7 @@ function candView(){
 }
 function rname(a){if(a.recruiter_name)return a.recruiter_name;var id=a.recruiter_id;if(!id){var x=S.apps.find(function(y){return y.id===a.id});id=x&&x.recruiter_id}return id?nameOf(id):""}
 function profHTML(){
-  var ar=lang==="ar",m=S.me||{};
+  var ar=lang==="ar",m=(S.pd&&S.me&&S.pd[S.me.id])||{};m.full_name=S.me.full_name;m.role=S.me.role;
   function f(id,l,v,t,ex){return'<label class="mute" style="display:block;margin-top:8px">'+l+'</label><input id="'+id+'" type="'+(t||"text")+'" value="'+esc(v==null?"":v)+'" autocomplete="off" '+(ex||"")+'>'}
   return'<div class="card"><div class="name">'+esc(m.full_name||"")+' <span class="badge">'+T("ro")[m.role]+'</span></div>'+
   '<p class="mute">'+(ar?"كل الخانات اختيارية.":"All fields are optional.")+'</p>'+
@@ -411,7 +412,7 @@ function profHTML(){
   f("pf_mail",ar?"الإيميل":"Email",m.contact_email,"email",'dir="ltr"')+
   f("pf_age",ar?"السن":"Age",m.age,"number",'dir="ltr" inputmode="numeric" min="16" max="80"')+
   '<div style="margin-top:12px"><button class="btn pri" data-act="saveprof">'+(ar?"حفظ":"Save")+'</button></div></div>'}
-function profInfo(p){var ar=lang==="ar",o=[];
+function profInfo(p){if(!isBoss())return"";p=(S.pd&&S.pd[p.id])||{};var ar=lang==="ar",o=[];
   if(p.phone)o.push((ar?"موبايل: ":"Phone: ")+esc(p.phone));if(p.wallet_number)o.push((ar?"محفظة: ":"Wallet: ")+esc(p.wallet_number));
   if(p.contact_email)o.push(esc(p.contact_email));if(p.age)o.push((ar?"سن: ":"Age: ")+esc(p.age));
   if(p.leader_name)o.push((ar?"ليدر: ":"Leader: ")+esc(p.leader_name));if(p.unit_manager_name)o.push((ar?"يونيت مانجر: ":"UM: ")+esc(p.unit_manager_name));
@@ -475,7 +476,7 @@ function teamHTML(){
     '<div class="mute">'+(p.parent_id?T("reportsTo")+": "+esc(nameOf(p.parent_id))+" · ":"")+n+" "+T("count")+" · "+(p.active?'<span class="ok">'+T("active")+'</span>':'<span class="bad">'+T("disabled")+'</span>')+'</div>'+profInfo(p)+
     ((owner&&p.role!=="owner"||S.me.role==="admin"&&RANK[p.role]>RANK.admin||S.me.role==="unit_manager"&&RANK[p.role]>RANK.unit_manager||S.me.role==="team_leader"&&RANK[p.role]>RANK.team_leader)?'<div class="grid2" style="margin-top:8px"><div><label class="mute">'+(lang==="ar"?"الدور":"Role")+'</label><select data-role="'+p.id+'">'+(owner?["admin","unit_manager","team_leader","recruiter"]:S.me.role==="admin"?["unit_manager","team_leader","recruiter"]:S.me.role==="team_leader"?["recruiter"]:["team_leader","recruiter"]).map(function(r){return'<option value="'+r+'"'+(p.role===r?" selected":"")+'>'+T("ro")[r]+'</option>'}).join("")+'</select></div><div><label class="mute">'+T("reportsTo")+'</label><select data-par="'+p.id+'">'+S.team.filter(function(x){return x.id!==p.id&&RANK[x.role]<RANK[p.role]}).map(function(x){return'<option value="'+x.id+'"'+(p.parent_id===x.id?" selected":"")+'>'+esc(x.full_name)+' ('+T("ro")[x.role]+')</option>'}).join("")+'</select></div></div>':'')+
     '<div class="row" style="margin-top:8px"><button class="btn sm" data-copy="'+esc(base()+"index.html?ref="+p.ref_code)+'">'+T("copy")+' '+T("myLink").split(" (")[0]+'</button>'+
-    (owner&&p.role!=="owner"?'<button class="btn sm" data-rv="'+p.id+'">&#127908; '+(lang==="ar"?"صلاحية الفويس: ":"Voice access: ")+(p.can_review?(lang==="ar"?"مفعّلة":"ON"):(lang==="ar"?"مقفولة":"OFF"))+'</button>':'')+(canDis(p)?'<button class="btn sm" data-toggle="'+p.id+'">'+(p.active?T("disable"):T("enable"))+'</button>':'')+'</div></div>';
+    (owner&&p.role!=="owner"?'<button class="btn sm" data-rv="'+p.id+'">&#127908; '+(lang==="ar"?"صلاحية الفويس: ":"Voice access: ")+(p.can_review?(lang==="ar"?"مفعّلة":"ON"):(lang==="ar"?"مقفولة":"OFF"))+'</button>':'')+(canDis(p)?'<button class="btn sm" data-toggle="'+p.id+'" style="color:#ff6b6b">&#128465; '+(lang==="ar"?"تعطيل ومسح من السيستم":"Disable & delete from system")+'</button>':'')+'</div></div>';
   });
   return h;
 }
@@ -526,7 +527,10 @@ document.addEventListener("click",async function(e){
   if(b.dataset.tab){S.tab=b.dataset.tab;S.gq="";if(S.tab==="vr")await loadVQ();if(S.tab==="pn")await loadPQ();if(S.tab==="an")await loadAnns();render();return}
   if(b.dataset.f!==undefined&&b.classList.contains("chip")){S.filter=b.dataset.f;renderList();return}
   if(b.dataset.copy){copy(b.dataset.copy);return}
-  if(b.dataset.toggle){var p=S.team.find(function(x){return x.id===b.dataset.toggle});var r=await sb.rpc("set_active",{p_id:p.id,p_active:!p.active});if(r.error)toast(r.error.message);else{p.active=!p.active;renderList()}return}
+  if(b.dataset.toggle){var p=S.team.find(function(x){return x.id===b.dataset.toggle});if(!p)return;var ar6=lang==="ar";
+    if(!confirm(ar6?"هتمسح "+p.full_name+" من السيستم نهائياً ومش هيقدر يدخل تاني.\nالكانديديتس والناس اللي تحته هيتنقلوا للمسؤول عنه.\nمتأكد؟":"Delete "+p.full_name+" from the system permanently? They will not be able to log in again.\nTheir candidates and team members move to their manager.\nContinue?"))return;
+    var r=await sb.rpc("remove_member",{p_id:p.id});if(r.error){toast(r.error.message);return}
+    toast(ar6?"اتمسح":"Deleted");await loadData();render();return}
   var a=b.dataset.act;
   if(a==="copylink")copy(base()+"index.html?ref="+S.me.ref_code);
   else if((a==="login"||a==="signup")&&(!$("em").value.trim()||!$("pw").value)){toast(lang==="en"?"Enter your email and password":"اكتب الإيميل وكلمة السر")}
@@ -567,7 +571,7 @@ document.addEventListener("click",async function(e){
     var pr7={p_phone:$("pf_phone").value.trim(),p_wallet:$("pf_wallet").value.trim(),p_leader:$("pf_leader").value.trim(),p_um:$("pf_um").value.trim(),p_email:$("pf_mail").value.trim(),p_age:agn};
     var rs7=await sb.rpc("update_my_profile",pr7);if(rs7.error){toast(rs7.error.message);return}
     var up7={phone:pr7.p_phone||null,wallet_number:pr7.p_wallet||null,leader_name:pr7.p_leader||null,unit_manager_name:pr7.p_um||null,contact_email:pr7.p_email||null,age:agn};
-    Object.assign(S.me,up7);var tm7=S.team.find(function(x){return x.id===S.me.id});if(tm7)Object.assign(tm7,up7);toast(T("saved"));
+    S.pd=S.pd||{};up7.user_id=S.me.id;S.pd[S.me.id]=up7;toast(T("saved"));
   }
   else if(a==="distribute"){
     var ar2=lang==="ar",ow=ownerId(),fr=function(r){return S.team.filter(function(x){return x.role===r&&x.parent_id===ow})};
