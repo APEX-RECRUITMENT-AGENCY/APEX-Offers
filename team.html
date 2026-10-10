@@ -291,6 +291,7 @@ function appView(){
   '<button class="tab'+(S.tab==="team"?" on":"")+'" data-tab="team">'+T("team")+' ('+S.team.length+')</button>'+
   (isRev()?'<button class="tab'+(S.tab==="vr"?" on":"")+'" data-tab="vr">&#127908; '+(lang==="ar"?"مراجعة الفويس":"Voice review")+' ('+(S.vq||[]).filter(function(a){return(a.voice_status||"pending")==="pending"}).length+')</button>':'')+
   (S.me&&S.me.role==="owner"?'<button class="tab'+(S.tab==="pn"?" on":"")+'" data-tab="pn">&#128196; ADDED TO PANEL ('+(S.pq||[]).filter(function(a){return(a.panel_status||"pending")!=="added"}).length+')</button>':'')+
+  '<button class="tab'+(S.tab==="me"?" on":"")+'" data-tab="me">&#128100; '+(lang==="ar"?"بروفايلي":"Profile")+'</button>'+
   '<button class="tab'+(S.tab==="an"?" on":"")+'" data-tab="an">&#128226; '+(lang==="ar"?"الأخبار":"News")+'</button>'+
   (INV[me.role].length?'<button class="tab'+(S.tab==="inv"?" on":"")+'" data-tab="inv">'+T("invites")+'</button>':'')+'</div>';
   if(S.tab==="vr"||S.tab==="nt"||S.tab==="inv")h+='<input id="gq" type="search" autocomplete="off" placeholder="&#128269; '+(lang==="ar"?"ابحث...":"Search...")+'" value="'+esc(S.gq||"")+'" style="margin-bottom:10px">';
@@ -299,7 +300,7 @@ function appView(){
 function renderList(){
   if(S.tab==="vr")setTimeout(autoEval,0);
   var el=$("list");if(!el)return;
-  if(S.tab==="apps")el.innerHTML=appsHTML();else if(S.tab==="vr")el.innerHTML=voiceHTML();else if(S.tab==="pn")el.innerHTML=panelHTML();else if(S.tab==="an")el.innerHTML=annHTML();else if(S.tab==="nt"){el.innerHTML=notifHTML();var un=S.notifs.filter(function(n){return!n.read}).map(function(n){return n.id});if(un.length)sb.from("notifications").update({read:true}).in("id",un).then(function(){S.notifs.forEach(function(n){n.read=true});setNtCount()})}else if(S.tab==="team")el.innerHTML=teamHTML();else el.innerHTML=invHTML();
+  if(S.tab==="apps")el.innerHTML=appsHTML();else if(S.tab==="vr")el.innerHTML=voiceHTML();else if(S.tab==="pn")el.innerHTML=panelHTML();else if(S.tab==="an")el.innerHTML=annHTML();else if(S.tab==="me")el.innerHTML=profHTML();else if(S.tab==="nt"){el.innerHTML=notifHTML();var un=S.notifs.filter(function(n){return!n.read}).map(function(n){return n.id});if(un.length)sb.from("notifications").update({read:true}).in("id",un).then(function(){S.notifs.forEach(function(n){n.read=true});setNtCount()})}else if(S.tab==="team")el.innerHTML=teamHTML();else el.innerHTML=invHTML();
   applyGQ();
 }
 function applyGQ(){
@@ -398,6 +399,23 @@ function candView(){
   return h;
 }
 function rname(a){if(a.recruiter_name)return a.recruiter_name;var id=a.recruiter_id;if(!id){var x=S.apps.find(function(y){return y.id===a.id});id=x&&x.recruiter_id}return id?nameOf(id):""}
+function profHTML(){
+  var ar=lang==="ar",m=S.me||{};
+  function f(id,l,v,t,ex){return'<label class="mute" style="display:block;margin-top:8px">'+l+'</label><input id="'+id+'" type="'+(t||"text")+'" value="'+esc(v==null?"":v)+'" autocomplete="off" '+(ex||"")+'>'}
+  return'<div class="card"><div class="name">'+esc(m.full_name||"")+' <span class="badge">'+T("ro")[m.role]+'</span></div>'+
+  '<p class="mute">'+(ar?"كل الخانات اختيارية.":"All fields are optional.")+'</p>'+
+  f("pf_phone",ar?"رقم الموبايل":"Phone number",m.phone,"tel",'dir="ltr"')+
+  f("pf_wallet",ar?"رقم المحفظة":"Wallet number",m.wallet_number,"text",'dir="ltr" inputmode="numeric"')+
+  f("pf_leader",ar?"اسم التيم ليدر":"Team leader name",m.leader_name)+
+  f("pf_um",ar?"اسم اليونيت مانجر":"Unit manager name",m.unit_manager_name)+
+  f("pf_mail",ar?"الإيميل":"Email",m.contact_email,"email",'dir="ltr"')+
+  f("pf_age",ar?"السن":"Age",m.age,"number",'dir="ltr" inputmode="numeric" min="16" max="80"')+
+  '<div style="margin-top:12px"><button class="btn pri" data-act="saveprof">'+(ar?"حفظ":"Save")+'</button></div></div>'}
+function profInfo(p){var ar=lang==="ar",o=[];
+  if(p.phone)o.push((ar?"موبايل: ":"Phone: ")+esc(p.phone));if(p.wallet_number)o.push((ar?"محفظة: ":"Wallet: ")+esc(p.wallet_number));
+  if(p.contact_email)o.push(esc(p.contact_email));if(p.age)o.push((ar?"سن: ":"Age: ")+esc(p.age));
+  if(p.leader_name)o.push((ar?"ليدر: ":"Leader: ")+esc(p.leader_name));if(p.unit_manager_name)o.push((ar?"يونيت مانجر: ":"UM: ")+esc(p.unit_manager_name));
+  return o.length?'<div class="mute" dir="auto" style="margin-top:4px">'+o.join(" · ")+'</div>':''}
 function ivVal(v){if(!v)return"";var d=new Date(v);if(isNaN(d))return"";var z=function(n){return("0"+n).slice(-2)};return d.getFullYear()+"-"+z(d.getMonth()+1)+"-"+z(d.getDate())+"T"+z(d.getHours())+":"+z(d.getMinutes())}
 function appsHTML(){
   var cnt={};S.apps.forEach(function(a){cnt[a.status]=(cnt[a.status]||0)+1});
@@ -454,7 +472,7 @@ function teamHTML(){
     if(!S.rf&&!tq&&p.role!==lastR){lastR=p.role;h+='<div class="name" style="font-size:16px;margin:16px 0 8px">'+T("ro")[p.role]+' ('+cntR[p.role]+')</div>'}
     var n=S.apps.filter(function(a){return a.recruiter_id===p.id}).length;
     h+='<div class="card"><div class="row"><span class="name" style="flex:1">'+esc(p.full_name)+'</span><span class="badge">'+T("ro")[p.role]+'</span></div>'+
-    '<div class="mute">'+(p.parent_id?T("reportsTo")+": "+esc(nameOf(p.parent_id))+" · ":"")+n+" "+T("count")+" · "+(p.active?'<span class="ok">'+T("active")+'</span>':'<span class="bad">'+T("disabled")+'</span>')+'</div>'+
+    '<div class="mute">'+(p.parent_id?T("reportsTo")+": "+esc(nameOf(p.parent_id))+" · ":"")+n+" "+T("count")+" · "+(p.active?'<span class="ok">'+T("active")+'</span>':'<span class="bad">'+T("disabled")+'</span>')+'</div>'+profInfo(p)+
     ((owner&&p.role!=="owner"||S.me.role==="admin"&&RANK[p.role]>RANK.admin||S.me.role==="unit_manager"&&RANK[p.role]>RANK.unit_manager||S.me.role==="team_leader"&&RANK[p.role]>RANK.team_leader)?'<div class="grid2" style="margin-top:8px"><div><label class="mute">'+(lang==="ar"?"الدور":"Role")+'</label><select data-role="'+p.id+'">'+(owner?["admin","unit_manager","team_leader","recruiter"]:S.me.role==="admin"?["unit_manager","team_leader","recruiter"]:S.me.role==="team_leader"?["recruiter"]:["team_leader","recruiter"]).map(function(r){return'<option value="'+r+'"'+(p.role===r?" selected":"")+'>'+T("ro")[r]+'</option>'}).join("")+'</select></div><div><label class="mute">'+T("reportsTo")+'</label><select data-par="'+p.id+'">'+S.team.filter(function(x){return x.id!==p.id&&RANK[x.role]<RANK[p.role]}).map(function(x){return'<option value="'+x.id+'"'+(p.parent_id===x.id?" selected":"")+'>'+esc(x.full_name)+' ('+T("ro")[x.role]+')</option>'}).join("")+'</select></div></div>':'')+
     '<div class="row" style="margin-top:8px"><button class="btn sm" data-copy="'+esc(base()+"index.html?ref="+p.ref_code)+'">'+T("copy")+' '+T("myLink").split(" (")[0]+'</button>'+
     (owner&&p.role!=="owner"?'<button class="btn sm" data-rv="'+p.id+'">&#127908; '+(lang==="ar"?"صلاحية الفويس: ":"Voice access: ")+(p.can_review?(lang==="ar"?"مفعّلة":"ON"):(lang==="ar"?"مقفولة":"OFF"))+'</button>':'')+(canDis(p)?'<button class="btn sm" data-toggle="'+p.id+'">'+(p.active?T("disable"):T("enable"))+'</button>':'')+'</div></div>';
@@ -542,6 +560,14 @@ document.addEventListener("click",async function(e){
     var r8=await sb.from("applications").insert(row8).select().single();
     if(r8.error){toast(r8.error.message);if(btn8)btn8.disabled=false;return}
     S.apps.unshift(r8.data);S.addOpen=false;recReset();render();toast(T("saved"));
+  }
+  else if(a==="saveprof"){
+    var ar7=lang==="ar",ag=$("pf_age").value.trim(),agn=ag?parseInt(ag,10):null;
+    if(ag&&(!(agn>=16&&agn<=80))){toast(ar7?"السن غير صحيح":"Invalid age");return}
+    var pr7={p_phone:$("pf_phone").value.trim(),p_wallet:$("pf_wallet").value.trim(),p_leader:$("pf_leader").value.trim(),p_um:$("pf_um").value.trim(),p_email:$("pf_mail").value.trim(),p_age:agn};
+    var rs7=await sb.rpc("update_my_profile",pr7);if(rs7.error){toast(rs7.error.message);return}
+    var up7={phone:pr7.p_phone||null,wallet_number:pr7.p_wallet||null,leader_name:pr7.p_leader||null,unit_manager_name:pr7.p_um||null,contact_email:pr7.p_email||null,age:agn};
+    Object.assign(S.me,up7);var tm7=S.team.find(function(x){return x.id===S.me.id});if(tm7)Object.assign(tm7,up7);toast(T("saved"));
   }
   else if(a==="distribute"){
     var ar2=lang==="ar",ow=ownerId(),fr=function(r){return S.team.filter(function(x){return x.role===r&&x.parent_id===ow})};
