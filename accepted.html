@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en" dir="ltr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Accepted Candidates</title><meta name="theme-color" content="#0a0a0b"><meta name="robots" content="noindex,nofollow">
+<style>
+:root{--bg:#0a0a0b;--card:#141416;--ink:#e6e8ea;--mute:#9a9ea3;--line:#2b2d31;--acc:#d91616;--ok:#6fd08c;--warn:#ffb74d;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;padding:16px}
+.w{max-width:640px;margin:0 auto}
+h1{font-size:22px;margin:0}header{display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:2px solid var(--acc);padding-bottom:12px;margin-bottom:14px}
+button,input,select,textarea{font:inherit;color:var(--ink)}
+input{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;min-width:0;margin-bottom:8px}
+label{display:block;color:var(--mute);font-size:13px;margin:6px 0 2px}
+.btn{border:1px solid var(--ink);background:none;border-radius:10px;padding:8px 14px;cursor:pointer;font-weight:600}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#fff}.btn.sm{padding:5px 10px;font-size:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+.n{font-weight:700;font-size:17px}.m{color:var(--mute);font-size:14px}
+.f{display:flex;justify-content:space-between;gap:10px;font-size:14px;padding:4px 0;border-top:1px dashed var(--line)}
+.f span:first-child{color:var(--mute);white-space:nowrap}.f span:last-child{text-align:end;word-break:break-all}
+.tag{border-radius:999px;padding:2px 10px;font-size:12px;font-weight:700;border:1px solid var(--line)}
+.tag.ok{color:var(--ok);border-color:var(--ok)}.tag.w{color:var(--warn);border-color:var(--warn)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#222;border:1px solid var(--line);padding:10px 16px;border-radius:10px;display:none;z-index:9}
+</style></head><body><div class="w">
+<header><h1 id="ttl">Accepted Candidates</h1><div><button class="btn sm" id="lg">عربي</button> <button class="btn sm" id="out" style="display:none">Log out</button></div></header>
+<div id="app"></div></div><div id="toast"></div>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+var CFG=window.APEX_CONFIG||{},sb=null,lang="en";try{lang=localStorage.getItem("accLang")||"en"}catch(e){}
+try{sb=window.supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY)}catch(e){}
+var S={user:null,rows:[],q:"",open:false,edit:null};
+function $(i){return document.getElementById(i)}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+var TX={en:{add:"Add candidate",name:"Candidate name",phone:"Phone",email:"Email",rec:"Recruiter",tl:"Team leader",um:"Unit manager",ts:"Training starts",te:"Training ends",cd:"Commission date",save:"Save",cancel:"Cancel",search:"Search by name, phone, recruiter...",none:"No candidates yet.",login:"Log in",pw:"Password",out:"Log out",saved:"Saved",del:"Delete",edit:"Edit",sure:"Delete this candidate?",need:"Enter the candidate name",due:"Commission due",soon:"Commission soon",lang:"عربي",ttl:"Accepted Candidates",bad:"Check the dates: training end must be after the start"},
+ar:{add:"إضافة كانديديت",name:"اسم الكانديديت",phone:"الرقم",email:"الإيميل",rec:"الريكروتر",tl:"التيم ليدر",um:"اليونيت مانجر",ts:"بداية التدريب",te:"نهاية التدريب",cd:"معاد الكوميشن",save:"حفظ",cancel:"إلغاء",search:"ابحث بالاسم أو الرقم أو الريكروتر...",none:"مفيش كانديديت لسه.",login:"دخول",pw:"كلمة السر",out:"خروج",saved:"اتحفظ",del:"مسح",edit:"تعديل",sure:"تمسح الكانديديت ده؟",need:"اكتب اسم الكانديديت",due:"الكوميشن مستحق",soon:"الكوميشن قرب",lang:"English",ttl:"الكانديديت المقبولين",bad:"راجع التواريخ: نهاية التدريب لازم تبقى بعد البداية"}};
+function T(k){return TX[lang][k]}
+function toast(m){var t=$("toast");t.textContent=m;t.style.display="block";clearTimeout(toast.t);toast.t=setTimeout(function(){t.style.display="none"},2600)}
+function fd(v){if(!v)return"";var p=v.split("-");return p[2]+"/"+p[1]+"/"+p[0]}
+function today(){return new Date().toISOString().slice(0,10)}
+function diffDays(v){return Math.round((new Date(v+"T00:00:00Z")-new Date(today()+"T00:00:00Z"))/864e5)}
+function fld(k,v){return v?'<div class="f"><span>'+k+'</span><span>'+esc(v)+'</span></div>':''}
+function form(){var r=S.edit||{};
+  function inp(id,l,t,v,ex){return '<label>'+l+'</label><input id="'+id+'" type="'+(t||"text")+'" value="'+esc(v||"")+'" autocomplete="off" '+(ex||"")+'>'}
+  return '<div class="card">'+inp("f_n",T("name"),"text",r.full_name)+
+  '<div class="g2"><div>'+inp("f_p",T("phone"),"tel",r.phone,'dir="ltr"')+'</div><div>'+inp("f_e",T("email"),"email",r.email,'dir="ltr"')+'</div></div>'+
+  inp("f_r",T("rec"),"text",r.recruiter_name)+inp("f_t",T("tl"),"text",r.leader_name)+inp("f_u",T("um"),"text",r.unit_manager_name)+
+  '<div class="g2"><div>'+inp("f_ts",T("ts"),"date",r.training_start,'dir="ltr"')+'</div><div>'+inp("f_te",T("te"),"date",r.training_end,'dir="ltr"')+'</div></div>'+
+  inp("f_cd",T("cd"),"date",r.commission_date,'dir="ltr"')+
+  '<div class="row" style="justify-content:flex-start"><button class="btn pri" data-a="save">'+T("save")+'</button><button class="btn" data-a="cancel">'+T("cancel")+'</button></div></div>'}
+function cards(){var q=S.q.trim().toLowerCase(),L=S.rows.filter(function(r){return!q||[r.full_name,r.phone,r.email,r.recruiter_name,r.leader_name,r.unit_manager_name].join(" ").toLowerCase().indexOf(q)>-1});
+  if(!L.length)return'<p class="m">'+T("none")+'</p>';
+  return L.map(function(r){var tag="";if(r.commission_date){var d=diffDays(r.commission_date);tag=d<=0?'<span class="tag ok">'+T("due")+'</span>':d<=7?'<span class="tag w">'+T("soon")+' · '+d+'d</span>':''}
+    return '<div class="card"><div class="row"><span class="n">'+esc(r.full_name)+'</span>'+tag+'</div>'+
+    fld(T("phone"),r.phone)+fld(T("email"),r.email)+fld(T("rec"),r.recruiter_name)+fld(T("tl"),r.leader_name)+fld(T("um"),r.unit_manager_name)+
+    fld(T("ts"),fd(r.training_start))+fld(T("te"),fd(r.training_end))+fld(T("cd"),fd(r.commission_date))+
+    '<div class="row" style="margin-top:8px;justify-content:flex-start"><button class="btn sm" data-a="edit" data-id="'+r.id+'">'+T("edit")+'</button>'+(S.boss?'<button class="btn sm" data-a="del" data-id="'+r.id+'" style="color:#ff8a80">'+T("del")+'</button>':'')+'</div></div>'}).join("")}
+function render(){document.documentElement.lang=lang;document.documentElement.dir=lang==="ar"?"rtl":"ltr";
+  $("ttl").textContent=T("ttl");$("lg").textContent=T("lang");$("out").textContent=T("out");$("out").style.display=S.user?"":"none";
+  var a=$("app");
+  if(!sb){a.innerHTML='<p class="m">Config error</p>';return}
+  if(!S.user){a.innerHTML='<div class="card"><label>Email</label><input id="em" type="email" dir="ltr" autocomplete="username"><label>'+T("pw")+'</label><input id="pw" type="password" dir="ltr" autocomplete="current-password"><button class="btn pri" data-a="login">'+T("login")+'</button></div>';return}
+  a.innerHTML='<div class="row" style="margin-bottom:10px"><button class="btn pri" data-a="add">+ '+T("add")+'</button></div>'+(S.open?form():'')+'<input id="q" placeholder="'+esc(T("search"))+'" value="'+esc(S.q)+'"><div id="list">'+cards()+'</div>'}
+async function load(){var r=await sb.from("accepted_candidates").select("*").order("commission_date",{ascending:true,nullsFirst:false}).order("created_at",{ascending:false});
+  if(r.error){toast(r.error.message);return}S.rows=r.data||[]}
+async function boot(){if(!sb){render();return}var s=await sb.auth.getSession();S.user=s.data.session?s.data.session.user:null;
+  if(S.user){var b=await sb.rpc("is_boss");S.boss=!!b.data;await load()}render()}
+document.addEventListener("click",async function(e){var b=e.target.closest("[data-a]");if(!b)return;var a=b.dataset.a;
+  if(a==="login"){var r=$("em").value.trim(),p=$("pw").value;if(!r||!p){toast(T("pw"));return}var x=await sb.auth.signInWithPassword({email:r,password:p});if(x.error)toast(x.error.message);else boot()}
+  else if(a==="add"){S.open=!S.open;S.edit=null;render()}
+  else if(a==="cancel"){S.open=false;S.edit=null;render()}
+  else if(a==="edit"){S.edit=S.rows.find(function(x){return x.id===b.dataset.id});S.open=true;render();window.scrollTo(0,0)}
+  else if(a==="del"){if(!confirm(T("sure")))return;var d=await sb.from("accepted_candidates").delete().eq("id",b.dataset.id);if(d.error){toast(d.error.message);return}await load();render()}
+  else if(a==="save"){var n=$("f_n").value.trim();if(n.length<2){toast(T("need"));return}
+    var ts=$("f_ts").value||null,te=$("f_te").value||null;if(ts&&te&&te<ts){toast(T("bad"));return}
+    var row={full_name:n.slice(0,120),phone:$("f_p").value.trim().slice(0,30)||null,email:$("f_e").value.trim().slice(0,160)||null,recruiter_name:$("f_r").value.trim().slice(0,120)||null,leader_name:$("f_t").value.trim().slice(0,120)||null,unit_manager_name:$("f_u").value.trim().slice(0,120)||null,training_start:ts,training_end:te,commission_date:$("f_cd").value||null};
+    b.disabled=true;var res=S.edit?await sb.from("accepted_candidates").update(row).eq("id",S.edit.id):await sb.from("accepted_candidates").insert(row);
+    if(res.error){toast(res.error.message);b.disabled=false;return}
+    S.open=false;S.edit=null;await load();render();toast(T("saved"))}});
+document.addEventListener("input",function(e){if(e.target.id==="q"){S.q=e.target.value;$("list").innerHTML=cards()}});
+$("lg").onclick=function(){lang=lang==="en"?"ar":"en";try{localStorage.setItem("accLang",lang)}catch(e){}render()};
+$("out").onclick=async function(){await sb.auth.signOut();S.user=null;S.rows=[];render()};
+boot();
+</script></body></html>
