@@ -386,13 +386,25 @@ var SDT={
  "CCS":["Site interview date","Name","Phone number","Email","Account","Age","Graduation status","English level","Vocaroo link"],
  "Leadbull":["Date","Interview date","Full name","Phone number","Email","Graduation Status","Age","Nationality"],
  "UCC":["Site interview Date","Name","Phone Number","Email","Vocaroo Link","Age"],
- "LPM":["Interview date","Interview time","Full Name","Title","Phone number","Email","Graduation Status","Age","Nationality"]
+ "LPM":["Interview date","Interview time","Full Name","Title","Phone number","Email","Graduation Status","Age","Nationality"],
+ "WGS":["Date","Candidate name","phone number","email","Candidate previous Experience (company, title, account, period)","offer","Vn script link"],
+ "Atain":["interview date","name","number","email","lang","Online/onsite","graduation"],
+ "Cxperts":["Interview Date","Interview Time","Full name","Phone number","Exp message","Email","English level","Graduation Status","Age","Nationality"],
+ "LTS":["Site Date","Name","Phone Number","Email","ID number","Grad status","account"],
+ "Minister Fitness Pharma":["Site date","Name","Phone Number","email","time","Position"],
+ "Telephonic":["Date","Time","Name","Number","Gmail","language"],
+ "Vintrin Clinic":["Site date","Name","Phone Number","email","cv","vacaroo link","time"],
+ "Winirix":["Date","Full Name","Phone Number","Email","Graduation Statues","Nationality","Age","CV + Exp message","Introduction in English"],
+ "Concentrix":["Date","Name","Phone Number","Email","Account","Graduation status","Age","Vocaroo Link","Site interview date"],
+ "Dial Expert":["Date","Name","Phone Number","Email","Graduation status","Age","Vocaroo Link","Exp message","Interview date"],
+ "Total Trip Planners":["Date","Name","Phone Number","Email","Graduation status","Age","Vocaroo Link","Interview date"],
+ "Crystal Reach":["Date","Name","Phone Number","Email","Graduation status","Age","Vocaroo Link","Interview date"]
 };
 function sdN(x){return String(x||"").toLowerCase().replace(/[^a-z0-9]+/g,"")}
 function sdTab(a){
   var c=sdN(a.job_company),t=sdN(a.job_title);
   if(c.indexOf("geekycx")===0||c==="geeky")return t.indexOf("spanish")>=0?"Geeky CX Spanish":"Geeky CX";
-  var m={ttc:"TTC",ttec:"TTEC",teleperformance:"TP",tp:"TP",alorica:"Alorica",aces:"ACES",eclerx:"eClerx",contactcentersource:"CCS",ccs:"CCS",leadbull:"Leadbull",ucc:"UCC",lpm:"LPM"};
+  var m={ttc:"TTC",ttec:"TTEC",teleperformance:"TP",tp:"TP",alorica:"Alorica",aces:"ACES",eclerx:"eClerx",contactcentersource:"CCS",ccs:"CCS",leadbull:"Leadbull",ucc:"UCC",lpm:"LPM",winglobalsolutions:"WGS",wgs:"WGS",atain:"Atain",cxperts:"Cxperts",lts:"LTS",ministerfitnesspharma:"Minister Fitness Pharma",telephonic:"Telephonic",vintrinclinic:"Vintrin Clinic",winirix:"Winirix",concentrix:"Concentrix",dialexpert:"Dial Expert",totaltripplanners:"Total Trip Planners",crystalreach:"Crystal Reach"};
   return m[c]||null;
 }
 function sdDefault(label,a){
@@ -401,10 +413,12 @@ function sdDefault(label,a){
   if(/^(date|formdate)$/.test(h))return d10(new Date());
   if(/interviewdate|sitedate|siteinterviewdate/.test(h))return iv?d10(iv):"";
   if(/^(interviewtime|time)$/.test(h))return iv?(iv.getHours()%12||12)+":"+pad(iv.getMinutes())+" "+(iv.getHours()>=12?"PM":"AM"):"";
+  if(/^(cv|idnumber|onlineonsite|introductioninenglish)$/.test(h))return"";
   if(/spanish/.test(h))return a.voice_link2||"";
+  if(/vacaroo|vnscript/.test(h))return a.voice_link||"";
   if(/vocar|voicenote/.test(h))return a.voice_link||"";
   if(/expmessage|experience|previous/.test(h))return a.experience||"";
-  if(/^(fullname|name)$/.test(h))return a.full_name||"";
+  if(/^(fullname|name|candidatename)$/.test(h))return a.full_name||"";
   if(/phone|^number$/.test(h))return a.phone||"";
   if(/email|gmail/.test(h))return a.email||"";
   if(/^age$/.test(h))return a.age||"";
@@ -412,12 +426,20 @@ function sdDefault(label,a){
   if(/englishlevel/.test(h))return a.english_level||"";
   if(/^(language|lang)$/.test(h))return a.voice_lang||"";
   if(/location/.test(h))return a.location||"";
-  if(/^(account|accountname|title)$/.test(h))return a.job_title||"";
+  if(/^(account|accountname|title|position|offer)$/.test(h))return a.job_title||"";
   return"";
+}
+var SDOFF=[["TTC","US Telesales"],["Total Trip Planners","Back Office"],["Crystal Reach","Telesales"],["Leadbull","Canadian Telesales [HVAC]"],["Geeky CX","Debt Settlement Sales"],["Geeky CX","English Customer Service (Inbound/Outbound)"],["Geeky CX","English Back Office (Admin work & Emails)"],["ACES","Cold-calling Telesales Agent"],["TTEC","English Customer Service"],["TTEC","Dutch Sales Exp"],["TTEC","Portuguese Sales Exp"],["TTEC","Spanish Sales Exp"],["TTEC","French Sales Exp"],["Alorica","English US Customer Support / Airline"],["eClerx","Customer Support"],["Geeky CX","Spanish Customer Service"],["Cxperts","Staffing Sales / Lead Generation"],["Teleperformance","English Call Center"],["Teleperformance","French Technical Support – Voice (Bilingual)"],["Teleperformance","French Technical Support – Voice & Email (Bilingual)"],["Telephonic","French & English Bilingual Customer Service"],["LPM","Sales Agent / Telesales"],["LTS","Hotel Surveys – Outbound"],["LTS","Sales Agent – Inbound Vacation Packages"],["Alorica","French Bilingual Customer Service"],["Atain","English Travel Advisor – GDS"],["Atain","French Travel Advisor – GDS"],["Minister Fitness Pharma","Sales Agent"],["Vintrin Clinic","Sales Representative – Night/Overnight"],["WINIRIX","Appointment Setter"],["TTEC","Italian Sales Exp"],["UCC","Call Center Agent – US Account"],["Contact Center Source","Lead Verification Agent (Sales)"],["Dial Expert","US Financial Advisor / Closer Account"]];
+function sdPick(a){
+  var ar=lang==="ar";
+  var o="<option value=\"\">"+(ar?"اختار الأوفر…":"Choose the offer…")+"</option>";
+  SDOFF.forEach(function(x,i){o+="<option value=\""+i+"\">"+esc(x[0]+" · "+x[1])+"</option>"});
+  return "<div class=\"card\"><div class=\"mute\">"+(ar?"تقديم عام اتقبل — اختار الأوفر ليه:":"General application accepted — assign an offer:")+"</div><select id=\"sd_offer\" style=\"margin-top:8px\">"+o+"</select><div style=\"margin-top:10px\"><button class=\"btn pri\" data-act=\"sdoffer\" data-sdid=\""+a.id+"\">"+(ar?"تأكيد الأوفر":"Assign offer")+"</button></div></div>";
 }
 function sdHTML(a){
   var ar=lang==="ar",tab=sdTab(a);
   if(a.status!=="accepted")return"";
+  if(!a.job_company&&!a.job_title)return sdPick(a);
   if(!tab)return'<div class="card"><div class="mute">'+(ar?"مفيش شيت في الـ Panel للأوفر ده":"No Panel sheet for this offer")+'</div></div>';
   var sent=a.sheet_sent_at?'<span class="badge">'+(ar?"اتبعت للشيت":"Sent to sheet")+'</span>':"";
   var h='<div class="card"><button class="btn pri sm" data-act="sdopen">&#128221; '+(ar?"كل الداتا":"All the data")+'</button> '+sent;
@@ -604,10 +626,15 @@ document.addEventListener("click",async function(e){
     if(r3.error)toast(errMsg(r3.error));else boot();
   }
   else if(a==="candback"){closeCand()}
+  else if(a==="sdoffer"){
+    var oi=$("sd_offer").value;if(oi===""){toast(lang==="ar"?"اختار الأوفر":"Choose an offer");return}
+    b.disabled=true;var of=SDOFF[+oi],orr=await upd(b.dataset.sdid,{job_company:of[0],job_title:of[1]});b.disabled=false;
+    if(orr){render();toast(lang==="ar"?"اتحدد الأوفر":"Offer assigned")}
+  }
   else if(a==="sdopen"){S.sdOpen=S.sdOpen===S.cand?null:S.cand;render()}
   else if(a==="sdsave"){
     var sdid=b.dataset.sdid,sdap=S.apps.find(function(x){return x.id===sdid}),sdo={},sdok=false;
-    document.querySelectorAll("[data-sdl]").forEach(function(i){var v=i.value.trim();if(v)sdo[i.getAttribute("data-sdl")]=v;if(/phone|number/i.test(i.getAttribute("data-sdl"))&&v)sdok=true});
+    document.querySelectorAll("[data-sdl]").forEach(function(i){var v=i.value.trim();if(v)sdo[i.getAttribute("data-sdl")]=v;if(/phone|^number$/i.test(i.getAttribute("data-sdl"))&&v)sdok=true});
     if(!sdok){toast(lang==="ar"?"اكتب رقم التليفون":"Enter the phone number");return}
     b.disabled=true;
     var sdr=await upd(sdid,{sheet_data:sdo});
