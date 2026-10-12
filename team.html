@@ -372,6 +372,67 @@ function chainRows(a,full,ar){
     kv(ar?"اليونيت":"Unit",out.um&&out.um.unit_name?esc(out.um.unit_name):"");
 }
 function kv(k,v){return v?'<div class="row" style="justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line)"><span class="mute">'+k+'</span><span style="text-align:end">'+v+'</span></div>':''}
+
+/* ===== "All the data" form: fields exactly as the Apex Panel sheet tab of the offer ===== */
+var SDT={
+ "Alorica":["Date","Full Name","Phone number","Email","Account"],
+ "TTC":["Date","Name","Phone Number","Email","Graduation status","Age","Vocaroo Link","Site interview date"],
+ "TTEC":["Site interview Date","Name","Phone Number","Email","Vocaroo Link","Age"],
+ "TP":["Site date","Full Name","Phone number","ID","Language","E-mail","Graduation statues","Time"],
+ "Geeky CX":["Date","Voice note Vocaro in English","Exp message","Full name","Phone number","account name","Email","Graduation Status","Age","Nationality"],
+ "Geeky CX Spanish":["Date","Voice note link on Vocaro English / Script","Voice note link on Vocaro Spanish / Script","Introduction in English","Candidate previous Experience (company, title, account, period)","Full name","Phone number","Email","Graduation Status","Age","Nationality"],
+ "ACES":["date","Interview Time","Full name","Phone number","Email","Location","English level","Fill out the form? yes or no","Graduation Status","Age","Nationality"],
+ "eClerx":["Site date","Full Name","Phone number","Language","E-mail","Nationality","Graduation Status & Major","Time","ID"],
+ "CCS":["Site interview date","Name","Phone number","Email","Account","Age","Graduation status","English level","Vocaroo link"],
+ "Leadbull":["Date","Interview date","Full name","Phone number","Email","Graduation Status","Age","Nationality"],
+ "UCC":["Site interview Date","Name","Phone Number","Email","Vocaroo Link","Age"],
+ "LPM":["Interview date","Interview time","Full Name","Title","Phone number","Email","Graduation Status","Age","Nationality"]
+};
+function sdN(x){return String(x||"").toLowerCase().replace(/[^a-z0-9]+/g,"")}
+function sdTab(a){
+  var c=sdN(a.job_company),t=sdN(a.job_title);
+  if(c.indexOf("geekycx")===0||c==="geeky")return t.indexOf("spanish")>=0?"Geeky CX Spanish":"Geeky CX";
+  var m={ttc:"TTC",ttec:"TTEC",teleperformance:"TP",tp:"TP",alorica:"Alorica",aces:"ACES",eclerx:"eClerx",contactcentersource:"CCS",ccs:"CCS",leadbull:"Leadbull",ucc:"UCC",lpm:"LPM"};
+  return m[c]||null;
+}
+function sdDefault(label,a){
+  var h=sdN(label),iv=a.interview_at?new Date(a.interview_at):null,pad=function(n){return(n<10?"0":"")+n};
+  function d10(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
+  if(/^(date|formdate)$/.test(h))return d10(new Date());
+  if(/interviewdate|sitedate|siteinterviewdate/.test(h))return iv?d10(iv):"";
+  if(/^(interviewtime|time)$/.test(h))return iv?(iv.getHours()%12||12)+":"+pad(iv.getMinutes())+" "+(iv.getHours()>=12?"PM":"AM"):"";
+  if(/spanish/.test(h))return a.voice_link2||"";
+  if(/vocar|voicenote/.test(h))return a.voice_link||"";
+  if(/expmessage|experience|previous/.test(h))return a.experience||"";
+  if(/^(fullname|name)$/.test(h))return a.full_name||"";
+  if(/phone|^number$/.test(h))return a.phone||"";
+  if(/email|gmail/.test(h))return a.email||"";
+  if(/^age$/.test(h))return a.age||"";
+  if(/grad/.test(h))return a.graduation||"";
+  if(/englishlevel/.test(h))return a.english_level||"";
+  if(/^(language|lang)$/.test(h))return a.voice_lang||"";
+  if(/location/.test(h))return a.location||"";
+  if(/^(account|accountname|title)$/.test(h))return a.job_title||"";
+  return"";
+}
+function sdHTML(a){
+  var ar=lang==="ar",tab=sdTab(a);
+  if(a.status!=="accepted")return"";
+  if(!tab)return'<div class="card"><div class="mute">'+(ar?"مفيش شيت في الـ Panel للأوفر ده":"No Panel sheet for this offer")+'</div></div>';
+  var sent=a.sheet_sent_at?'<span class="badge">'+(ar?"اتبعت للشيت":"Sent to sheet")+'</span>':"";
+  var h='<div class="card"><button class="btn pri sm" data-act="sdopen">&#128221; '+(ar?"كل الداتا":"All the data")+'</button> '+sent;
+  if(S.sdOpen===a.id){
+    var saved=a.sheet_data||{},seen={},rows="";
+    SDT[tab].forEach(function(l){
+      var k=sdN(l);if(seen[k])return;seen[k]=1;
+      var v=saved[l]!=null?saved[l]:sdDefault(l,a);
+      rows+='<label class="mute" style="display:block;margin-top:8px">'+esc(l)+'</label><input data-sdl="'+esc(l)+'" value="'+esc(v)+'" dir="auto" autocomplete="off">';
+    });
+    h+='<div class="mute" style="margin-top:8px">'+(ar?"الشيت: ":"Sheet: ")+esc(tab)+'</div>'+rows+
+       '<div style="margin-top:12px"><button class="btn pri" data-act="sdsave" data-sdid="'+a.id+'">'+(ar?"حفظ وإرسال للشيت":"Save and send to sheet")+'</button></div>';
+  }
+  return h+'</div>';
+}
 function candView(){
   var ar=lang==="ar",a=findCand(S.cand),full=S.apps.find(function(x){return x.id===S.cand}),
   back='<button class="btn sm" data-act="candback" style="margin-bottom:12px">'+(ar?"\u2192 رجوع":"\u2190 Back")+'</button>';
@@ -389,6 +450,7 @@ function candView(){
     (isRev()?aiBox(a):'')+
     (a.voice_note?'<div class="mute" style="margin-top:6px">'+esc(a.voice_note)+'</div>':'')+'</div>';
   }
+  h+=sdHTML(full||a);
   if(full){
     var owner=isBoss();
     h+='<div class="card"><div class="grid2"><select data-st="'+a.id+'">'+ST.map(function(s2){return'<option value="'+s2+'"'+(a.status===s2?" selected":"")+'>'+T("st")[s2]+'</option>'}).join("")+'</select>'+
@@ -542,6 +604,16 @@ document.addEventListener("click",async function(e){
     if(r3.error)toast(errMsg(r3.error));else boot();
   }
   else if(a==="candback"){closeCand()}
+  else if(a==="sdopen"){S.sdOpen=S.sdOpen===S.cand?null:S.cand;render()}
+  else if(a==="sdsave"){
+    var sdid=b.dataset.sdid,sdap=S.apps.find(function(x){return x.id===sdid}),sdo={},sdok=false;
+    document.querySelectorAll("[data-sdl]").forEach(function(i){var v=i.value.trim();if(v)sdo[i.getAttribute("data-sdl")]=v;if(/phone|number/i.test(i.getAttribute("data-sdl"))&&v)sdok=true});
+    if(!sdok){toast(lang==="ar"?"اكتب رقم التليفون":"Enter the phone number");return}
+    b.disabled=true;
+    var sdr=await upd(sdid,{sheet_data:sdo});
+    b.disabled=false;
+    if(sdr){S.sdOpen=null;render();toast(lang==="ar"?"اتحفظ واتبعت للشيت":"Saved and sent to the sheet")}
+  }
   else if(a==="addcand"){S.addOpen=!S.addOpen;recReset();renderList();if(S.addOpen){recUI();if($("ac_n"))$("ac_n").focus()}}
   else if(a==="recstart")await recStart();
   else if(a==="recstop")recStop();
