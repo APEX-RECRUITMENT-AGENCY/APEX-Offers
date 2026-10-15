@@ -151,7 +151,7 @@ async function loadData(){
   S.team=a[0].data||[];S.apps=a[1].data||[];S.invites=a[2].data||[];
   S.pd={};try{var pdr=await sb.from("profile_details").select("*");(pdr.data||[]).forEach(function(x){S.pd[x.user_id]=x})}catch(e){}
   var nr=await sb.from("notifications").select("*").order("created_at",{ascending:false}).limit(60);S.notifs=nr.data||[];
-  await loadAnns();await loadVQ();await loadPQ();await loadPD();startPoll();
+  await loadAnns();await loadVQ();await loadPQ();await loadPD();await loadComm();startPoll();
 }
 var pollT=null;
 function canDis(p){var m=S.me.role;if(!p||p.id===S.me.id||p.role==="owner")return false;if(m==="owner")return true;return RANK[p.role]>RANK[m]&&m!=="recruiter"}
@@ -191,7 +191,7 @@ function startPoll(){
   },20000);
 }
 function vlabel(k){var ar=lang==="ar",m={pending:ar?"في الانتظار":"Pending",accepted:ar?"مقبول":"Accepted",rejected:ar?"مرفوض":"Rejected",repeat:ar?"إعادة":"Repeat",dup_lang:ar?"تكرار ولغة معلّقة":"Duplicate and language pending",duplicate:ar?"مكرر":"Duplicate",lang_pending:ar?"لغة معلّقة":"Language pending"};return m[k]||k}
-function nTitle(n){var ar=lang==="ar",k=n.kind;if(k==="announcement")return"\ud83d\udce2 "+(n.cand_name||"");return(k==="accepted"?"\u2705 ":k==="rejected"?"\u274c ":(k==="dup_lang"||k==="lang_pending")?"\u23f3 ":"\ud83d\udd01 ")+(ar?"الفويس نوت بتاع ":"Voice note of ")+(n.cand_name||"")+": "+vlabel(k)}
+function nTitle(n){var ar=lang==="ar",k=n.kind;if(k&&k.indexOf("st_")===0){var sk=k.slice(3);return(SI[sk]||"\ud83d\udd14")+" "+(ar?"حالة ":"Status of ")+(n.cand_name||"")+": "+(T("st")[sk]||sk)}if(k==="announcement")return"\ud83d\udce2 "+(n.cand_name||"");return(k==="accepted"?"\u2705 ":k==="rejected"?"\u274c ":(k==="dup_lang"||k==="lang_pending")?"\u23f3 ":"\ud83d\udd01 ")+(ar?"الفويس نوت بتاع ":"Voice note of ")+(n.cand_name||"")+": "+vlabel(k)}
 function voiceBtn1(a,lbl){var ar=lang==="ar";if(a.voice_link&&/^https:\/\/(www\.)?(vocaroo\.com|voca\.ro)\//i.test(a.voice_link))return'<a class="btn sm" href="'+esc(a.voice_link)+'" target="_blank" rel="noopener noreferrer">&#127908; '+(ar?"افتح لينك Vocaroo":"Open Vocaroo link")+'</a>';if(a.voice_path)return'<button class="btn sm" data-voice="'+esc(a.voice_path)+'" data-vid="'+a.id+'">&#127908; '+lbl+(a.voice_secs?" ("+a.voice_secs+"s)":"")+'</button> <button class="btn sm" data-pdl="'+esc(a.voice_path)+'">&#11015; '+(ar?"تحميل":"Download")+'</button>';return''}
 function voiceBtn(a,lbl){var h=voiceBtn1(a,lbl);if(!(a.voice_path2||a.voice_link2))return h;var ar=lang==="ar",L=a.voice_lang||"2",b2;
   if(a.voice_link2&&/^https:\/\/(www\.)?(vocaroo\.com|voca\.ro)\//i.test(a.voice_link2))b2='<a class="btn sm" href="'+esc(a.voice_link2)+'" target="_blank" rel="noopener noreferrer">&#127908; '+esc(L)+' Vocaroo</a>';
@@ -229,6 +229,7 @@ function pvHTML1(a){var ar=lang==="ar";
   '<div class="row" style="margin-top:6px"><input data-vlin="'+a.id+'" dir="ltr" placeholder="https://voca.ro/..." style="flex:1;min-width:0"><button class="btn sm pri" data-vls="'+a.id+'">'+(ar?"حفظ":"Save")+'</button></div></div>'}
 function plabel(k){var ar=lang==="ar",m={pending:ar?"لسه متضافش":"Not added yet",missing:ar?"لسه ناقص تفاصيل":"Missing details",added:ar?"Added \u2705":"Added \u2705"};return m[k]||k}
 
+async function loadComm(){S.comm={};if(!S.me||S.me.role==="admin")return;try{var r=await sb.from("app_commission").select("app_id,amount");if(!r.error&&r.data)r.data.forEach(function(x){S.comm[x.app_id]=x.amount||""})}catch(e){}}
 async function loadPD(){if(!S.me||S.me.role!=="owner"){S.pd=[];return}var r=await sb.rpc("panel_daily");if(!r.error&&r.data)S.pd=r.data}
 function dKey(d){return String(d).slice(0,10)}
 function dToday(){return new Date().toLocaleDateString("en-CA",{timeZone:"Africa/Cairo"})}
@@ -487,6 +488,13 @@ function sdHTML(a){
   }
   return h+'</div>';
 }
+function commHTML(a){
+  var ar=lang==="ar",own=S.me&&S.me.role==="owner",v=(S.comm||{})[a.id]||"";
+  if(!S.me||S.me.role==="admin")return"";
+  if(!own&&!v)return"";
+  if(own)return'<div class="card"><div class="mute">&#128176; '+(ar?"الكوميشن المستحق (إنت بس اللي بتعدّله)":"Commission due (only you can edit)")+'</div><div class="row" style="margin-top:6px"><input id="cm_v" value="'+esc(v)+'" dir="auto" style="flex:1" autocomplete="off"><button class="btn pri sm" data-act="commsave" data-cid="'+a.id+'">'+(ar?"حفظ":"Save")+'</button></div></div>';
+  return'<div class="card"><div class="mute">&#128176; '+(ar?"الكوميشن المستحق":"Commission due")+'</div><div class="name" style="margin-top:4px">'+esc(v)+'</div></div>';
+}
 function candView(){
   var ar=lang==="ar",a=findCand(S.cand),full=S.apps.find(function(x){return x.id===S.cand}),
   back='<button class="btn sm" data-act="candback" style="margin-bottom:12px">'+(ar?"\u2192 رجوع":"\u2190 Back")+'</button>';
@@ -497,6 +505,7 @@ function candView(){
   var nsx=a.night_shifts==="yes"?(ar?"موافق":"Yes"):a.night_shifts==="no"?(ar?"لا":"No"):"";
   var rec=rname(a)||(full&&full.recruiter_id?nameOf(full.recruiter_id):"")||(ar?"غير معيّن":"Unassigned");
   h+='<div class="card">'+kv(ar?"الأوفر":"Offer",job)+kv(ar?"الريكروتر":"Recruiter",esc(rec))+chainRows(a,full,ar)+kv(T("age"),a.age?esc(a.age):"")+kv(T("eng"),esc(a.english_level||""))+kv(T("grad"),esc(a.graduation||""))+kv(ar?"المنطقة":"Location",esc(a.location||""))+kv(ar?"شيفت ليلي":"Night shifts",nsx)+kv(ar?"ميعاد الإنترفيو":"Interview",a.interview_at?fmt(a.interview_at):"")+'</div>';
+  h+=commHTML(a);
   if(a.experience)h+='<div class="card"><div class="mute">'+(ar?"الخبرة":"Experience")+'</div><div style="white-space:pre-wrap;margin-top:4px">'+esc(a.experience)+'</div></div>';
   if(a.voice_path||a.voice_link){
     h+='<div class="card"><div class="name" style="font-size:16px">&#127908; '+(ar?"الفويس نوت":"Voice note")+(a.voice_path?' <span class="badge">'+vlabel(a.voice_status||"pending")+'</span>':'')+'</div>'+
@@ -573,6 +582,7 @@ function unitsHTML(){
   if(free.length)h+='<div class="card"><div class="name">'+(ar?"من غير يونيت":"Not in a unit")+' ('+free.length+')</div>'+free.map(function(p){return'<div class="mute">'+esc(p.full_name)+' · '+T("ro")[p.role]+'</div>'}).join("")+(ums.length&&isBoss()?'<button class="btn pri sm" style="margin-top:10px" data-act="distribute">'+(ar?"وزّعهم تلقائي على اليونتات":"Auto-distribute to units")+'</button>':'')+'</div>';
   return h||'<p class="mute">'+(ar?"لسه مفيش يونتات.":"No units yet.")+'</p>';
 }
+function hiresOf(id){var ids={};ids[id]=1;var ch=true;while(ch){ch=false;S.team.forEach(function(p){if(p.parent_id&&ids[p.parent_id]&&!ids[p.id]){ids[p.id]=1;ch=true}})}return S.apps.filter(function(a){return a.status==="hired"&&a.recruiter_id&&ids[a.recruiter_id]}).length}
 function teamHTML(){
   var tq=(S.tq||"").trim().toLowerCase(),ar0=lang==="ar";
   var h='<input id="tq" placeholder="'+esc(ar0?"ابحث عن عضو بالاسم أو الدور أو اليونيت":"Search team by name, role or unit")+'" value="'+esc(S.tq||"")+'" style="margin-bottom:10px">'+rfChips()+(tq||S.rf?"":unitsHTML()),owner=S.me.role==="owner";
@@ -589,7 +599,7 @@ function teamHTML(){
     if(!S.rf&&!tq&&p.role!==lastR){lastR=p.role;h+='<div class="name" style="font-size:16px;margin:16px 0 8px">'+rl(p.role)+' ('+cntR[p.role]+')</div>'}
     var n=S.apps.filter(function(a){return a.recruiter_id===p.id}).length;
     h+='<div class="card mcard rc-'+p.role+'"><div class="row" style="gap:12px"><span class="av">'+esc((p.full_name||"?").trim().charAt(0).toUpperCase())+'</span><span class="name" style="flex:1">'+esc(p.full_name)+'</span><span class="badge" style="color:var(--sc);border:1px solid var(--sc)">'+rl(p.role)+'</span></div>'+
-    '<div class="mute" style="margin-top:6px">'+(p.parent_id?"\u2197\ufe0f "+T("reportsTo")+": "+esc(nameOf(p.parent_id))+" · ":"")+'<span class="pill">\ud83d\udccb '+n+" "+T("count")+'</span> \u00b7 '+(p.active?'<span class="ok">\u2705 '+T("active")+'</span>':'<span class="bad">\u274c '+T("disabled")+'</span>')+'</div>'+profInfo(p)+
+    '<div class="mute" style="margin-top:6px">'+(p.parent_id?"\u2197\ufe0f "+T("reportsTo")+": "+esc(nameOf(p.parent_id))+" · ":"")+'<span class="pill">\ud83c\udf89 '+hiresOf(p.id)+' Hires</span> <span class="pill">\ud83d\udccb '+n+" "+T("count")+'</span> \u00b7 '+(p.active?'<span class="ok">\u2705 '+T("active")+'</span>':'<span class="bad">\u274c '+T("disabled")+'</span>')+'</div>'+profInfo(p)+
     ((owner&&p.role!=="owner"||S.me.role==="admin"&&RANK[p.role]>RANK.admin||S.me.role==="unit_manager"&&RANK[p.role]>RANK.unit_manager||S.me.role==="team_leader"&&RANK[p.role]>RANK.team_leader)?'<div class="grid2" style="margin-top:8px"><div><label class="mute">'+(lang==="ar"?"الدور":"Role")+'</label><select data-role="'+p.id+'">'+(owner?["admin","unit_manager","team_leader","recruiter"]:S.me.role==="admin"?["unit_manager","team_leader","recruiter"]:S.me.role==="team_leader"?["recruiter"]:["team_leader","recruiter"]).map(function(r){return'<option value="'+r+'"'+(p.role===r?" selected":"")+'>'+T("ro")[r]+'</option>'}).join("")+'</select></div><div><label class="mute">'+T("reportsTo")+'</label><select data-par="'+p.id+'">'+S.team.filter(function(x){return x.id!==p.id&&RANK[x.role]<RANK[p.role]}).map(function(x){return'<option value="'+x.id+'"'+(p.parent_id===x.id?" selected":"")+'>'+esc(x.full_name)+' ('+T("ro")[x.role]+')</option>'}).join("")+'</select></div></div>':'')+
     '<div class="row" style="margin-top:8px"><button class="btn sm" data-copy="'+esc(base()+"index.html?ref="+p.ref_code)+'">'+T("copy")+' '+T("myLink").split(" (")[0]+'</button>'+
     (owner&&p.role!=="owner"?'<button class="btn sm" data-rv="'+p.id+'">&#127908; '+(lang==="ar"?"صلاحية الفويس: ":"Voice access: ")+(p.can_review?(lang==="ar"?"مفعّلة":"ON"):(lang==="ar"?"مقفولة":"OFF"))+'</button>':'')+(canDis(p)?'<button class="btn sm" data-toggle="'+p.id+'" style="color:#ff6b6b">&#128465; '+(lang==="ar"?"تعطيل ومسح من السيستم":"Disable & delete from system")+'</button>':'')+'</div></div>';
@@ -685,6 +695,12 @@ document.addEventListener("click",async function(e){
     var oi=$("sd_offer").value;if(oi===""){toast(lang==="ar"?"اختار الأوفر":"Choose an offer");return}
     b.disabled=true;var of=SDOFF[+oi],orr=await upd(b.dataset.sdid,{job_company:of[0],job_title:of[1]});b.disabled=false;
     if(orr){render();toast(lang==="ar"?"اتحدد الأوفر":"Offer assigned")}
+  }
+  else if(a==="commsave"){
+    var cid=b.dataset.cid,cv=($("cm_v").value||"").trim();b.disabled=true;
+    var cr=cv?await sb.from("app_commission").upsert({app_id:cid,amount:cv,updated_at:new Date().toISOString()}):await sb.from("app_commission").delete().eq("app_id",cid);
+    b.disabled=false;if(cr.error){toast(cr.error.message);return}
+    S.comm=S.comm||{};if(cv)S.comm[cid]=cv;else delete S.comm[cid];toast(lang==="ar"?"اتحفظ":"Saved")
   }
   else if(a==="sdopen"){S.sdOpen=S.sdOpen===S.cand?null:S.cand;render()}
   else if(a==="sdsave"){
