@@ -57,6 +57,14 @@ a{color:var(--ink)}
 .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;opacity:0;pointer-events:none;transition:.25s;z-index:9;max-width:90vw}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 .bad{color:var(--bad)}.ok{color:var(--ok)}
+.stc-new{--sc:#4da3ff}.stc-contacted{--sc:#f5b942}.stc-interview{--sc:#b57bff}.stc-accepted{--sc:#2ecc71}.stc-validated{--sc:#1abc9c}.stc-hired{--sc:#ffd24d}.stc-rejected{--sc:#ff5a5a}.stc-no_answer{--sc:#9aa0a6}
+.chip[class*=stc-]{border-color:color-mix(in srgb,var(--sc) 55%,transparent)}.chip[class*=stc-].on{background:color-mix(in srgb,var(--sc) 22%,transparent);border-color:var(--sc)}
+.badge[class*=stc-]{background:color-mix(in srgb,var(--sc) 20%,transparent);color:var(--sc);border:1px solid color-mix(in srgb,var(--sc) 55%,transparent);font-weight:600}
+.rc-owner{--sc:#ffd24d}.rc-admin{--sc:#ff8a3d}.rc-unit_manager{--sc:#b57bff}.rc-team_leader{--sc:#4da3ff}.rc-recruiter{--sc:#2ecc71}
+.chip[class*=rc-]{border-color:color-mix(in srgb,var(--sc) 55%,transparent)}.chip[class*=rc-].on{background:color-mix(in srgb,var(--sc) 22%,transparent);border-color:var(--sc)}
+.av{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:var(--sc);background:color-mix(in srgb,var(--sc) 18%,transparent);border:2px solid var(--sc);flex:none}
+.mcard{border-left:3px solid var(--sc)!important}
+.pill{display:inline-block;border-radius:999px;padding:1px 9px;font-size:12px;background:var(--tag)}
 .badge{display:inline-block;background:var(--tag);border-radius:6px;padding:1px 8px;font-size:13px}
 .sep{height:1px;background:var(--line);margin:10px 0}
 /* Apex red/black/silver */
@@ -106,6 +114,10 @@ st:{new:"جديد",contacted:"تم التواصل",interview:"انترفيو",ac
 ro:{owner:"المالك",admin:"أدمن",unit_manager:"يونيت مانجر",team_leader:"تيم ليدر",recruiter:"ريكروتر"}}};
 var lang="en";try{lang=localStorage.getItem("apexLang")||"en"}catch(e){}
 function T(k){return(I[lang][k]!=null?I[lang][k]:I.en[k])||k}
+var SI={new:"\ud83c\udd95",contacted:"\ud83d\udcde",interview:"\ud83c\udfa4",accepted:"\u2705",validated:"\ud83d\udee1\ufe0f",hired:"\ud83c\udf89",rejected:"\u274c",no_answer:"\ud83d\udcf5"};
+var RI={owner:"\ud83d\udc51",admin:"\ud83d\udee0\ufe0f",unit_manager:"\ud83c\udfe2",team_leader:"\u2b50",recruiter:"\ud83d\udc64"};
+function stl(s){return (SI[s]||"")+" "+(T("st")[s]||s)}
+function rl(r){return (RI[r]||"")+" "+(T("ro")[r]||r)}
 var ST=["new","contacted","interview","accepted","validated","hired","rejected","no_answer"];
 var RANK={owner:0,admin:1,unit_manager:2,team_leader:3,recruiter:4};
 var INV={owner:["admin","unit_manager","team_leader","recruiter"],admin:["unit_manager","team_leader","recruiter"],unit_manager:["team_leader","recruiter"],team_leader:["recruiter"],recruiter:[]};
@@ -381,7 +393,7 @@ function closeCand(){if(history.state&&history.state.c){history.back();return}S.
 window.addEventListener("popstate",function(){var m=/#cand=([\w-]+)/.exec(location.hash);S.cand=m?m[1]:null;if(S.me){render();window.scrollTo(0,m?0:(S.candScroll||0))}});
 function rfChips(){
   var cnt={};S.team.forEach(function(p){cnt[p.role]=(cnt[p.role]||0)+1});
-  return'<div class="chips"><button class="chip'+(!S.rf?" on":"")+'" data-rf="">'+T("all")+' '+S.team.length+'</button>'+["owner","admin","unit_manager","team_leader","recruiter"].filter(function(r){return cnt[r]||S.rf===r}).map(function(r){return'<button class="chip'+(S.rf===r?" on":"")+'" data-rf="'+r+'">'+T("ro")[r]+' '+(cnt[r]||0)+'</button>'}).join("")+'</div>';
+  return'<div class="chips"><button class="chip'+(!S.rf?" on":"")+'" data-rf="">'+T("all")+' '+S.team.length+'</button>'+["owner","admin","unit_manager","team_leader","recruiter"].filter(function(r){return cnt[r]||S.rf===r}).map(function(r){return'<button class="chip rc-'+r+(S.rf===r?" on":"")+'" data-rf="'+r+'">'+rl(r)+' '+(cnt[r]||0)+'</button>'}).join("")+'</div>';
 }
 function chainRows(a,full,ar){
   var id=a.recruiter_id||(full&&full.recruiter_id)||"",out={},x=S.team.find(function(y){return y.id===id}),g=0;
@@ -449,7 +461,7 @@ function sdDefault(label,a){
   if(/^(account|accountname|title|position|offer)$/.test(h))return a.job_title||"";
   return"";
 }
-var SDOFF=[["TTC","US Telesales"],["Total Trip Planners","Back Office"],["Crystal Reach","Telesales"],["Leadbull","Canadian Telesales [HVAC]"],["Geeky CX","Debt Settlement Sales"],["Geeky CX","English Customer Service (Inbound/Outbound)"],["Geeky CX","English Back Office (Admin work & Emails)"],["ACES","Cold-calling Telesales Agent"],["TTEC","English Customer Service"],["TTEC","Dutch Sales Exp"],["TTEC","Portuguese Sales Exp"],["TTEC","Spanish Sales Exp"],["TTEC","French Sales Exp"],["Alorica","English US Customer Support / Airline"],["eClerx","Customer Support"],["Geeky CX","Spanish Customer Service"],["Cxperts","Staffing Sales / Lead Generation"],["Teleperformance","English Call Center"],["Teleperformance","French Technical Support – Voice (Bilingual)"],["Teleperformance","French Technical Support – Voice & Email (Bilingual)"],["Telephonic","French & English Bilingual Customer Service"],["LPM","Sales Agent / Telesales"],["LTS","Hotel Surveys – Outbound"],["LTS","Sales Agent – Inbound Vacation Packages"],["Alorica","French Bilingual Customer Service"],["Atain","English Travel Advisor – GDS"],["Atain","French Travel Advisor – GDS"],["Minister Fitness Pharma","Sales Agent"],["Vintrin Clinic","Sales Representative – Night/Overnight"],["WINIRIX","Appointment Setter"],["TTEC","Italian Sales Exp"],["UCC","Call Center Agent – US Account"],["Contact Center Source","Lead Verification Agent (Sales)"],["Dial Expert","US Financial Advisor / Closer Account"]];
+var SDOFF=[["TTC","US Telesales"],["Total Trip Planners","Back Office"],["Crystal Reach","Telesales"],["Leadbull","Canadian Telesales [HVAC]"],["Geeky CX","Debt Settlement Sales"],["Geeky CX","English Customer Service (Inbound/Outbound)"],["Geeky CX","English Back Office (Admin work & Emails)"],["ACES","Cold-calling Telesales Agent"],["TTEC","English Customer Service"],["TTEC","Dutch Sales Exp"],["TTEC","Portuguese Sales Exp"],["TTEC","Spanish Sales Exp"],["TTEC","French Sales Exp"],["Alorica","English US Customer Support / Airline"],["eClerx","Customer Support"],["Geeky CX","Spanish Customer Service"],["Cxperts","Telesales Agent"],["Teleperformance","English Call Center"],["Teleperformance","French Technical Support – Voice (Bilingual)"],["Teleperformance","French Technical Support – Voice & Email (Bilingual)"],["Telephonic","French & English Bilingual Customer Service"],["LPM","Sales Agent / Telesales"],["LTS","Hotel Surveys – Outbound"],["LTS","Sales Agent – Inbound Vacation Packages"],["Alorica","French Bilingual Customer Service"],["Atain","English Travel Advisor – GDS"],["Atain","French Travel Advisor – GDS"],["Minister Fitness Pharma","Sales Agent"],["Vintrin Clinic","Sales Representative – Night/Overnight"],["WINIRIX","Appointment Setter"],["TTEC","Italian Sales Exp"],["UCC","Call Center Agent – US Account"],["Contact Center Source","Lead Verification Agent (Sales)"],["Dial Expert","US Financial Advisor / Closer Account"]];
 function sdPick(a){
   var ar=lang==="ar";
   var o="<option value=\"\">"+(ar?"اختار الأوفر…":"Choose the offer…")+"</option>";
@@ -480,7 +492,7 @@ function candView(){
   back='<button class="btn sm" data-act="candback" style="margin-bottom:12px">'+(ar?"\u2192 رجوع":"\u2190 Back")+'</button>';
   if(!a)return back+'<p class="mute">'+T("none")+'</p>';
   var job=(a.job_company||a.job_title)?esc(a.job_company||"")+" \u00b7 "+esc(a.job_title||""):(ar?"تقديم عام":"General application");
-  var h=back+'<div class="card"><div class="name" style="font-size:22px">'+esc(a.full_name)+'</div><div class="mute" style="margin-top:4px">'+fmt(a.created_at)+(a.status?' \u00b7 <span class="badge">'+esc(T("st")[a.status]||a.status)+'</span>':'')+'</div>'+
+  var h=back+'<div class="card"><div class="name" style="font-size:22px">'+esc(a.full_name)+'</div><div class="mute" style="margin-top:4px">'+fmt(a.created_at)+(a.status?' \u00b7 <span class="badge stc-'+a.status+'">'+esc(stl(a.status))+'</span>':'')+'</div>'+
   '<div class="row" style="margin-top:12px">'+(a.phone?'<a class="btn sm" href="tel:'+esc(a.phone)+'" dir="ltr">'+T("call")+' '+esc(a.phone)+'</a><a class="btn sm" target="_blank" rel="noopener" href="https://wa.me/'+waNum(a.phone)+'">'+T("wa")+'</a>':'')+(a.email?'<a class="btn sm" href="mailto:'+esc(a.email)+'" dir="ltr">'+esc(a.email)+'</a>':'')+'</div></div>';
   var nsx=a.night_shifts==="yes"?(ar?"موافق":"Yes"):a.night_shifts==="no"?(ar?"لا":"No"):"";
   var rec=rname(a)||(full&&full.recruiter_id?nameOf(full.recruiter_id):"")||(ar?"غير معيّن":"Unassigned");
@@ -495,7 +507,7 @@ function candView(){
   h+=sdHTML(full||a);
   if(full){
     var owner=isBoss();
-    h+='<div class="card"><div class="grid2"><select data-st="'+a.id+'">'+ST.map(function(s2){return'<option value="'+s2+'"'+(a.status===s2?" selected":"")+'>'+T("st")[s2]+'</option>'}).join("")+'</select>'+
+    h+='<div class="card"><div class="grid2"><select data-st="'+a.id+'">'+ST.map(function(s2){return'<option value="'+s2+'"'+(a.status===s2?" selected":"")+'>'+stl(s2)+'</option>'}).join("")+'</select>'+
     (owner?'<select data-rc="'+a.id+'"><option value="">'+T("unassigned")+'</option>'+S.team.map(function(p){return'<option value="'+p.id+'"'+(a.recruiter_id===p.id?" selected":"")+'>'+esc(p.full_name)+'</option>'}).join("")+'</select>':'<div class="mute">'+T("assign")+': '+esc(nameOf(a.recruiter_id))+'</div>')+'</div>'+
     '<label class="mute" style="display:block;margin-top:8px">'+(ar?"ميعاد الإنترفيو":"Interview date")+'</label><input type="datetime-local" data-iv="'+a.id+'" value="'+ivVal(a.interview_at)+'" dir="ltr" style="width:100%">'+
     '<textarea data-nt="'+a.id+'" placeholder="'+T("notes")+'" style="margin-top:8px">'+esc(a.notes||"")+'</textarea>'+
@@ -525,7 +537,7 @@ function ivVal(v){if(!v)return"";var d=new Date(v);if(isNaN(d))return"";var z=fu
 function appsHTML(){
   var cnt={};S.apps.forEach(function(a){cnt[a.status]=(cnt[a.status]||0)+1});
   var ar9=lang==="ar",h='<div class="card"><button class="btn sm" data-act="addcand">+ '+(ar9?"إضافة مرشح":"Add candidate")+'</button>'+(S.addOpen?addFormHTML():'')+'</div>'+'<input id="q" placeholder="'+esc(T("search"))+'" value="'+esc(S.q)+'" style="margin-bottom:10px"><div class="chips"><button class="chip'+(S.filter===""?" on":"")+'" data-f="">'+T("all")+' '+S.apps.length+'</button>';
-  ST.forEach(function(s){h+='<button class="chip'+(S.filter===s?" on":"")+'" data-f="'+s+'">'+T("st")[s]+' '+(cnt[s]||0)+'</button>'});
+  ST.forEach(function(s){h+='<button class="chip stc-'+s+(S.filter===s?" on":"")+'" data-f="'+s+'">'+stl(s)+' '+(cnt[s]||0)+'</button>'});
   h+='</div>';
   var q=S.q.toLowerCase(),list=S.apps.filter(function(a){return(!S.filter||a.status===S.filter)&&(!q||(a.full_name+" "+a.phone+" "+a.job_company+" "+a.job_title).toLowerCase().indexOf(q)>-1)});
   if(!list.length)return h+'<p class="mute">'+T("none")+'</p>';
@@ -538,7 +550,7 @@ function appsHTML(){
     ((a.voice_path||a.voice_link)?'<div class="row" style="margin:8px 0" id="v_'+a.id+'">'+voiceBtn(a,lang==="ar"?"فويس نوت":"Voice note")+'<span class="badge">'+vlabel(a.voice_status||"pending")+'</span></div>':'')+
     '<div class="mute">'+(a.age?T("age")+": "+a.age+" · ":"")+(a.graduation?T("grad")+": "+esc(a.graduation)+" · ":"")+(a.english_level?T("eng")+": "+esc(a.english_level):"")+'</div>'+
     ((a.location||a.night_shifts)?'<div class="mute">'+(a.location?(lang==="ar"?"المنطقة: ":"Location: ")+esc(a.location)+" · ":"")+(a.night_shifts?(lang==="ar"?"شيفت ليلي: ":"Night shifts: ")+(a.night_shifts==="yes"?(lang==="ar"?"موافق":"Yes"):(lang==="ar"?"لا":"No")):"")+'</div>':'')+
-    '<div class="grid2"><select data-st="'+a.id+'">'+ST.map(function(s){return'<option value="'+s+'"'+(a.status===s?" selected":"")+'>'+T("st")[s]+'</option>'}).join("")+'</select>'+
+    '<div class="grid2"><select data-st="'+a.id+'">'+ST.map(function(s){return'<option value="'+s+'"'+(a.status===s?" selected":"")+'>'+stl(s)+'</option>'}).join("")+'</select>'+
     (boss?'<select data-rc="'+a.id+'"><option value="">'+T("unassigned")+'</option>'+S.team.map(function(p){return'<option value="'+p.id+'"'+(a.recruiter_id===p.id?" selected":"")+'>'+esc(p.full_name)+'</option>'}).join("")+'</select>':'<div class="mute">'+T("assign")+': '+esc(nameOf(a.recruiter_id))+'</div>')+'</div>'+
     (owner?'<div style="margin-top:8px"><button class="btn sm" data-del="'+a.id+'" style="color:#ff6b6b">&#128465; '+(lang==="ar"?"مسح المرشح":"Delete candidate")+'</button></div>':'')+
     '<label class="mute" style="display:block;margin-top:8px">'+(lang==="ar"?"موعد الإنترفيو":"Interview date")+'</label><input type="datetime-local" data-iv="'+a.id+'" value="'+ivVal(a.interview_at)+'" dir="ltr" style="width:100%">'+
@@ -574,10 +586,10 @@ function teamHTML(){
   if((tq||S.rf)&&!shown.length)return h+'<p class="mute">'+T("none")+'</p>';
   var lastR="",cntR={};shown.forEach(function(p){cntR[p.role]=(cntR[p.role]||0)+1});
   shown.forEach(function(p){
-    if(!S.rf&&!tq&&p.role!==lastR){lastR=p.role;h+='<div class="name" style="font-size:16px;margin:16px 0 8px">'+T("ro")[p.role]+' ('+cntR[p.role]+')</div>'}
+    if(!S.rf&&!tq&&p.role!==lastR){lastR=p.role;h+='<div class="name" style="font-size:16px;margin:16px 0 8px">'+rl(p.role)+' ('+cntR[p.role]+')</div>'}
     var n=S.apps.filter(function(a){return a.recruiter_id===p.id}).length;
-    h+='<div class="card"><div class="row"><span class="name" style="flex:1">'+esc(p.full_name)+'</span><span class="badge">'+T("ro")[p.role]+'</span></div>'+
-    '<div class="mute">'+(p.parent_id?T("reportsTo")+": "+esc(nameOf(p.parent_id))+" · ":"")+n+" "+T("count")+" · "+(p.active?'<span class="ok">'+T("active")+'</span>':'<span class="bad">'+T("disabled")+'</span>')+'</div>'+profInfo(p)+
+    h+='<div class="card mcard rc-'+p.role+'"><div class="row" style="gap:12px"><span class="av">'+esc((p.full_name||"?").trim().charAt(0).toUpperCase())+'</span><span class="name" style="flex:1">'+esc(p.full_name)+'</span><span class="badge" style="color:var(--sc);border:1px solid var(--sc)">'+rl(p.role)+'</span></div>'+
+    '<div class="mute" style="margin-top:6px">'+(p.parent_id?"\u2197\ufe0f "+T("reportsTo")+": "+esc(nameOf(p.parent_id))+" · ":"")+'<span class="pill">\ud83d\udccb '+n+" "+T("count")+'</span> \u00b7 '+(p.active?'<span class="ok">\u2705 '+T("active")+'</span>':'<span class="bad">\u274c '+T("disabled")+'</span>')+'</div>'+profInfo(p)+
     ((owner&&p.role!=="owner"||S.me.role==="admin"&&RANK[p.role]>RANK.admin||S.me.role==="unit_manager"&&RANK[p.role]>RANK.unit_manager||S.me.role==="team_leader"&&RANK[p.role]>RANK.team_leader)?'<div class="grid2" style="margin-top:8px"><div><label class="mute">'+(lang==="ar"?"الدور":"Role")+'</label><select data-role="'+p.id+'">'+(owner?["admin","unit_manager","team_leader","recruiter"]:S.me.role==="admin"?["unit_manager","team_leader","recruiter"]:S.me.role==="team_leader"?["recruiter"]:["team_leader","recruiter"]).map(function(r){return'<option value="'+r+'"'+(p.role===r?" selected":"")+'>'+T("ro")[r]+'</option>'}).join("")+'</select></div><div><label class="mute">'+T("reportsTo")+'</label><select data-par="'+p.id+'">'+S.team.filter(function(x){return x.id!==p.id&&RANK[x.role]<RANK[p.role]}).map(function(x){return'<option value="'+x.id+'"'+(p.parent_id===x.id?" selected":"")+'>'+esc(x.full_name)+' ('+T("ro")[x.role]+')</option>'}).join("")+'</select></div></div>':'')+
     '<div class="row" style="margin-top:8px"><button class="btn sm" data-copy="'+esc(base()+"index.html?ref="+p.ref_code)+'">'+T("copy")+' '+T("myLink").split(" (")[0]+'</button>'+
     (owner&&p.role!=="owner"?'<button class="btn sm" data-rv="'+p.id+'">&#127908; '+(lang==="ar"?"صلاحية الفويس: ":"Voice access: ")+(p.can_review?(lang==="ar"?"مفعّلة":"ON"):(lang==="ar"?"مقفولة":"OFF"))+'</button>':'')+(canDis(p)?'<button class="btn sm" data-toggle="'+p.id+'" style="color:#ff6b6b">&#128465; '+(lang==="ar"?"تعطيل ومسح من السيستم":"Disable & delete from system")+'</button>':'')+'</div></div>';
