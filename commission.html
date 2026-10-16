@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>الكوميشن - Apex</title><meta name="theme-color" content="#d91616"><meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="icon-192.png">
+<style>
+:root{--bg:#0a0a0b;--card:#141416;--tx:#f2f2f3;--mu:#a5a5ab;--acc:#d91616;--bd:#2a2a2e;--ok:#2ecc71}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;line-height:1.6;padding:16px 12px 50px}
+.w{max-width:720px;margin:0 auto}
+header{text-align:center;border-bottom:2px solid var(--acc);padding-bottom:12px;margin-bottom:14px}
+header img{width:64px;height:64px;border-radius:16px;border:1px solid var(--bd)}
+h1{margin:6px 0 0;font-size:22px}header p{margin:0;color:var(--mu);font-size:13px}
+.top{display:flex;gap:8px;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+a.lk,.b{background:none;border:1px solid var(--bd);color:var(--tx);border-radius:10px;padding:7px 12px;font-size:14px;cursor:pointer;text-decoration:none;display:inline-block}
+.b.p{background:linear-gradient(180deg,#f02a2a,#a50f0f);border:0;font-weight:700}
+.b.d{color:#ff6b6b}
+select,input{padding:9px 10px;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--tx);font-size:15px;max-width:100%}
+.sum{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.sc{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:10px 12px;border-top:3px solid var(--c)}
+.sc small{color:var(--mu);display:block;font-size:12px}.sc b{font-size:20px;direction:ltr;display:inline-block}
+.tabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;padding-bottom:2px}
+.tab{flex:none;border:1px solid var(--bd);background:none;color:var(--tx);border-radius:10px;padding:8px 12px;font-size:14px;cursor:pointer;white-space:nowrap}
+.tab.on{background:rgba(217,22,22,.18);border-color:var(--acc);font-weight:700}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:12px 14px;margin-bottom:10px;border-inline-start:3px solid var(--c,var(--acc))}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.nm{font-weight:700;font-size:17px}.tt{font-weight:800;font-size:18px;direction:ltr;color:var(--c,var(--ok))}
+.mu{color:var(--mu);font-size:13px}
+.en{display:flex;justify-content:space-between;gap:8px;border-top:1px dashed var(--bd);padding:6px 0;font-size:14px}
+.en .a{font-weight:700;direction:ltr;white-space:nowrap}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.g2 label{font-size:12px;color:var(--mu);display:block}.g2 input{width:100%}
+.empty{text-align:center;color:var(--mu);padding:30px 0}
+h3{margin:16px 0 8px;font-size:15px;color:#ff8a8a}
+</style></head><body><div class="w">
+<header><img src="icon-192.png" alt="Apex"><h1>&#128176; الكوميشن</h1><p>Apex Recruitment Agency</p></header>
+<div class="top"><a class="lk" href="team.html">&rarr; رجوع للتيم</a><select id="mo" aria-label="الشهر"></select></div>
+<div id="app" class="empty">جاري التحميل...</div>
+</div>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+var C=window.APEX_CONFIG,sb=supabase.createClient(C.SUPABASE_URL,C.SUPABASE_ANON_KEY);
+var S={me:null,rows:[],rates:[],tab:"rec",mo:""};
+var COLS=[{k:"rec",t:"Recruiter",ar:"كوميشن الريكروتر",c:"#2ecc71"},{k:"sen",t:"Senior Recruiter",ar:"كوميشن السينيور",c:"#f5b942"},{k:"tl",t:"Team Leader",ar:"كوميشن التيم ليدر",c:"#4da3ff"},{k:"um",t:"Unit Manager",ar:"كوميشن اليونيت مانجر",c:"#b57bff"}];
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function $(i){return document.getElementById(i)}
+function fm(n){return (Number(n)||0).toLocaleString("en-US")+" EGP"}
+function mkey(r){return String(r.created_at||"").slice(0,7)}
+function inMo(r){return !S.mo||mkey(r)===S.mo}
+async function boot(){
+  var s=await sb.auth.getSession();
+  if(!s.data.session){$("app").innerHTML='<div class="empty">سجّل دخول من صفحة التيم الأول.<br><br><a class="b p" href="team.html">فتح صفحة التيم</a></div>';return}
+  var p=await sb.from("profiles").select("id,full_name,role").eq("id",s.data.session.user.id).single();
+  if(p.error||!p.data){$("app").innerHTML='<div class="empty">الحساب مش متسجل في السيستم.</div>';return}
+  S.me=p.data;
+  if(S.me.role==="admin"){$("app").innerHTML='<div class="empty">الصفحة دي مش متاحة لحسابك.</div>';return}
+  await load();
+}
+async function load(){
+  var r=await sb.rpc("commission_report");
+  if(r.error){$("app").innerHTML='<div class="empty">تعذر التحميل: '+esc(r.error.message)+'<br>اتأكد إن comm_1.sql اتشغّل.</div>';return}
+  S.rows=r.data||[];
+  if(S.me.role==="owner"){var q=await sb.from("offer_rates").select("*").order("grp").order("label");S.rates=q.data||[]}
+  var ms={};S.rows.forEach(function(x){ms[mkey(x)]=1});
+  var keys=Object.keys(ms).sort().reverse();
+  $("mo").innerHTML='<option value="">كل الشهور</option>'+keys.map(function(k){return'<option value="'+k+'"'+(S.mo===k?" selected":"")+'>'+k+'</option>'}).join("");
+  draw();
+}
+function tabsFor(){
+  var t=COLS.map(function(c){return{k:c.k,l:c.ar}});
+  if(S.me.role==="owner"){t.push({k:"log",l:"كل الـ Hires"});t.push({k:"rates",l:"أسعار الأوفرات"})}
+  return t;
+}
+function draw(){
+  var rows=S.rows.filter(inMo),h="";
+  h+='<div class="sum">'+COLS.map(function(c){var s=0;rows.forEach(function(r){s+=Number(r[c.k+"_amt"])||0});return'<div class="sc" style="--c:'+c.c+'"><small>'+c.ar+'</small><b>'+fm(s)+'</b></div>'}).join("")+'</div>';
+  h+='<div class="tabs">'+tabsFor().map(function(t){return'<button class="tab'+(S.tab===t.k?" on":"")+'" data-tab="'+t.k+'">'+t.l+'</button>'}).join("")+'</div>';
+  if(S.tab==="log")h+=logHTML(rows);else if(S.tab==="rates")h+=ratesHTML();else h+=colHTML(rows,COLS.filter(function(c){return c.k===S.tab})[0]||COLS[0]);
+  $("app").className="";$("app").innerHTML=h;
+}
+function colHTML(rows,col){
+  var by={},ord=[];
+  rows.forEach(function(r){var nm=r[col.k+"_name"];if(!nm)return;if(!by[nm]){by[nm]=[];ord.push(nm)}by[nm].push(r)});
+  if(!ord.length)return'<div class="empty">مفيش '+col.ar+' لسه. بيتحسب تلقائي لما حد يبقى Hired.</div>';
+  ord.sort(function(a,b){return tot(by[b],col.k)-tot(by[a],col.k)});
+  return ord.map(function(nm){
+    var l=by[nm];
+    return'<div class="card" style="--c:'+col.c+'"><div class="row"><span class="nm">&#128100; '+esc(nm)+'</span><span class="tt">'+fm(tot(l,col.k))+'</span></div><div class="mu">'+l.length+' Hire</div>'+
+    l.map(function(r){var a=r[col.k+"_amt"];return'<div class="en"><span>&#127881; '+esc(r.cand_name)+'<div class="mu">'+esc(r.offer_label||"")+(r.due_date?' &middot; &#128197; '+esc(r.due_date):'')+'</div></div><span class="a">'+(a==null?'—':fm(a))+'</span></div>'}).join("")+'</div>';
+  }).join("");
+}
+function tot(l,k){var s=0;l.forEach(function(r){s+=Number(r[k+"_amt"])||0});return s}
+function logHTML(rows){
+  if(!rows.length)return'<div class="empty">مفيش Hires.</div>';
+  return rows.map(function(r){
+    return'<div class="card"><div class="row"><span class="nm">&#127881; '+esc(r.cand_name)+'</span><button class="b d" data-del="'+r.id+'">&#128465; مسح</button></div><div class="mu">'+esc(r.offer_label||"")+' &middot; '+String(r.created_at).slice(0,10)+'</div>'+
+    COLS.map(function(c){return'<div class="mu" style="margin-top:4px">'+esc(c.t)+': <b style="color:var(--tx)">'+esc(r[c.k+"_name"]||"—")+'</b></div>'}).join("")+
+    '<div class="g2">'+COLS.map(function(c){return'<div><label>'+c.t+' (EGP)</label><input type="number" inputmode="numeric" data-f="'+c.k+'_amt" data-id="'+r.id+'" value="'+(r[c.k+"_amt"]==null?"":r[c.k+"_amt"])+'"></div>'}).join("")+
+    '<div><label>&#128197; تاريخ الاستلام</label><input type="date" data-f="due_date" data-id="'+r.id+'" value="'+esc(r.due_date||"")+'"></div></div>'+
+    '<div style="margin-top:8px"><button class="b p" data-save="'+r.id+'">حفظ</button></div></div>';
+  }).join("");
+}
+function ratesHTML(){
+  var h='<div class="mu">التعديل هنا بيأثر على الـ Hires الجديدة بس (الأرقام المتسجلة قبل كده مش بتتغير).</div>',last="";
+  S.rates.forEach(function(r){
+    if(r.grp!==last){h+='<h3>'+esc(r.grp)+'</h3>';last=r.grp}
+    h+='<div class="card"><div class="nm">'+esc(r.label)+(r.after_test?' *':'')+'</div><div class="g2" style="grid-template-columns:repeat(3,1fr)">'+
+    [["rec","Recruiter"],["sen","Senior"],["tl","Team Leader"],["um","Unit Manager"],["terms_days","أيام (Terms)"]].map(function(f){return'<div><label>'+f[1]+'</label><input type="number" inputmode="numeric" data-rk="'+esc(r.key)+'" data-rf="'+f[0]+'" value="'+r[f[0]]+'"></div>'}).join("")+
+    '</div><div style="margin-top:8px"><button class="b p" data-rsave="'+esc(r.key)+'">حفظ</button></div></div>';
+  });
+  return h;
+}
+document.addEventListener("click",async function(e){
+  var b=e.target.closest("[data-tab],[data-save],[data-del],[data-rsave]");if(!b)return;
+  if(b.dataset.tab){S.tab=b.dataset.tab;draw();return}
+  if(b.dataset.save){
+    var id=b.dataset.save,p={};
+    document.querySelectorAll('[data-id="'+id+'"]').forEach(function(i){var f=i.dataset.f,v=i.value.trim();p[f]=f==="due_date"?(v||null):(v===""?null:parseInt(v,10))});
+    b.disabled=true;var r=await sb.from("commissions").update(p).eq("id",id);b.disabled=false;
+    if(r.error){alert(r.error.message);return}
+    var row=S.rows.find(function(x){return x.id===id});if(row)Object.keys(p).forEach(function(k){row[k]=p[k]});
+    b.textContent="اتحفظ ✅";setTimeout(function(){draw()},700);return}
+  if(b.dataset.del){
+    if(!confirm("تمسح الكوميشن ده؟"))return;
+    var d=await sb.from("commissions").delete().eq("id",b.dataset.del).select();
+    if(d.error||!d.data||!d.data.length){alert(d.error?d.error.message:"مش مسموح");return}
+    S.rows=S.rows.filter(function(x){return x.id!==b.dataset.del});draw();return}
+  if(b.dataset.rsave){
+    var k=b.dataset.rsave,pp={};
+    document.querySelectorAll('[data-rk="'+k+'"]').forEach(function(i){pp[i.dataset.rf]=parseInt(i.value,10)||0});
+    b.disabled=true;var q=await sb.from("offer_rates").update(pp).eq("key",k);b.disabled=false;
+    if(q.error){alert(q.error.message);return}
+    var rt=S.rates.find(function(x){return x.key===k});if(rt)Object.keys(pp).forEach(function(f){rt[f]=pp[f]});
+    b.textContent="اتحفظ ✅";return}
+});
+$("mo").addEventListener("change",function(){S.mo=this.value;draw()});
+boot();
+</script></body></html>
