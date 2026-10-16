@@ -51,7 +51,6 @@ async function boot(){
   var p=await sb.from("profiles").select("id,full_name,role").eq("id",s.data.session.user.id).single();
   if(p.error||!p.data){$("app").innerHTML='<div class="empty">الحساب مش متسجل في السيستم.</div>';return}
   S.me=p.data;
-  if(S.me.role==="admin"){$("app").innerHTML='<div class="empty">الصفحة دي مش متاحة لحسابك.</div>';return}
   await load();
 }
 async function load(){
