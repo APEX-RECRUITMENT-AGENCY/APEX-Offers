@@ -46,10 +46,69 @@ pre{white-space:pre-wrap;background:var(--bg);border:1px solid var(--bd);border-
 .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#222;border:1px solid var(--bd);padding:9px 16px;border-radius:12px;z-index:9;max-width:90%}
 </style></head><body><div class="w">
 <header><img src="icon-192.png" alt="Apex"><h1>&#9881;&#65039; العمليات والمتابعة</h1><p>Apex Recruitment Agency</p></header>
-<div class="top"><a class="lk" href="team.html">&rarr; رجوع للتيم</a><a class="lk" href="commission.html">&#128176; الكوميشن</a></div>
+<div class="top"><a class="lk" href="team.html">&rarr; رجوع للتيم</a><a class="lk" href="commission.html">&#128176; الكوميشن</a><button class="lk" id="lgb" onclick="setLang(LANG==='en'?'ar':'en')" style="background:none;border:1px solid var(--bd);border-radius:99px;cursor:pointer;font-family:inherit"></button></div>
 <div id="tabs" class="tabs"></div>
 <div id="app" class="empty">جاري التحميل...</div>
 </div>
+<script>
+var DICT=[
+["العمليات - Apex","Operations - Apex"],["العمليات والمتابعة","Operations & Follow-up"],["رجوع للتيم","Back to team"],["الكوميشن","Commission"],["جاري التحميل...","Loading..."],
+["المالك","Owner"],["أدمن","Admin"],["يونيت مانجر","Unit Manager"],["تيم ليدر","Team Leader"],["سينيور","Senior"],["ريكروتر:","Recruiter:"],["ريكروتر","Recruiter"],
+["جديد ومحدش كلّمه","New and nobody contacted"],["جديد،","new,"],["جديد ·","new ·"],["جديد","New"],["تم التواصل (من المتابعات)","Contacted (from follow-ups)"],["تم التواصل","Contacted"],["إنترفيو:","Interviews:"],["إنترفيو","Interview"],["مقبولين:","Accepted:"],["مقبولين","Accepted"],["مقبول ومفيش حركة","Accepted, no activity"],["مقبول","Accepted"],["مرفوضين:","Rejected:"],["مرفوضين","Rejected"],["مرفوض","Rejected"],["لم يرد","No answer"],
+["تذكير جه ميعاده","Reminder is due"],["الإنترفيو عدّى، سجّل النتيجة","Interview passed, log the result"],["ساكت بقاله فترة","No activity for a while"],
+["متابعات متأخرة حالياً:","Overdue follow-ups now:"],["متابعات متأخرة:","Overdue follow-ups:"],["متابعات","Follow-ups"],["الأداء","Performance"],["الأهداف","Goals"],["تقرير اليوم","Daily report"],["السجل","Activity log"],["المحذوفات","Trash"],["قوالب الرسائل","Message templates"],["الدفع والضمان","Payments & guarantee"],["العملاء","Clients"],["نسخة احتياطية","Backup"],
+["سجّل دخول من صفحة التيم الأول.","Sign in from the team page first."],["فتح صفحة التيم","Open team page"],["الحساب مش متسجل في السيستم.","This account is not registered in the system."],["تعذر التحميل:","Failed to load:"],["اتأكد إن ops_1.sql اتشغّل.","Make sure the ops_1 SQL files were run."],
+["مفيش متابعات متأخرة. كل المرشحين متابَعين.","No overdue follow-ups. All candidates are covered."],["مرشح محتاج متابعة","candidates need follow-up"],["تقديم عام","General application"],["ملاحظة:","Note:"],["الإنترفيو:","Interview:"],["اتصال","Call"],["قالب الرسالة","Message template"],["واتساب","WhatsApp"],["ذكّرني بكرة","Remind me tomorrow"],["بعد ٣ أيام","In 3 days"],["فتح الكارت","Open card"],
+["النهاردة","Today"],["٧ أيام","7 days"],["٣٠ يوم","30 days"],["الشهر ده","This month"],["مفيش بيانات.","No data."],["مرشحين جداد:","New candidates:"],["مرشحين جداد","New candidates"],["مرشحين","Candidates"],["(كوميشن)","(commission)"],["التحويل","Conversion"],["تحت:","Under:"],["اتكلّموا:","Contacted:"],["اتكلّموا","Contacted"],["رُفض:","Rejected:"],["بكوميشن في الفترة:","with commission in period:"],["تحويل:","Conversion:"],["تحويل ","Conversion "],
+["الشهر","Month"],["مفيش أعضاء.","No members."],["لسه مفيش هدف","No target yet"],["مسح الهدف","Clear target"],["الهدف","Target"],["حفظ","Save"],
+["الـ Hired بيتحسب من أول Hire اتسجل بالكوميشن، والتيم ليدر واليونيت مانجر بيتحسبلهم Hired فريقهم.","Hired is counted from the first Hire recorded with commission. Team leaders and unit managers are credited with their team's hires."],
+["تقرير Apex ليوم","Apex report for"],["حركة","actions"],["من غير نشاط النهاردة","No activity today"],["من غير نشاط:","No activity:"],["اليوم","Day"],["الريكروترز","Recruiters"],["انسخ التقرير للواتساب","Copy report for WhatsApp"],["،",","],
+["نظام / فورم","System / form"],["مرشح جديد","New candidate"],["غيّر الحالة","Changed status"],["نقل مرشح","Moved candidate"],["مسح مرشح","Deleted candidate"],["عضو انضم","Member joined"],["غيّر منصب","Changed role"],["عطّل حساب","Disabled account"],["فعّل حساب","Enabled account"],["اتشال عضو","Member removed"],["رجّع مرشحين","Restored candidates"],["بدون","none"],["تحت","under"],["الكل","All"],["مفيش سجلات.","No records."],["نظام","System"],
+["بيتعرض آخر ٣٠٠ حدث. السجل بيبدأ من لحظة تشغيل ops_1.sql.","Showing the last 300 events. The log starts from when the ops SQL was run."],
+["مرشحين اتمسحوا (بيتحفظوا ٣٠ يوم)","Deleted candidates (kept for 30 days)"],["سلة المحذوفات فاضية.","Trash is empty."],["استرجاع المرشح ده؟","Restore this candidate?"],["استرجاع","Restore"],["امسح نهائياً الأقدم من ٣٠ يوم","Permanently delete items older than 30 days"],["أعضاء اتشالوا","Removed members"],["مفيش.","None."],["اعمله دعوة جديدة الأول، وبعد ما يسجل اختاره هنا:","Create a new invite first, then pick them here after they sign up:"],["رجّع مرشحيه ليه","Give their candidates back"],
+["المتغيرات اللي تقدر تستخدمها: {name} اسم المرشح، {offer} الأوفر، {time} ميعاد الإنترفيو، {recruiter} اسم الريكروتر.","Variables you can use: {name} candidate name, {offer} the offer, {time} interview time, {recruiter} recruiter name."],["مسح","Delete"],["قالب جديد","New template"],["العنوان","Title"],["نص الرسالة","Message text"],["إضافة","Add"],
+["استقال قبل نهاية الضمان، راجع الكوميشن","Resigned before the guarantee ended, review the commission"],["استقال بعد الضمان","Resigned after the guarantee"],["الضمان خلص ولسه مدفعش","Guarantee ended and not paid yet"],["الضمان بيخلص خلال أسبوع","Guarantee ends within a week"],["الضمان لحد","Guarantee until"],["اتدفع:","Paid:"],["اتدفع","Paid"],["لسه مستحق","Still due"],["مستحق:","Due:"],["محتاج مراجعة","Needs review"],["مش مدفوع","Unpaid"],["مدفوع","Paid"],["مفيش نتايج.","No results."],["المبلغ اللي العميل بيدفعه (EGP)","Amount the client pays (EGP)"],["تاريخ الاستقالة (لو حصلت)","Resignation date (if any)"],["العميل دفع","Client paid"],["ملاحظة","Note"],["الصفحة دي ليك إنت بس (المالك).","This page is for you only (owner)."],
+["النسخة الاحتياطية","Backup"],["نزّل نسخة كاملة (JSON)","Download full backup (JSON)"],["نزّل المرشحين (CSV)","Download candidates (CSV)"],["النسخة الكاملة فيها: الأعضاء، المرشحين، الكوميشن، الأسعار، الملاحظات، الأهداف، القوالب، الدعوات. حطها في Google Drive أو على جهازك.","The full backup includes members, candidates, commissions, rates, notes, goals, templates and invites. Store it in Google Drive or on your device."],["عشان النسخ يبقى تلقائي كل يوم، استخدم ملف backup_to_drive.gs المرفق واتبع الخطوات اللي في أوله.","For automatic daily backups, use the attached backup_to_drive.gs file and follow the steps at its top."],
+["اتحمّلت","Downloaded"],["تمام","Done"],["هفكّرك","I'll remind you"],["اكتب رقم","Enter a number"],["اتحفظ","Saved"],["اتنسخ","Copied"],["انسخ من المربع تحت","Copy from the box below"],["اترجّع","Restored"],["مسح نهائي لكل اللي أقدم من ٣٠ يوم؟","Permanently delete everything older than 30 days?"],["اتمسح","Deleted"],["ترجّع مرشحيه للحساب المختار؟","Give this member's candidates to the selected account?"],["اكتب العنوان والنص","Enter a title and text"],["مسح القالب؟","Delete this template?"],["مرشح","candidate"]
+
+,["اتشالوا","removed"],["اتشال","Removed"],["اترجّعوا","restored"],["عدّى أكتر من أسبوع","over a week old"],["آخر نسخة نزّلتها من هنا:","Last backup downloaded from here:"],["لسه ما نزّلتش نسخة من هنا","No backup downloaded from here yet"],["بواسطة","by"],["كان معاه","had"]
+].sort(function(a,b){return b[0].length-a[0].length});
+/*i18n*/
+var LANG=(function(){try{return localStorage.getItem("apexLang")==="en"?"en":"ar"}catch(e){return"ar"}})();
+var RX=[
+ [/آخر حركة من (\d+) يوم/g,"Last activity $1 days ago"],
+ [/فاضل (\d+) يوم/g,"$1 days left"],
+ [/كان معاه (\d+) مرشح/g,"had $1 candidates"],
+ [/اتمسح (\d+)/g,"Deleted $1"],
+ [/اترجّع (\d+) مرشح/g,"Restored $1 candidates"],
+ [/(\d+) مرشح محتاج متابعة/g,"$1 candidates need follow-up"],
+ [/اتمسح (.+?) بواسطة/g,"Deleted $1 by"],
+ [/^\s*من\s*$/,"From"],[/^\s*إلى\s*$/,"To"],
+ [/^ من (\d+) \(/,"of $1 ("],[/\(من (\d+) يوم\)/,"($1 days ago)"]
+];
+function X(s){
+  if(LANG!=="en"||s==null)return s;
+  s=String(s);if(!/[؀-ۿ]/.test(s))return s;
+  RX.forEach(function(r){s=s.replace(r[0],r[1])});
+  DICT.forEach(function(d){if(s.indexOf(d[0])>-1)s=s.split(d[0]).join(d[1])});
+  return s.replace(/[٠-٩]/g,function(c){return c.charCodeAt(0)-1632});
+}
+(function(){
+  if(LANG!=="en")return;
+  var de=document.documentElement;de.lang="en";de.dir="ltr";document.title=X(document.title);
+  var _c=window.confirm,_a=window.alert;window.confirm=function(m){return _c(X(m))};window.alert=function(m){return _a(X(m))};
+  var AT=["placeholder","title","aria-label"];
+  function fix(n){
+    if(n.nodeType===3){if(/[؀-ۿ]/.test(n.nodeValue)){var p=n.parentNode;if(p&&(p.tagName==="TEXTAREA"||p.tagName==="SCRIPT"||p.tagName==="STYLE"))return;var v=X(n.nodeValue);if(v!==n.nodeValue)n.nodeValue=v}return}
+    if(n.nodeType!==1||n.tagName==="SCRIPT"||n.tagName==="STYLE")return;
+    AT.forEach(function(a){if(n.hasAttribute(a)){var v=n.getAttribute(a),w=X(v);if(w!==v)n.setAttribute(a,w)}});
+    for(var c=n.firstChild;c;c=c.nextSibling)fix(c);
+  }
+  var mo=new MutationObserver(function(ms){ms.forEach(function(m){if(m.type==="characterData")fix(m.target);else m.addedNodes.forEach(fix)})});
+  document.addEventListener("DOMContentLoaded",function(){fix(document.body);mo.observe(document.body,{childList:true,subtree:true,characterData:true})});
+})();
+function setLang(l){try{localStorage.setItem("apexLang",l)}catch(e){}location.reload()}
+</script>
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -64,8 +123,8 @@ function $(i){return document.getElementById(i)}
 function toast(m){var t=document.createElement("div");t.className="toast";t.textContent=m;document.body.appendChild(t);setTimeout(function(){t.remove()},2600)}
 function cairoDay(d){return (d||new Date()).toLocaleDateString("en-CA",{timeZone:"Africa/Cairo"})}
 function addDays(s,n){var d=new Date(s+"T12:00:00Z");d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)}
-function fdt(v){if(!v)return"";return new Date(v).toLocaleString("ar-EG",{timeZone:"Africa/Cairo",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}
-function fd(v){if(!v)return"";return new Date(v).toLocaleDateString("ar-EG",{timeZone:"Africa/Cairo",day:"numeric",month:"short"})}
+function fdt(v){if(!v)return"";return new Date(v).toLocaleString(LANG==="en"?"en-GB":"ar-EG",{timeZone:"Africa/Cairo",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}
+function fd(v){if(!v)return"";return new Date(v).toLocaleDateString(LANG==="en"?"en-GB":"ar-EG",{timeZone:"Africa/Cairo",day:"numeric",month:"short"})}
 function waNum(p){var d=String(p||"").replace(/\D/g,"");if(d.indexOf("00")===0)d=d.slice(2);else if(d.charAt(0)==="0")d="20"+d.slice(1);else if(d.length===10)d="20"+d;return d}
 function isBoss(){return S.me&&(S.me.role==="owner"||S.me.role==="admin")}
 function isOwner(){return S.me&&S.me.role==="owner"}
@@ -80,6 +139,7 @@ function tabsHTML(){
   return TABS.filter(function(t){return t.all||(t.boss&&isBoss())||(t.owner&&isOwner())}).map(function(t){
     return'<button class="tab'+(S.tab===t.k?" on":"")+'" data-tab="'+t.k+'">'+t.t+(t.k==="fu"&&S.fu.length?'<i>'+S.fu.length+'</i>':'')+'</button>'}).join("");
 }
+document.getElementById("lgb").textContent=LANG==="en"?"العربية":"English";
 async function boot(){
   var s=await sb.auth.getSession();
   if(!s.data.session){$("app").innerHTML='<div class="empty">سجّل دخول من صفحة التيم الأول.<br><br><a class="b p" href="team.html">فتح صفحة التيم</a></div>';return}
@@ -300,7 +360,7 @@ document.addEventListener("click",async function(e){
   if(d.rg){setRange(d.rg);await go("pf");return}
   if(d.gs){var v=document.querySelector('[data-gt="'+d.gs+'"]').value;if(v===""){toast("اكتب رقم");return}var r3=await sb.rpc("set_goal",{p_user:d.gs,p_month:S.gm+"-01",p_target:parseInt(v,10)});if(r3.error){toast(r3.error.message);return}toast("اتحفظ");await go("gl");return}
   if(d.gx){var r4=await sb.rpc("set_goal",{p_user:d.gx,p_month:S.gm+"-01",p_target:-1});if(r4.error){toast(r4.error.message);return}await go("gl");return}
-  if(d.copy==="dy"){var tx=dyText(S.daily);try{await navigator.clipboard.writeText(tx);toast("اتنسخ")}catch(x){toast("انسخ من المربع تحت")}return}
+  if(d.copy==="dy"){var tx=X(dyText(S.daily));try{await navigator.clipboard.writeText(tx);toast("اتنسخ")}catch(x){toast("انسخ من المربع تحت")}return}
   if(d.lf!==undefined&&b.classList.contains("chip")){S.logf=d.lf;draw();return}
   if(d.rs){if(!confirm("استرجاع المرشح ده؟"))return;var r5=await sb.rpc("restore_application",{p_id:d.rs});if(r5.error){toast(r5.error.message);return}toast("اترجّع");await go("tr");return}
   if(d.purge){if(!confirm("مسح نهائي لكل اللي أقدم من ٣٠ يوم؟"))return;var r6=await sb.rpc("purge_trash",{p_days:30});if(r6.error){toast(r6.error.message);return}toast("اتمسح "+r6.data);await go("tr");return}

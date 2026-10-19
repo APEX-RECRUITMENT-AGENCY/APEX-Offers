@@ -31,9 +31,54 @@ select,input{padding:9px 10px;border-radius:10px;border:1px solid var(--bd);back
 h3{margin:16px 0 8px;font-size:15px;color:#ff8a8a}
 </style></head><body><div class="w">
 <header><img src="icon-192.png" alt="Apex"><h1>&#128176; الكوميشن</h1><p>Apex Recruitment Agency</p></header>
-<div class="top"><a class="lk" href="team.html">&rarr; رجوع للتيم</a><select id="mo" aria-label="الشهر"></select></div>
+<div class="top"><a class="lk" href="team.html">&rarr; رجوع للتيم</a><select id="mo" aria-label="الشهر"></select><button class="lk" id="lgb" onclick="setLang(LANG==='en'?'ar':'en')" style="background:none;border:1px solid var(--bd);border-radius:99px;cursor:pointer;font-family:inherit"></button></div>
 <div id="app" class="empty">جاري التحميل...</div>
 </div>
+<script>
+var DICT=[
+["الكوميشن - Apex","Commission - Apex"],["كوميشن الريكروتر","Recruiter Commission"],["كوميشن السينيور","Senior Commission"],["كوميشن التيم ليدر","Team Leader Commission"],["كوميشن اليونيت مانجر","Unit Manager Commission"],
+["الكوميشن","Commission"],["رجوع للتيم","Back to team"],["الشهر","Month"],["كل الشهور","All months"],["كل الـ Hires","All Hires"],["أسعار الأوفرات","Offer rates"],
+["سجّل دخول من صفحة التيم الأول.","Sign in from the team page first."],["فتح صفحة التيم","Open team page"],["الحساب مش متسجل في السيستم.","This account is not registered in the system."],["تعذر التحميل:","Failed to load:"],["اتأكد إن comm_1.sql اتشغّل.","Make sure comm_1.sql was run."],
+["مفيش","No"],["لسه.","yet."],["بيتحسب تلقائي لما حد يبقى Hired.","It is calculated automatically when someone is Hired."],["مفيش Hires.","No Hires."],
+["مسح","Delete"],["تاريخ الاستلام","Due date"],["حفظ","Save"],["اتحفظ ✅","Saved ✅"],["تمسح الكوميشن ده؟","Delete this commission?"],["مش مسموح","Not allowed"],
+["التعديل هنا بيأثر على الـ Hires الجديدة بس (الأرقام المتسجلة قبل كده مش بتتغير).","Changes here only affect new Hires (previously recorded amounts do not change)."],["أيام (Terms)","Terms (days)"]
+].sort(function(a,b){return b[0].length-a[0].length});
+/*i18n*/
+var LANG=(function(){try{return localStorage.getItem("apexLang")==="en"?"en":"ar"}catch(e){return"ar"}})();
+var RX=[
+ [/آخر حركة من (\d+) يوم/g,"Last activity $1 days ago"],
+ [/فاضل (\d+) يوم/g,"$1 days left"],
+ [/كان معاه (\d+) مرشح/g,"had $1 candidates"],
+ [/اتمسح (\d+)/g,"Deleted $1"],
+ [/اترجّع (\d+) مرشح/g,"Restored $1 candidates"],
+ [/(\d+) مرشح محتاج متابعة/g,"$1 candidates need follow-up"],
+ [/اتمسح (.+?) بواسطة/g,"Deleted $1 by"],
+ [/^\s*من\s*$/,"From"],[/^\s*إلى\s*$/,"To"],
+ [/^ من (\d+) \(/,"of $1 ("],[/\(من (\d+) يوم\)/,"($1 days ago)"]
+];
+function X(s){
+  if(LANG!=="en"||s==null)return s;
+  s=String(s);if(!/[؀-ۿ]/.test(s))return s;
+  RX.forEach(function(r){s=s.replace(r[0],r[1])});
+  DICT.forEach(function(d){if(s.indexOf(d[0])>-1)s=s.split(d[0]).join(d[1])});
+  return s.replace(/[٠-٩]/g,function(c){return c.charCodeAt(0)-1632});
+}
+(function(){
+  if(LANG!=="en")return;
+  var de=document.documentElement;de.lang="en";de.dir="ltr";document.title=X(document.title);
+  var _c=window.confirm,_a=window.alert;window.confirm=function(m){return _c(X(m))};window.alert=function(m){return _a(X(m))};
+  var AT=["placeholder","title","aria-label"];
+  function fix(n){
+    if(n.nodeType===3){if(/[؀-ۿ]/.test(n.nodeValue)){var p=n.parentNode;if(p&&(p.tagName==="TEXTAREA"||p.tagName==="SCRIPT"||p.tagName==="STYLE"))return;var v=X(n.nodeValue);if(v!==n.nodeValue)n.nodeValue=v}return}
+    if(n.nodeType!==1||n.tagName==="SCRIPT"||n.tagName==="STYLE")return;
+    AT.forEach(function(a){if(n.hasAttribute(a)){var v=n.getAttribute(a),w=X(v);if(w!==v)n.setAttribute(a,w)}});
+    for(var c=n.firstChild;c;c=c.nextSibling)fix(c);
+  }
+  var mo=new MutationObserver(function(ms){ms.forEach(function(m){if(m.type==="characterData")fix(m.target);else m.addedNodes.forEach(fix)})});
+  document.addEventListener("DOMContentLoaded",function(){fix(document.body);mo.observe(document.body,{childList:true,subtree:true,characterData:true})});
+})();
+function setLang(l){try{localStorage.setItem("apexLang",l)}catch(e){}location.reload()}
+</script>
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -45,6 +90,7 @@ function $(i){return document.getElementById(i)}
 function fm(n){return (Number(n)||0).toLocaleString("en-US")+" EGP"}
 function mkey(r){return String(r.created_at||"").slice(0,7)}
 function inMo(r){return !S.mo||mkey(r)===S.mo}
+document.getElementById("lgb").textContent=LANG==="en"?"العربية":"English";
 async function boot(){
   var s=await sb.auth.getSession();
   if(!s.data.session){$("app").innerHTML='<div class="empty">سجّل دخول من صفحة التيم الأول.<br><br><a class="b p" href="team.html">فتح صفحة التيم</a></div>';return}
