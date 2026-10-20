@@ -528,7 +528,7 @@ function candView(){
   h+=sdHTML(full||a);
   if(full){
     var owner=isBoss();
-    h+='<div class="card"><div class="grid2"><select data-st="'+a.id+'">'+ST.map(function(s2){return'<option value="'+s2+'"'+(a.status===s2?" selected":"")+'>'+stl(s2)+'</option>'}).join("")+'</select>'+
+    h+='<div class="card"><div class="grid2"><select data-st="'+a.id+'"'+(a.status==="hired"&&!(S.me&&S.me.role==="owner")?" disabled":"")+'>'+ST.map(function(s2){return'<option value="'+s2+'"'+(a.status===s2?" selected":"")+(s2==="hired"&&!(S.me&&S.me.role==="owner")?" disabled":"")+'>'+stl(s2)+'</option>'}).join("")+'</select>'+
     (owner?'<select data-rc="'+a.id+'"><option value="">'+T("unassigned")+'</option>'+S.team.map(function(p){return'<option value="'+p.id+'"'+(a.recruiter_id===p.id?" selected":"")+'>'+esc(p.full_name)+'</option>'}).join("")+'</select>':'<div class="mute">'+T("assign")+': '+esc(nameOf(a.recruiter_id))+'</div>')+'</div>'+
     '<label class="mute" style="display:block;margin-top:8px">'+(ar?"ميعاد الإنترفيو":"Interview date")+'</label><input type="datetime-local" data-iv="'+a.id+'" value="'+ivVal(a.interview_at)+'" dir="ltr" style="width:100%">'+
     '<textarea data-nt="'+a.id+'" placeholder="'+T("notes")+'" style="margin-top:8px">'+esc(a.notes||"")+'</textarea>'+
@@ -576,7 +576,7 @@ function appsHTML(){
     ((a.voice_path||a.voice_link)?'<div class="row" style="margin:8px 0" id="v_'+a.id+'">'+voiceBtn(a,lang==="ar"?"فويس نوت":"Voice note")+'<span class="badge">'+vlabel(a.voice_status||"pending")+'</span></div>':'')+
     '<div class="mute">'+(a.age?T("age")+": "+a.age+" · ":"")+(a.graduation?T("grad")+": "+esc(a.graduation)+" · ":"")+(a.english_level?T("eng")+": "+esc(a.english_level):"")+'</div>'+
     ((a.location||a.night_shifts)?'<div class="mute">'+(a.location?(lang==="ar"?"المنطقة: ":"Location: ")+esc(a.location)+" · ":"")+(a.night_shifts?(lang==="ar"?"شيفت ليلي: ":"Night shifts: ")+(a.night_shifts==="yes"?(lang==="ar"?"موافق":"Yes"):(lang==="ar"?"لا":"No")):"")+'</div>':'')+
-    '<div class="grid2"><select data-st="'+a.id+'">'+ST.map(function(s){return'<option value="'+s+'"'+(a.status===s?" selected":"")+'>'+stl(s)+'</option>'}).join("")+'</select>'+
+    '<div class="grid2"><select data-st="'+a.id+'"'+(a.status==="hired"&&!(S.me&&S.me.role==="owner")?" disabled":"")+'>'+ST.map(function(s){return'<option value="'+s+'"'+(a.status===s?" selected":"")+(s==="hired"&&!(S.me&&S.me.role==="owner")?" disabled":"")+'>'+stl(s)+'</option>'}).join("")+'</select>'+
     (boss?'<select data-rc="'+a.id+'"><option value="">'+T("unassigned")+'</option>'+S.team.map(function(p){return'<option value="'+p.id+'"'+(a.recruiter_id===p.id?" selected":"")+'>'+esc(p.full_name)+'</option>'}).join("")+'</select>':'<div class="mute">'+T("assign")+': '+esc(nameOf(a.recruiter_id))+'</div>')+'</div>'+
     (owner?'<div style="margin-top:8px"><button class="btn sm" data-del="'+a.id+'" style="color:#ff6b6b">&#128465; '+(lang==="ar"?"مسح المرشح":"Delete candidate")+'</button></div>':'')+
     '<label class="mute" style="display:block;margin-top:8px">'+(lang==="ar"?"موعد الإنترفيو":"Interview date")+'</label><input type="datetime-local" data-iv="'+a.id+'" value="'+ivVal(a.interview_at)+'" dir="ltr" style="width:100%">'+
