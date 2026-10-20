@@ -138,7 +138,7 @@ function logHTML(rows){
   return rows.map(function(r){
     return'<div class="card"><div class="row"><span class="nm">&#127881; '+esc(r.cand_name)+'</span><button class="b d" data-del="'+r.id+'">&#128465; مسح</button></div><div class="mu">'+esc(r.offer_label||"")+' &middot; '+String(r.created_at).slice(0,10)+'</div>'+
     COLS.map(function(c){return'<div class="mu" style="margin-top:4px">'+esc(c.t)+': <b style="color:var(--tx)">'+esc(r[c.k+"_name"]||"—")+'</b></div>'}).join("")+
-    '<div class="g2">'+COLS.map(function(c){return'<div><label>'+c.t+' (EGP)</label><input type="number" inputmode="numeric" data-f="'+c.k+'_amt" data-id="'+r.id+'" value="'+(r[c.k+"_amt"]==null?"":r[c.k+"_amt"])+'"></div>'}).join("")+
+    '<div class="g2">'+COLS.map(function(c){return'<div><label>'+c.t+' (EGP)</label><input type="number" inputmode="numeric" data-f="'+c.k+'_amt" data-id="'+r.id+'" value="'+(r[c.k+"_amt"]==null?"":r[c.k+"_amt"])+'"><button class="b d" style="margin-top:4px;padding:4px 10px;font-size:12px" data-clr="'+r.id+'|'+c.k+'_amt">&#10006; مسح</button></div>'}).join("")+
     '<div><label>&#128197; تاريخ الاستلام</label><input type="date" data-f="due_date" data-id="'+r.id+'" value="'+esc(r.due_date||"")+'"></div></div>'+
     '<div style="margin-top:8px"><button class="b p" data-save="'+r.id+'">حفظ</button></div></div>';
   }).join("");
@@ -154,7 +154,7 @@ function ratesHTML(){
   return h;
 }
 document.addEventListener("click",async function(e){
-  var b=e.target.closest("[data-tab],[data-save],[data-del],[data-rsave]");if(!b)return;
+  var b=e.target.closest("[data-tab],[data-save],[data-del],[data-rsave],[data-clr]");if(!b)return;
   if(b.dataset.tab){S.tab=b.dataset.tab;draw();return}
   if(b.dataset.save){
     var id=b.dataset.save,p={};
@@ -163,6 +163,12 @@ document.addEventListener("click",async function(e){
     if(r.error){alert(r.error.message);return}
     var row=S.rows.find(function(x){return x.id===id});if(row)Object.keys(p).forEach(function(k){row[k]=p[k]});
     b.textContent="اتحفظ ✅";setTimeout(function(){draw()},700);return}
+  if(b.dataset.clr){
+    var cp=b.dataset.clr.split("|"),cid=cp[0],cf=cp[1];
+    if(!confirm("تمسح الكوميشن ده؟"))return;
+    var pc={};pc[cf]=null;b.disabled=true;var cr=await sb.from("commissions").update(pc).eq("id",cid).select();b.disabled=false;
+    if(cr.error||!cr.data||!cr.data.length){alert(cr.error?cr.error.message:"مش مسموح");return}
+    var crow=S.rows.find(function(x){return x.id===cid});if(crow)crow[cf]=null;draw();return}
   if(b.dataset.del){
     if(!confirm("تمسح الكوميشن ده؟"))return;
     var d=await sb.from("commissions").delete().eq("id",b.dataset.del).select();
