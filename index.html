@@ -432,6 +432,8 @@ window.addEventListener("load",function(){
     var r=await sbc.rpc("submit_application",{p_name:g("a_n").value.trim(),p_phone:g("a_p").value.trim(),p_age:isNaN(age)?null:age,p_grad:g("a_g").value,p_english:g("a_e").value,p_company:cur.c,p_title:cur.t,p_ref:ref,p_voice:vp,p_voice_secs:vMode==="c"?R1.secs:0,p_voice_link:vMode==="r"?vlink:null,p_voice2:vp2,p_voice_secs2:vMode==="c"&&needL?R2.secs:0,p_voice_link2:vMode==="r"&&needL?vlink2:null,p_voice_lang:needL||null,p_email:g("a_m2").value.trim(),p_experience:g("a_x").value.trim()});
     if(r.error&&/recruiter code/i.test(r.error.message||"")){btn.disabled=false;msg.textContent="Invalid recruiter code, ask your recruiter \u00b7 \u0643\u0648\u062f \u0627\u0644\u0631\u064a\u0643\u0631\u0648\u062a\u0631 \u063a\u0644\u0637\u060c \u0627\u0633\u0623\u0644 \u0627\u0644\u0631\u064a\u0643\u0631\u0648\u062a\u0631 \u0628\u062a\u0627\u0639\u0643";return}
     if(r.error){btn.disabled=false;msg.textContent="Could not send. Check your data and try again \u00b7 \u062d\u0627\u0648\u0644 \u062a\u0627\u0646\u064a";return}
+    var tk=(typeof r.data==="string"&&/^[0-9a-f-]{36}$/i.test(r.data))?r.data:"";
+    if(tk){try{localStorage.setItem("apexTok",tk)}catch(x){}location.href="status.html?t="+tk;return}
     msg.textContent="Sent! We will contact you on WhatsApp \u00b7 \u062a\u0645 \u0627\u0644\u0625\u0631\u0633\u0627\u0644\u060c \u0647\u0646\u062a\u0648\u0627\u0635\u0644 \u0645\u0639\u0627\u0643 \u0639\u0644\u0649 \u0648\u0627\u062a\u0633\u0627\u0628";
     g("apf").reset();setMode("c");R1.reset();R2.reset();
   });
