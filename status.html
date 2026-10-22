@@ -16,6 +16,7 @@ button.p,.b.p{background:var(--acc);border-color:var(--acc);color:#fff;font-weig
 button:disabled{opacity:.5}
 .row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:12px}
 .sp{width:34px;height:34px;border:4px solid var(--line);border-top-color:var(--acc);border-radius:50%;animation:s 1s linear infinite;margin:8px auto}@keyframes s{to{transform:rotate(360deg)}}
+.chat{margin-top:4px}.msgs{display:flex;flex-direction:column;gap:8px;margin:10px 0}.m{padding:9px 12px;border-radius:12px;max-width:88%;white-space:pre-wrap;font-size:15px}.m.u{align-self:flex-end;background:var(--acc);color:#fff}.m.a{align-self:flex-start;background:#1e2024;border:1px solid var(--line)}.ask{display:flex;gap:8px}.ask input{flex:1;font:inherit;background:#0f0f11;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px}
 .kv{margin:6px 0}.kv b{display:block;color:var(--mute);font-weight:500;font-size:12px}
 </style></head><body><div class="w">
 <header><img src="icon-192.png" alt="Apex"><h1>Apex Recruitment Agency</h1><p>Application status</p></header>
@@ -25,7 +26,7 @@ button:disabled{opacity:.5}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 var C=window.APEX_CONFIG,sb=supabase.createClient(C.SUPABASE_URL,C.SUPABASE_ANON_KEY);
-var T0=Date.now(),TOK=(new URLSearchParams(location.search).get("t")||"").trim(),POLL=null,CHOSEN=null;
+var CHAT=[],BUSY=false,CURS=null,T0=Date.now(),TOK=(new URLSearchParams(location.search).get("t")||"").trim(),POLL=null,CHOSEN=null;
 if(!TOK){try{TOK=localStorage.getItem("apexTok")||""}catch(e){}}
 var UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 function $(i){return document.getElementById(i)}
@@ -35,13 +36,36 @@ var TZ="Africa/Cairo";
 function fDay(v){return new Date(v).toLocaleDateString("en-GB",{timeZone:TZ,weekday:"long",day:"numeric",month:"long"})}
 function fTime(v){return new Date(v).toLocaleTimeString("en-US",{timeZone:TZ,hour:"numeric",minute:"2-digit"})}
 function dayKey(v){return new Date(v).toLocaleDateString("en-CA",{timeZone:TZ})}
-function show(h){$("app").innerHTML=h}
+function show(h){$("app").innerHTML=h;if(CURS&&(CURS.decision==="accepted"||CURS.decision==="review"))addChat()}
+function addChat(){
+  var d=document.createElement("div");d.className="card chat";d.id="chat";
+  d.innerHTML='<h2>Have a question?</h2><div class="mu" style="text-align:center">Ask about the job: pay, shifts, location, requirements.</div><div class="msgs" id="msgs"></div><div class="ask"><input id="q" maxlength="500" placeholder="Type your question" autocomplete="off"><button class="p" id="qs">Send</button></div>';
+  $("app").appendChild(d);paintChat();
+  $("qs").onclick=sendQ;$("q").onkeydown=function(e){if(e.key==="Enter")sendQ()};
+}
+function paintChat(){
+  var h="";CHAT.forEach(function(m){
+    h+='<div class="m '+(m.r==="u"?"u":"a")+'">'+esc(m.t)+'</div>';
+    if(m.wa)h+='<div class="m a"><a class="b p" target="_blank" rel="noopener" href="https://wa.me/2'+esc(m.wa)+'?text='+encodeURIComponent(m.wt)+'">Message our team on WhatsApp</a></div>'});
+  if(BUSY)h+='<div class="m a">Typing...</div>';
+  var el=$("msgs");if(el){el.innerHTML=h;el.scrollTop=el.scrollHeight}
+}
+async function sendQ(){
+  var inp=$("q"),q=inp.value.trim();if(q.length<2||BUSY)return;
+  inp.value="";CHAT.push({r:"u",t:q});BUSY=true;paintChat();
+  var res=null;
+  try{var r=await sb.functions.invoke("ask-apex",{body:{token:TOK,question:q}});res=r.data}catch(e){}
+  BUSY=false;
+  if(!res||!res.answer)res={answer:"Sorry, I could not answer right now. Please message our team on WhatsApp.",escalate:true,wa:"01115634954"};
+  CHAT.push({r:"a",t:res.answer,wa:res.escalate?(res.wa||"01115634954"):null,wt:"Hello, my name is "+(CURS&&CURS.name||"")+". I applied for "+(CURS&&CURS.company||"")+" - "+(CURS&&CURS.title||"")+". My question: "+q});
+  paintChat();
+}
 function offer(s){return esc(s.company||"")+(s.title?" &ndash; "+esc(s.title):"")}
 function detailsHTML(s){
   return'<div class="kv"><b>Offer</b>'+offer(s)+'</div>'+(s.location?'<div class="kv"><b>Location</b>'+esc(s.location)+'</div>':'')+(s.maps?'<div class="kv"><b>Google Maps</b><a href="'+esc(s.maps)+'" target="_blank" rel="noopener" style="color:#ff8a80">'+esc(s.maps)+'</a></div>':'');
 }
 function render(s){
-  clearInterval(POLL);POLL=null;
+  clearInterval(POLL);POLL=null;CURS=s;
   if(!s){show('<div class="card"><div class="big">&#128683;</div><h2>'+B("Link not found","اللينك غير صحيح")+'</h2><div class="mu" style="text-align:center">'+B("Please use the link you received after applying.","استخدم اللينك اللي ظهرلك بعد التقديم.")+'</div></div>');return}
   var n=esc(s.name||"");
   if(s.decision==="processing"&&Date.now()-T0>180000)s.decision="review";

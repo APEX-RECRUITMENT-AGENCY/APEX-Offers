@@ -72,6 +72,8 @@ var DICT=[
 ["اتحمّلت","Downloaded"],["تمام","Done"],["هفكّرك","I'll remind you"],["اكتب رقم","Enter a number"],["اتحفظ","Saved"],["اتنسخ","Copied"],["انسخ من المربع تحت","Copy from the box below"],["اترجّع","Restored"],["مسح نهائي لكل اللي أقدم من ٣٠ يوم؟","Permanently delete everything older than 30 days?"],["اتمسح","Deleted"],["ترجّع مرشحيه للحساب المختار؟","Give this member's candidates to the selected account?"],["اكتب العنوان والنص","Enter a title and text"],["مسح القالب؟","Delete this template?"],["مرشح","candidate"]
 
 ,["اتشالوا","removed"],["اتشال","Removed"],["اترجّعوا","restored"],["عدّى أكتر من أسبوع","over a week old"],["آخر نسخة نزّلتها من هنا:","Last backup downloaded from here:"],["لسه ما نزّلتش نسخة من هنا","No backup downloaded from here yet"],["بواسطة","by"],["كان معاه","had"]
+
+,["الأسئلة","Questions"],["مفيش أسئلة من المرشحين لسه.","No candidate questions yet."],["محتاج رد","Needs reply"],["تم الرد","Replied"],["رجّعه مفتوح","Reopen"],["اتصال","Call"]
 ].sort(function(a,b){return b[0].length-a[0].length});
 /*i18n*/
 var LANG=(function(){try{return localStorage.getItem("apexLang")==="en"?"en":"ar"}catch(e){return"ar"}})();
@@ -113,7 +115,7 @@ function setLang(l){try{localStorage.setItem("apexLang",l)}catch(e){}location.re
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 var C=window.APEX_CONFIG,sb=supabase.createClient(C.SUPABASE_URL,C.SUPABASE_ANON_KEY);
-var S={me:null,tab:"fu",tpl:[],team:[],fu:[],perf:[],range:"7",from:"",to:"",gm:"",goals:[],day:"",daily:null,logs:[],logf:"",trash:[],rem:[],pays:[],payf:"all",clients:[],tplEdit:[]};
+var S={me:null,tab:"fu",tpl:[],team:[],fu:[],perf:[],range:"7",from:"",to:"",gm:"",goals:[],day:"",daily:null,logs:[],logf:"",trash:[],rem:[],pays:[],payf:"all",clients:[],tplEdit:[],qs:[],qn:0};
 var RANK={owner:0,admin:1,unit_manager:2,team_leader:3,senior_recruiter:4,recruiter:5};
 var ROLE_AR={owner:"المالك",admin:"أدمن",unit_manager:"يونيت مانجر",team_leader:"تيم ليدر",senior_recruiter:"سينيور",recruiter:"ريكروتر"};
 var ST_AR={new:"جديد",contacted:"تم التواصل",interview:"إنترفيو",accepted:"مقبول",validated:"Validated",hired:"Hired",rejected:"مرفوض",no_answer:"لم يرد"};
@@ -133,11 +135,11 @@ function fill(t,o){return String(t).replace(/\{(\w+)\}/g,function(m,k){return o[
 
 var TABS=[
  {k:"fu",t:"&#128222; متابعات",all:1},{k:"pf",t:"&#128200; الأداء",all:1},{k:"gl",t:"&#127919; الأهداف",all:1},
- {k:"dy",t:"&#128221; تقرير اليوم",boss:1},{k:"lg",t:"&#128269; السجل",boss:1},{k:"tr",t:"&#128465; المحذوفات",boss:1},
+ {k:"dy",t:"&#128221; تقرير اليوم",boss:1},{k:"qs",t:"&#10067; الأسئلة",boss:1},{k:"lg",t:"&#128269; السجل",boss:1},{k:"tr",t:"&#128465; المحذوفات",boss:1},
  {k:"tp",t:"&#128172; قوالب الرسائل",boss:1},{k:"py",t:"&#128179; الدفع والضمان",owner:1},{k:"cl",t:"&#127970; العملاء",owner:1},{k:"bk",t:"&#128190; نسخة احتياطية",boss:1}];
 function tabsHTML(){
   return TABS.filter(function(t){return t.all||(t.boss&&isBoss())||(t.owner&&isOwner())}).map(function(t){
-    return'<button class="tab'+(S.tab===t.k?" on":"")+'" data-tab="'+t.k+'">'+t.t+(t.k==="fu"&&S.fu.length?'<i>'+S.fu.length+'</i>':'')+'</button>'}).join("");
+    return'<button class="tab'+(S.tab===t.k?" on":"")+'" data-tab="'+t.k+'">'+t.t+(t.k==="fu"&&S.fu.length?'<i>'+S.fu.length+'</i>':'')+(t.k==="qs"&&S.qn?'<i>'+S.qn+'</i>':'')+'</button>'}).join("");
 }
 document.getElementById("lgb").textContent=LANG==="en"?"العربية":"English";
 async function boot(){
@@ -148,13 +150,14 @@ async function boot(){
   S.me=p.data;S.day=cairoDay();S.gm=S.day.slice(0,7);S.to=S.day;S.from=addDays(S.day,-7);
   var m=/#(\w+)/.exec(location.hash);if(m&&TABS.some(function(t){return t.k===m[1]}))S.tab=m[1];
   var t=await sb.from("msg_templates").select("*").order("sort");S.tpl=t.data||[];
+  if(isBoss()){try{var qc=await sb.rpc("open_questions_count");S.qn=qc.data||0}catch(x){}}
   await go(S.tab);
 }
 async function go(k){
   S.tab=k;$("tabs").innerHTML=tabsHTML();$("app").innerHTML='<div class="empty">جاري التحميل...</div>';
   try{
     if(k==="fu")await loadFu();else if(k==="pf")await loadPerf();else if(k==="gl")await loadGoals();else if(k==="dy")await loadDaily();
-    else if(k==="lg")await loadLog();else if(k==="tr")await loadTrash();else if(k==="py")await loadPays();else if(k==="cl")await loadClients();else if(k==="tp")await loadTpl();
+    else if(k==="lg")await loadLog();else if(k==="tr")await loadTrash();else if(k==="py")await loadPays();else if(k==="cl")await loadClients();else if(k==="tp")await loadTpl();else if(k==="qs")await loadQs();
   }catch(e){$("app").innerHTML='<div class="empty">تعذر التحميل: '+esc(e.message||e)+'<br>اتأكد إن ops_1.sql اتشغّل.</div>';return}
   draw();
 }
@@ -170,13 +173,26 @@ async function loadTrash(){
 }
 async function loadPays(){S.pays=err(await sb.from("commissions").select("*").order("created_at",{ascending:false}).limit(500))||[]}
 async function loadClients(){S.clients=err(await sb.rpc("clients_report"))||[]}
+async function loadQs(){S.qs=err(await sb.rpc("ai_questions_report"))||[];S.qn=S.qs.filter(function(q){return q.escalated&&!q.handled}).length;$("tabs").innerHTML=tabsHTML()}
 async function loadTpl(){var t=err(await sb.from("msg_templates").select("*").order("sort"));S.tpl=t||[]}
 
 function draw(){
   var k=S.tab,h="";
   if(k==="fu")h=fuHTML();else if(k==="pf")h=pfHTML();else if(k==="gl")h=glHTML();else if(k==="dy")h=dyHTML();else if(k==="lg")h=lgHTML();
-  else if(k==="tr")h=trHTML();else if(k==="tp")h=tpHTML();else if(k==="py")h=pyHTML();else if(k==="cl")h=clHTML();else if(k==="bk")h=bkHTML();
+  else if(k==="tr")h=trHTML();else if(k==="tp")h=tpHTML();else if(k==="py")h=pyHTML();else if(k==="cl")h=clHTML();else if(k==="bk")h=bkHTML();else if(k==="qs")h=qsHTML();
   $("app").innerHTML=h;
+}
+/* ---------- candidate questions ---------- */
+function qsHTML(){
+  if(!S.qs.length)return'<div class="empty">مفيش أسئلة من المرشحين لسه.</div>';
+  return S.qs.map(function(q){
+    var open=q.escalated&&!q.handled;
+    return'<div class="card" style="--c:'+(open?"var(--acc)":"var(--ok)")+(q.handled?";opacity:.65":"")+'"><div class="row"><span class="nm">'+esc(q.full_name||"—")+'</span>'+(open?'<span class="pill">محتاج رد</span>':q.handled?'<span class="pill">تم الرد</span>':'')+'</div>'+
+    '<div class="mu">'+esc(((q.job_company||"")+" · "+(q.job_title||"")).replace(/^ · $/,"تقديم عام"))+' · '+fdt(q.at)+'</div>'+
+    '<div style="margin:6px 0"><b>'+esc(q.question)+'</b></div>'+
+    (q.answer?'<div class="mu">'+esc(q.answer)+'</div>':'')+
+    '<div class="btns">'+(q.phone?'<a class="b s" target="_blank" rel="noopener" href="https://wa.me/'+waNum(q.phone)+'">&#128172; واتساب</a><a class="b s" href="tel:'+esc(q.phone)+'">&#128222; اتصال</a>':'')+
+    (q.escalated?'<button class="b s" data-qh="'+q.id+'" data-qv="'+(q.handled?0:1)+'">'+(q.handled?"رجّعه مفتوح":"تم الرد")+'</button>':'')+'</div></div>'}).join("");
 }
 /* ---------- follow-ups ---------- */
 function fuHTML(){
@@ -369,6 +385,7 @@ document.addEventListener("click",async function(e){
   if(d.td){if(!confirm("مسح القالب؟"))return;var r9=await sb.from("msg_templates").delete().eq("id",d.td);if(r9.error){toast(r9.error.message);return}await go("tp");return}
   if(d.tn){var t2=$("nt_t").value.trim(),b2=$("nt_b").value.trim();if(!t2||!b2){toast("اكتب العنوان والنص");return}var r10=await sb.from("msg_templates").insert({title:t2,body:b2,sort:S.tpl.length+1});if(r10.error){toast(r10.error.message);return}await go("tp");return}
   if(d.pf&&b.classList.contains("chip")){S.payf=d.pf;draw();return}
+  if(d.qh){var qr=await sb.rpc("mark_question_handled",{p_id:d.qh,p_done:d.qv==="1"});if(qr.error){toast(qr.error.message);return}await go("qs");return}
   if(d.ps){
     var card=document.querySelector('[data-py="'+d.ps+'"]'),amt=card.querySelector("[data-pa]").value,paid=card.querySelector("[data-pp]").checked,pd=card.querySelector("[data-pd]").value,rs=card.querySelector("[data-pr]").value,nt=card.querySelector("[data-pn]").value.trim();
     var upd={client_amount:amt===""?null:parseInt(amt,10),client_paid:paid,client_paid_at:paid?(pd||cairoDay()):null,resigned_at:rs||null,pay_note:nt||null};
