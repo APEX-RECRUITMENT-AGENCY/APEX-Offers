@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>العمليات - Apex</title><meta name="theme-color" content="#d91616"><meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="icon-192.png">
+<style>
+:root{--bg:#0a0a0b;--card:#141416;--tx:#f2f2f3;--mu:#a5a5ab;--acc:#d91616;--bd:#2a2a2e;--ok:#2ecc71;--warn:#f5b942;--bad:#ff6b6b;--blue:#4da3ff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;line-height:1.6;padding:16px 12px 60px}
+.w{max-width:760px;margin:0 auto}@media(min-width:1000px){.w{max-width:1100px}}
+header{text-align:center;border-bottom:2px solid var(--acc);padding-bottom:12px;margin-bottom:14px}
+header img{width:60px;height:60px;border-radius:16px;border:1px solid var(--bd)}
+h1{margin:6px 0 0;font-size:22px}header p{margin:0;color:var(--mu);font-size:13px}
+.top{display:flex;gap:8px;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+a.lk,.b{background:none;border:1px solid var(--bd);color:var(--tx);border-radius:10px;padding:7px 12px;font-size:14px;cursor:pointer;text-decoration:none;display:inline-block;font-family:inherit}
+.b.p{background:linear-gradient(180deg,#f02a2a,#a50f0f);border:0;font-weight:700}
+.b.d{color:var(--bad)}.b.s{padding:5px 10px;font-size:13px}
+.b:disabled{opacity:.5}
+select,input,textarea{padding:9px 10px;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--tx);font-size:15px;max-width:100%;font-family:inherit}
+textarea{width:100%;min-height:70px}
+.tabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;padding-bottom:2px;position:sticky;top:0;background:var(--bg);padding-top:6px;z-index:3}
+.tab{flex:none;border:1px solid var(--bd);background:none;color:var(--tx);border-radius:10px;padding:8px 12px;font-size:14px;cursor:pointer;white-space:nowrap;font-family:inherit}
+.tab.on{background:rgba(217,22,22,.18);border-color:var(--acc);font-weight:700}
+.tab i{font-style:normal;background:var(--acc);border-radius:99px;padding:0 7px;font-size:12px;margin-inline-start:4px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:12px 14px;margin-bottom:10px;border-inline-start:3px solid var(--c,var(--acc))}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.nm{font-weight:700;font-size:16px}.mu{color:var(--mu);font-size:13px}
+.pill{font-size:12px;border-radius:99px;padding:2px 10px;background:rgba(217,22,22,.16);border:1px solid var(--acc);white-space:nowrap}
+.pill.w{background:rgba(245,185,66,.14);border-color:var(--warn);color:var(--warn)}
+.pill.g{background:rgba(46,204,113,.14);border-color:var(--ok);color:var(--ok)}
+.pill.b2{background:rgba(77,163,255,.14);border-color:var(--blue);color:var(--blue)}
+.btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center}
+.sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:12px}
+.sc{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:8px 12px;border-top:3px solid var(--c,var(--acc))}
+.sc small{color:var(--mu);display:block;font-size:12px}.sc b{font-size:20px}
+.fun{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:8px;text-align:center}
+.fun div{background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:4px 2px}.fun small{display:block;color:var(--mu);font-size:11px}.fun b{font-size:16px}
+.bar{height:9px;background:var(--bg);border:1px solid var(--bd);border-radius:99px;overflow:hidden;margin-top:6px}.bar i{display:block;height:100%;background:linear-gradient(90deg,#a50f0f,#f02a2a)}
+.bar.ok i{background:linear-gradient(90deg,#1e9b52,#2ecc71)}
+.empty{text-align:center;color:var(--mu);padding:30px 0}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.g2 label{font-size:12px;color:var(--mu);display:block}.g2 input,.g2 select{width:100%}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.chip{border:1px solid var(--bd);background:none;color:var(--tx);border-radius:99px;padding:5px 12px;font-size:13px;cursor:pointer;font-family:inherit}.chip.on{background:rgba(217,22,22,.18);border-color:var(--acc)}
+.lg{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;border-top:1px dashed var(--bd);padding:7px 0;font-size:14px}.lg:first-child{border-top:0}
+.tm{color:var(--mu);font-size:12px;white-space:nowrap;direction:ltr}
+.ro{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+pre{white-space:pre-wrap;background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:10px;font-family:inherit;font-size:14px}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#222;border:1px solid var(--bd);padding:9px 16px;border-radius:12px;z-index:9;max-width:90%}
+</style></head><body><div class="w">
+<header><img src="icon-192.png" alt="Apex"><h1>&#9881;&#65039; العمليات والمتابعة</h1><p>Apex Recruitment Agency</p></header>
+<div class="top"><a class="lk" href="team.html">&rarr; رجوع للتيم</a><a class="lk" href="commission.html">&#128176; الكوميشن</a><button class="lk" id="lgb" onclick="setLang(LANG==='en'?'ar':'en')" style="background:none;border:1px solid var(--bd);border-radius:99px;cursor:pointer;font-family:inherit"></button></div>
+<div id="tabs" class="tabs"></div>
+<div id="app" class="empty">جاري التحميل...</div>
+</div>
+<script>
+var DICT=[
+["العمليات - Apex","Operations - Apex"],["العمليات والمتابعة","Operations & Follow-up"],["رجوع للتيم","Back to team"],["الكوميشن","Commission"],["جاري التحميل...","Loading..."],
+["المالك","Owner"],["أدمن","Admin"],["يونيت مانجر","Unit Manager"],["تيم ليدر","Team Leader"],["سينيور","Senior"],["ريكروتر:","Recruiter:"],["ريكروتر","Recruiter"],
+["جديد ومحدش كلّمه","New and nobody contacted"],["جديد،","new,"],["جديد ·","new ·"],["جديد","New"],["تم التواصل (من المتابعات)","Contacted (from follow-ups)"],["تم التواصل","Contacted"],["إنترفيو:","Interviews:"],["إنترفيو","Interview"],["مقبولين:","Accepted:"],["مقبولين","Accepted"],["مقبول ومفيش حركة","Accepted, no activity"],["مقبول","Accepted"],["مرفوضين:","Rejected:"],["مرفوضين","Rejected"],["مرفوض","Rejected"],["لم يرد","No answer"],
+["تذكير جه ميعاده","Reminder is due"],["الإنترفيو عدّى، سجّل النتيجة","Interview passed, log the result"],["ساكت بقاله فترة","No activity for a while"],
+["متابعات متأخرة حالياً:","Overdue follow-ups now:"],["متابعات متأخرة:","Overdue follow-ups:"],["متابعات","Follow-ups"],["الأداء","Performance"],["الأهداف","Goals"],["تقرير اليوم","Daily report"],["السجل","Activity log"],["المحذوفات","Trash"],["قوالب الرسائل","Message templates"],["الدفع والضمان","Payments & guarantee"],["العملاء","Clients"],["نسخة احتياطية","Backup"],
+["سجّل دخول من صفحة التيم الأول.","Sign in from the team page first."],["فتح صفحة التيم","Open team page"],["الحساب مش متسجل في السيستم.","This account is not registered in the system."],["تعذر التحميل:","Failed to load:"],["اتأكد إن ops_1.sql اتشغّل.","Make sure the ops_1 SQL files were run."],
+["مفيش متابعات متأخرة. كل المرشحين متابَعين.","No overdue follow-ups. All candidates are covered."],["مرشح محتاج متابعة","candidates need follow-up"],["تقديم عام","General application"],["ملاحظة:","Note:"],["الإنترفيو:","Interview:"],["اتصال","Call"],["قالب الرسالة","Message template"],["واتساب","WhatsApp"],["ذكّرني بكرة","Remind me tomorrow"],["بعد ٣ أيام","In 3 days"],["فتح الكارت","Open card"],
+["النهاردة","Today"],["٧ أيام","7 days"],["٣٠ يوم","30 days"],["الشهر ده","This month"],["مفيش بيانات.","No data."],["مرشحين جداد:","New candidates:"],["مرشحين جداد","New candidates"],["مرشحين","Candidates"],["(كوميشن)","(commission)"],["التحويل","Conversion"],["تحت:","Under:"],["اتكلّموا:","Contacted:"],["اتكلّموا","Contacted"],["رُفض:","Rejected:"],["بكوميشن في الفترة:","with commission in period:"],["تحويل:","Conversion:"],["تحويل ","Conversion "],
+["الشهر","Month"],["مفيش أعضاء.","No members."],["لسه مفيش هدف","No target yet"],["مسح الهدف","Clear target"],["الهدف","Target"],["حفظ","Save"],
+["الـ Hired بيتحسب من أول Hire اتسجل بالكوميشن، والتيم ليدر واليونيت مانجر بيتحسبلهم Hired فريقهم.","Hired is counted from the first Hire recorded with commission. Team leaders and unit managers are credited with their team's hires."],
+["تقرير Apex ليوم","Apex report for"],["حركة","actions"],["من غير نشاط النهاردة","No activity today"],["من غير نشاط:","No activity:"],["اليوم","Day"],["الريكروترز","Recruiters"],["انسخ التقرير للواتساب","Copy report for WhatsApp"],["،",","],
+["نظام / فورم","System / form"],["مرشح جديد","New candidate"],["غيّر الحالة","Changed status"],["نقل مرشح","Moved candidate"],["مسح مرشح","Deleted candidate"],["عضو انضم","Member joined"],["غيّر منصب","Changed role"],["عطّل حساب","Disabled account"],["فعّل حساب","Enabled account"],["اتشال عضو","Member removed"],["رجّع مرشحين","Restored candidates"],["بدون","none"],["تحت","under"],["الكل","All"],["مفيش سجلات.","No records."],["نظام","System"],
+["بيتعرض آخر ٣٠٠ حدث. السجل بيبدأ من لحظة تشغيل ops_1.sql.","Showing the last 300 events. The log starts from when the ops SQL was run."],
+["مرشحين اتمسحوا (بيتحفظوا ٣٠ يوم)","Deleted candidates (kept for 30 days)"],["سلة المحذوفات فاضية.","Trash is empty."],["استرجاع المرشح ده؟","Restore this candidate?"],["استرجاع","Restore"],["امسح نهائياً الأقدم من ٣٠ يوم","Permanently delete items older than 30 days"],["أعضاء اتشالوا","Removed members"],["مفيش.","None."],["اعمله دعوة جديدة الأول، وبعد ما يسجل اختاره هنا:","Create a new invite first, then pick them here after they sign up:"],["رجّع مرشحيه ليه","Give their candidates back"],
+["المتغيرات اللي تقدر تستخدمها: {name} اسم المرشح، {offer} الأوفر، {time} ميعاد الإنترفيو، {recruiter} اسم الريكروتر.","Variables you can use: {name} candidate name, {offer} the offer, {time} interview time, {recruiter} recruiter name."],["مسح","Delete"],["قالب جديد","New template"],["العنوان","Title"],["نص الرسالة","Message text"],["إضافة","Add"],
+["استقال قبل نهاية الضمان، راجع الكوميشن","Resigned before the guarantee ended, review the commission"],["استقال بعد الضمان","Resigned after the guarantee"],["الضمان خلص ولسه مدفعش","Guarantee ended and not paid yet"],["الضمان بيخلص خلال أسبوع","Guarantee ends within a week"],["الضمان لحد","Guarantee until"],["اتدفع:","Paid:"],["اتدفع","Paid"],["لسه مستحق","Still due"],["مستحق:","Due:"],["محتاج مراجعة","Needs review"],["مش مدفوع","Unpaid"],["مدفوع","Paid"],["مفيش نتايج.","No results."],["المبلغ اللي العميل بيدفعه (EGP)","Amount the client pays (EGP)"],["تاريخ الاستقالة (لو حصلت)","Resignation date (if any)"],["العميل دفع","Client paid"],["ملاحظة","Note"],["الصفحة دي ليك إنت بس (المالك).","This page is for you only (owner)."],
+["النسخة الاحتياطية","Backup"],["نزّل نسخة كاملة (JSON)","Download full backup (JSON)"],["نزّل المرشحين (CSV)","Download candidates (CSV)"],["النسخة الكاملة فيها: الأعضاء، المرشحين، الكوميشن، الأسعار، الملاحظات، الأهداف، القوالب، الدعوات. حطها في Google Drive أو على جهازك.","The full backup includes members, candidates, commissions, rates, notes, goals, templates and invites. Store it in Google Drive or on your device."],["عشان النسخ يبقى تلقائي كل يوم، استخدم ملف backup_to_drive.gs المرفق واتبع الخطوات اللي في أوله.","For automatic daily backups, use the attached backup_to_drive.gs file and follow the steps at its top."],
+["اتحمّلت","Downloaded"],["تمام","Done"],["هفكّرك","I'll remind you"],["اكتب رقم","Enter a number"],["اتحفظ","Saved"],["اتنسخ","Copied"],["انسخ من المربع تحت","Copy from the box below"],["اترجّع","Restored"],["مسح نهائي لكل اللي أقدم من ٣٠ يوم؟","Permanently delete everything older than 30 days?"],["اتمسح","Deleted"],["ترجّع مرشحيه للحساب المختار؟","Give this member's candidates to the selected account?"],["اكتب العنوان والنص","Enter a title and text"],["مسح القالب؟","Delete this template?"],["مرشح","candidate"]
+
+,["اتشالوا","removed"],["اتشال","Removed"],["اترجّعوا","restored"],["عدّى أكتر من أسبوع","over a week old"],["آخر نسخة نزّلتها من هنا:","Last backup downloaded from here:"],["لسه ما نزّلتش نسخة من هنا","No backup downloaded from here yet"],["بواسطة","by"],["كان معاه","had"]
+
+,["الأسئلة","Questions"],["مفيش أسئلة من المرشحين لسه.","No candidate questions yet."],["محتاج رد","Needs reply"],["تم الرد","Replied"],["رجّعه مفتوح","Reopen"],["اتصال","Call"]
+].sort(function(a,b){return b[0].length-a[0].length});
+/*i18n*/
+var LANG=(function(){try{return localStorage.getItem("apexLang")==="en"?"en":"ar"}catch(e){return"ar"}})();
+var RX=[
+ [/آخر حركة من (\d+) يوم/g,"Last activity $1 days ago"],
+ [/فاضل (\d+) يوم/g,"$1 days left"],
+ [/كان معاه (\d+) مرشح/g,"had $1 candidates"],
+ [/اتمسح (\d+)/g,"Deleted $1"],
+ [/اترجّع (\d+) مرشح/g,"Restored $1 candidates"],
+ [/(\d+) مرشح محتاج متابعة/g,"$1 candidates need follow-up"],
+ [/اتمسح (.+?) بواسطة/g,"Deleted $1 by"],
+ [/^\s*من\s*$/,"From"],[/^\s*إلى\s*$/,"To"],
+ [/^ من (\d+) \(/,"of $1 ("],[/\(من (\d+) يوم\)/,"($1 days ago)"]
+];
+function X(s){
+  if(LANG!=="en"||s==null)return s;
+  s=String(s);if(!/[؀-ۿ]/.test(s))return s;
+  RX.forEach(function(r){s=s.replace(r[0],r[1])});
+  DICT.forEach(function(d){if(s.indexOf(d[0])>-1)s=s.split(d[0]).join(d[1])});
+  return s.replace(/[٠-٩]/g,function(c){return c.charCodeAt(0)-1632});
+}
+(function(){
+  if(LANG!=="en")return;
+  var de=document.documentElement;de.lang="en";de.dir="ltr";document.title=X(document.title);
+  var _c=window.confirm,_a=window.alert;window.confirm=function(m){return _c(X(m))};window.alert=function(m){return _a(X(m))};
+  var AT=["placeholder","title","aria-label"];
+  function fix(n){
+    if(n.nodeType===3){if(/[؀-ۿ]/.test(n.nodeValue)){var p=n.parentNode;if(p&&(p.tagName==="TEXTAREA"||p.tagName==="SCRIPT"||p.tagName==="STYLE"))return;var v=X(n.nodeValue);if(v!==n.nodeValue)n.nodeValue=v}return}
+    if(n.nodeType!==1||n.tagName==="SCRIPT"||n.tagName==="STYLE")return;
+    AT.forEach(function(a){if(n.hasAttribute(a)){var v=n.getAttribute(a),w=X(v);if(w!==v)n.setAttribute(a,w)}});
+    for(var c=n.firstChild;c;c=c.nextSibling)fix(c);
+  }
+  var mo=new MutationObserver(function(ms){ms.forEach(function(m){if(m.type==="characterData")fix(m.target);else m.addedNodes.forEach(fix)})});
+  document.addEventListener("DOMContentLoaded",function(){fix(document.body);mo.observe(document.body,{childList:true,subtree:true,characterData:true})});
+})();
+function setLang(l){try{localStorage.setItem("apexLang",l)}catch(e){}location.reload()}
+</script>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+var C=window.APEX_CONFIG,sb=supabase.createClient(C.SUPABASE_URL,C.SUPABASE_ANON_KEY);
+var S={me:null,tab:"fu",tpl:[],team:[],fu:[],perf:[],range:"7",from:"",to:"",gm:"",goals:[],day:"",daily:null,logs:[],logf:"",trash:[],rem:[],pays:[],payf:"all",clients:[],tplEdit:[],qs:[],qn:0};
+var RANK={owner:0,admin:1,unit_manager:2,team_leader:3,senior_recruiter:4,recruiter:5};
+var ROLE_AR={owner:"المالك",admin:"أدمن",unit_manager:"يونيت مانجر",team_leader:"تيم ليدر",senior_recruiter:"سينيور",recruiter:"ريكروتر"};
+var ST_AR={new:"جديد",contacted:"تم التواصل",interview:"إنترفيو",accepted:"مقبول",validated:"Validated",hired:"Hired",rejected:"مرفوض",no_answer:"لم يرد"};
+var FU_AR={reminder:"تذكير جه ميعاده",interview_done:"الإنترفيو عدّى، سجّل النتيجة",idle_new:"جديد ومحدش كلّمه",idle:"ساكت بقاله فترة",accepted_idle:"مقبول ومفيش حركة"};
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function $(i){return document.getElementById(i)}
+function toast(m){var t=document.createElement("div");t.className="toast";t.textContent=m;document.body.appendChild(t);setTimeout(function(){t.remove()},2600)}
+function cairoDay(d){return (d||new Date()).toLocaleDateString("en-CA",{timeZone:"Africa/Cairo"})}
+function addDays(s,n){var d=new Date(s+"T12:00:00Z");d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)}
+function fdt(v){if(!v)return"";return new Date(v).toLocaleString(LANG==="en"?"en-GB":"ar-EG",{timeZone:"Africa/Cairo",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}
+function fd(v){if(!v)return"";return new Date(v).toLocaleDateString(LANG==="en"?"en-GB":"ar-EG",{timeZone:"Africa/Cairo",day:"numeric",month:"short"})}
+function waNum(p){var d=String(p||"").replace(/\D/g,"");if(d.indexOf("00")===0)d=d.slice(2);else if(d.charAt(0)==="0")d="20"+d.slice(1);else if(d.length===10)d="20"+d;return d}
+function isBoss(){return S.me&&(S.me.role==="owner"||S.me.role==="admin")}
+function isOwner(){return S.me&&S.me.role==="owner"}
+function money(n){return(Number(n)||0).toLocaleString("en-US")+" EGP"}
+function fill(t,o){return String(t).replace(/\{(\w+)\}/g,function(m,k){return o[k]!=null?o[k]:m})}
+
+var TABS=[
+ {k:"fu",t:"&#128222; متابعات",all:1},{k:"pf",t:"&#128200; الأداء",all:1},{k:"gl",t:"&#127919; الأهداف",all:1},
+ {k:"dy",t:"&#128221; تقرير اليوم",boss:1},{k:"qs",t:"&#10067; الأسئلة",boss:1},{k:"jn",t:"&#129309; طلبات الانضمام",boss:1},{k:"lg",t:"&#128269; السجل",boss:1},{k:"tr",t:"&#128465; المحذوفات",boss:1},
+ {k:"tp",t:"&#128172; قوالب الرسائل",boss:1},{k:"py",t:"&#128179; الدفع والضمان",owner:1},{k:"cl",t:"&#127970; العملاء",owner:1},{k:"bk",t:"&#128190; نسخة احتياطية",boss:1}];
+function tabsHTML(){
+  return TABS.filter(function(t){return t.all||(t.boss&&isBoss())||(t.owner&&isOwner())}).map(function(t){
+    return'<button class="tab'+(S.tab===t.k?" on":"")+'" data-tab="'+t.k+'">'+t.t+(t.k==="fu"&&S.fu.length?'<i>'+S.fu.length+'</i>':'')+(t.k==="qs"&&S.qn?'<i>'+S.qn+'</i>':'')+(t.k==="jn"&&S.jn_n?'<i>'+S.jn_n+'</i>':'')+'</button>'}).join("");
+}
+document.getElementById("lgb").textContent=LANG==="en"?"العربية":"English";
+async function boot(){
+  var s=await sb.auth.getSession();
+  if(!s.data.session){$("app").innerHTML='<div class="empty">سجّل دخول من صفحة التيم الأول.<br><br><a class="b p" href="team.html">فتح صفحة التيم</a></div>';return}
+  var p=await sb.from("profiles").select("id,full_name,role").eq("id",s.data.session.user.id).single();
+  if(p.error||!p.data){$("app").innerHTML='<div class="empty">الحساب مش متسجل في السيستم.</div>';return}
+  S.me=p.data;S.day=cairoDay();S.gm=S.day.slice(0,7);S.to=S.day;S.from=addDays(S.day,-7);
+  var m=/#(\w+)/.exec(location.hash);if(m&&TABS.some(function(t){return t.k===m[1]}))S.tab=m[1];
+  var t=await sb.from("msg_templates").select("*").order("sort");S.tpl=t.data||[];
+  if(isBoss()){try{var qc=await sb.rpc("open_questions_count");S.qn=qc.data||0}catch(x){}try{var jc=await sb.rpc("open_team_apps_count");S.jn_n=jc.data||0}catch(x){}}
+  await go(S.tab);
+}
+async function go(k){
+  S.tab=k;$("tabs").innerHTML=tabsHTML();$("app").innerHTML='<div class="empty">جاري التحميل...</div>';
+  try{
+    if(k==="fu")await loadFu();else if(k==="pf")await loadPerf();else if(k==="gl")await loadGoals();else if(k==="dy")await loadDaily();
+    else if(k==="lg")await loadLog();else if(k==="tr")await loadTrash();else if(k==="py")await loadPays();else if(k==="cl")await loadClients();else if(k==="tp")await loadTpl();else if(k==="qs")await loadQs();else if(k==="jn")await loadJn();
+  }catch(e){$("app").innerHTML='<div class="empty">تعذر التحميل: '+esc(e.message||e)+'<br>اتأكد إن ops_1.sql اتشغّل.</div>';return}
+  draw();
+}
+function err(r){if(r.error)throw r.error;return r.data}
+async function loadFu(){var d=err(await sb.rpc("followups"));S.fu=d||[];$("tabs").innerHTML=tabsHTML()}
+async function loadPerf(){S.perf=err(await sb.rpc("perf_report",{p_from:S.from,p_to:S.to}))||[]}
+async function loadGoals(){S.goals=err(await sb.rpc("goals_report",{p_month:S.gm+"-01"}))||[]}
+async function loadDaily(){S.daily=err(await sb.rpc("daily_report",{p_day:S.day}))}
+async function loadLog(){S.logs=err(await sb.from("audit_log").select("*").order("at",{ascending:false}).limit(300))||[]}
+async function loadTrash(){
+  S.trash=err(await sb.from("deleted_applications").select("id,deleted_at,deleted_by_name,full_name,phone").order("deleted_at",{ascending:false}).limit(300))||[];
+  if(isOwner()){S.rem=err(await sb.from("deleted_members").select("*").order("removed_at",{ascending:false}).limit(50))||[];S.team=err(await sb.from("profiles").select("id,full_name,role,active").eq("active",true).order("full_name"))||[]}
+}
+async function loadPays(){S.pays=err(await sb.from("commissions").select("*").order("created_at",{ascending:false}).limit(500))||[]}
+async function loadClients(){S.clients=err(await sb.rpc("clients_report"))||[]}
+async function loadQs(){S.qs=err(await sb.rpc("ai_questions_report"))||[];S.qn=S.qs.filter(function(q){return q.escalated&&!q.handled}).length;$("tabs").innerHTML=tabsHTML()}
+async function loadTpl(){var t=err(await sb.from("msg_templates").select("*").order("sort"));S.tpl=t||[]}
+
+function draw(){
+  var k=S.tab,h="";
+  if(k==="fu")h=fuHTML();else if(k==="pf")h=pfHTML();else if(k==="gl")h=glHTML();else if(k==="dy")h=dyHTML();else if(k==="lg")h=lgHTML();
+  else if(k==="tr")h=trHTML();else if(k==="tp")h=tpHTML();else if(k==="py")h=pyHTML();else if(k==="cl")h=clHTML();else if(k==="bk")h=bkHTML();else if(k==="qs")h=qsHTML();else if(k==="jn")h=jnHTML();
+  $("app").innerHTML=h;
+}
+/* ---------- candidate questions ---------- */
+function jnMsg(a){
+  var n=String(a.full_name||"").trim().split(/\s+/)[0],r={recruiter:"ريكروتر",team_leader:"تيم ليدر",unit_manager:"يونيت مانجر"}[a.role_wanted]||"";
+  if(a.status==="accepted")return"مبروك يا "+n+" 🎉\nتم قبولك معانا في Apex Recruitment Agency كـ "+r+".\nهنجهّز لك حسابك على السيستم ونبعتلك بيانات الدخول وخطوات البداية. لو عندك أي سؤال أنا موجود.";
+  if(a.status==="rejected")return"مساء الخير يا "+n+"،\nشكراً لاهتمامك بالانضمام لفريق Apex. بعد مراجعة طلبك، مش هنقدر نكمّل معاك في الوقت الحالي، وهنبقى نتواصل معاك لو فيه فرصة مناسبة مستقبلاً. بالتوفيق 🙏";
+  return"مساء الخير يا "+n+" 👋\nشكراً لتقديمك في Apex Recruitment Agency على دور "+r+".\nاستلمنا طلبك وحابين نتعرّف عليك أكتر. ينفع نتكلم مكالمة قصيرة؟ قولي الوقت المناسب ليك النهارده أو بكرة.";
+}
+async function loadJn(){S.jn=err(await sb.rpc("team_apps_report"))||[];S.jn_n=S.jn.filter(function(a){return a.status==="new"}).length;$("tabs").innerHTML=tabsHTML()}
+function jnHTML(){
+  if(!S.jn||!S.jn.length)return'<div class="empty">مفيش طلبات انضمام لسه. انشر لينك صفحة الانضمام.</div>';
+  var RL={recruiter:"ريكروتر",team_leader:"تيم ليدر",unit_manager:"يونيت مانجر"},SL={"new":"جديد",contacted:"اتكلمنا",accepted:"اتقبل",rejected:"اترفض"};
+  return S.jn.map(function(a){
+    var tm=a.role_wanted==="unit_manager"?"تيم ليدرز: "+(a.leaders_count==null?"-":a.leaders_count)+" · ريكروترز: "+(a.recruiters_count==null?"-":a.recruiters_count):a.role_wanted==="team_leader"?"ريكروترز معاه: "+(a.recruiters_count==null?"-":a.recruiters_count):"";
+    return'<div class="card" style="--c:'+(a.status==="new"?"var(--acc)":"var(--ok)")+(a.status==="rejected"?";opacity:.6":"")+'"><div class="row"><span class="nm">'+esc(a.full_name)+'</span><span class="pill">'+esc(RL[a.role_wanted]||"")+' · '+esc(SL[a.status]||"")+'</span></div>'+
+    '<div class="mu">'+fdt(a.created_at)+(a.city?" · "+esc(a.city):"")+(a.age?" · "+esc(a.age)+" سنة":"")+'</div>'+
+    '<div style="margin:6px 0">الخبرة: <b>'+esc(a.years_exp||"-")+'</b> · الوقت: '+esc(a.availability||"-")+(tm?'<br><b>'+tm+'</b>':'')+'</div>'+
+    (a.prev_exp?'<div class="mu" style="white-space:pre-wrap">'+esc(a.prev_exp)+'</div>':'')+
+    (a.current_work?'<div class="mu">بيشتغل: '+esc(a.current_work)+'</div>':'')+
+    (a.team_size_note?'<div class="mu" style="white-space:pre-wrap">عن فريقه: '+esc(a.team_size_note)+'</div>':'')+
+    (a.why?'<div class="mu" style="white-space:pre-wrap">ليه: '+esc(a.why)+'</div>':'')+
+    '<div class="btns"><a class="b s" target="_blank" rel="noopener" href="https://wa.me/'+waNum(a.phone)+'?text='+encodeURIComponent(jnMsg(a))+'">&#128172; رد جاهز</a><a class="b s" href="tel:'+esc(a.phone)+'">&#128222; اتصال</a>'+
+    ["contacted","accepted","rejected"].filter(function(x){return x!==a.status}).map(function(x){return'<button class="b s" data-ja="'+a.id+'" data-js="'+x+'">'+SL[x]+'</button>'}).join("")+'</div></div>'}).join("");
+}
+function qsHTML(){
+  if(!S.qs.length)return'<div class="empty">مفيش أسئلة من المرشحين لسه.</div>';
+  return S.qs.map(function(q){
+    var open=q.escalated&&!q.handled;
+    return'<div class="card" style="--c:'+(open?"var(--acc)":"var(--ok)")+(q.handled?";opacity:.65":"")+'"><div class="row"><span class="nm">'+esc(q.full_name||"—")+'</span>'+(open?'<span class="pill">محتاج رد</span>':q.handled?'<span class="pill">تم الرد</span>':'')+'</div>'+
+    '<div class="mu">'+esc(((q.job_company||"")+" · "+(q.job_title||"")).replace(/^ · $/,"تقديم عام"))+' · '+fdt(q.at)+'</div>'+
+    '<div style="margin:6px 0"><b>'+esc(q.question)+'</b></div>'+
+    (q.answer?'<div class="mu">'+esc(q.answer)+'</div>':'')+
+    '<div class="btns">'+(q.phone?'<a class="b s" target="_blank" rel="noopener" href="https://wa.me/'+waNum(q.phone)+'">&#128172; واتساب</a><a class="b s" href="tel:'+esc(q.phone)+'">&#128222; اتصال</a>':'')+
+    (q.escalated?'<button class="b s" data-qh="'+q.id+'" data-qv="'+(q.handled?0:1)+'">'+(q.handled?"رجّعه مفتوح":"تم الرد")+'</button>':'')+'</div></div>'}).join("");
+}
+/* ---------- follow-ups ---------- */
+function fuHTML(){
+  if(!S.fu.length)return'<div class="empty">&#9989; مفيش متابعات متأخرة. كل المرشحين متابَعين.</div>';
+  var tsel=S.tpl.map(function(t,i){return'<option value="'+i+'">'+esc(t.title)+'</option>'}).join("");
+  return'<div class="mu" style="margin-bottom:8px">'+S.fu.length+' مرشح محتاج متابعة</div>'+S.fu.map(function(a){
+    var col=a.reason==="reminder"||a.reason==="interview_done"?"var(--warn)":a.reason==="accepted_idle"?"var(--blue)":"var(--acc)";
+    return'<div class="card" style="--c:'+col+'" data-fu="'+a.id+'"><div class="row"><span class="nm">'+esc(a.full_name)+'</span><span class="pill">'+esc(FU_AR[a.reason]||a.reason)+'</span></div>'+
+    '<div class="mu">'+esc(a.job||"تقديم عام")+' · '+esc(ST_AR[a.status]||a.status)+(S.me.role!=="recruiter"&&a.recruiter_name?' · '+esc(a.recruiter_name):'')+'</div>'+
+    '<div class="mu">آخر حركة من '+(a.idle_days||0)+' يوم'+(a.interview_at?' · الإنترفيو: '+fdt(a.interview_at):'')+(a.followup_note?' · ملاحظة: '+esc(a.followup_note):'')+'</div>'+
+    '<div class="btns"><a class="b s" href="tel:'+esc(a.phone)+'">&#128222; اتصال</a>'+
+    '<select data-tsel="'+a.id+'" aria-label="قالب الرسالة">'+tsel+'</select><button class="b s" data-wa="'+a.id+'">واتساب</button></div>'+
+    '<div class="btns"><button class="b s p" data-done="'+a.id+'">&#9989; تم التواصل</button>'+
+    '<button class="b s" data-snz="'+a.id+'" data-d="1">ذكّرني بكرة</button><button class="b s" data-snz="'+a.id+'" data-d="3">بعد ٣ أيام</button>'+
+    '<a class="b s" href="team.html#cand='+a.id+'">فتح الكارت</a></div></div>'}).join("");
+}
+function waFor(id){
+  var a=S.fu.find(function(x){return x.id===id});if(!a)return;
+  var sel=document.querySelector('[data-tsel="'+id+'"]'),t=S.tpl[sel?+sel.value:0];
+  var txt=t?fill(t.body,{name:a.full_name,offer:a.job||"",time:a.interview_at?fdt(a.interview_at):"",recruiter:S.me.full_name}):"";
+  window.open("https://wa.me/"+waNum(a.phone)+(txt?"?text="+encodeURIComponent(txt):""),"_blank");
+}
+/* ---------- performance ---------- */
+function pfHTML(){
+  var f=S.from,t=S.to,rg=S.range;
+  var h='<div class="chips">'+[["0","النهاردة"],["7","٧ أيام"],["30","٣٠ يوم"],["m","الشهر ده"]].map(function(x){return'<button class="chip'+(rg===x[0]?" on":"")+'" data-rg="'+x[0]+'">'+x[1]+'</button>'}).join("")+'</div>'+
+  '<div class="g2" style="margin-bottom:10px"><div><label>من</label><input type="date" id="pf_f" value="'+f+'"></div><div><label>إلى</label><input type="date" id="pf_t" value="'+t+'"></div></div>';
+  if(!S.perf.length)return h+'<div class="empty">مفيش بيانات.</div>';
+  var T={total:0,hired:0,acc:0,hp:0};S.perf.forEach(function(r){T.total+=r.total;T.hired+=r.hired;T.acc+=r.accepted;T.hp+=r.hires_period});
+  h+='<div class="sum"><div class="sc" style="--c:var(--blue)"><small>مرشحين</small><b>'+T.total+'</b></div><div class="sc" style="--c:var(--warn)"><small>مقبولين</small><b>'+T.acc+'</b></div><div class="sc" style="--c:var(--ok)"><small>Hired (كوميشن)</small><b>'+T.hp+'</b></div><div class="sc"><small>التحويل</small><b>'+(T.total?Math.round(100*T.hired/T.total):0)+'%</b></div></div>';
+  S.perf.forEach(function(r,i){
+    var cv=r.total?Math.round(100*r.hired/r.total):0;
+    h+='<div class="card"><div class="row"><span class="nm">'+(i<3&&r.hires_period>0?['&#129351;','&#129352;','&#129353;'][i]+' ':'')+esc(r.full_name)+'</span><span class="pill b2">'+esc(ROLE_AR[r.role]||r.role)+'</span></div>'+
+    (r.parent_name?'<div class="mu">تحت: '+esc(r.parent_name)+'</div>':'')+
+    '<div class="fun"><div><small>مرشحين</small><b>'+r.total+'</b></div><div><small>اتكلّموا</small><b>'+r.contacted+'</b></div><div><small>إنترفيو+</small><b>'+r.interviews+'</b></div><div><small>مقبول+</small><b>'+r.accepted+'</b></div><div><small>Hired</small><b style="color:var(--ok)">'+r.hired+'</b></div></div>'+
+    '<div class="mu" style="margin-top:6px">رُفض: '+r.rejected+' · Hired بكوميشن في الفترة: <b>'+r.hires_period+'</b> · تحويل: '+cv+'%</div></div>'});
+  return h;
+}
+function setRange(r){
+  var d=cairoDay();S.range=r;S.to=d;
+  if(r==="0")S.from=d;else if(r==="7")S.from=addDays(d,-7);else if(r==="30")S.from=addDays(d,-30);else if(r==="m")S.from=d.slice(0,8)+"01";
+}
+/* ---------- goals ---------- */
+function canSet(row){var m=S.me.role;return["owner","admin","unit_manager","team_leader"].indexOf(m)>-1&&RANK[m]<RANK[row.role]}
+function glHTML(){
+  var h='<div class="row" style="margin-bottom:10px"><label class="mu">الشهر</label><input type="month" id="gm" value="'+S.gm+'"></div>';
+  if(!S.goals.length)return h+'<div class="empty">مفيش أعضاء.</div>';
+  S.goals.forEach(function(g){
+    var pct=g.target?Math.min(100,Math.round(100*g.hires/g.target)):0,ok=g.target&&g.hires>=g.target;
+    h+='<div class="card" style="--c:'+(ok?"var(--ok)":"var(--acc)")+'"><div class="row"><span class="nm">'+esc(g.full_name)+'</span><span class="pill b2">'+esc(ROLE_AR[g.role]||g.role)+'</span></div>'+
+    '<div class="mu">Hired: <b>'+g.hires+'</b>'+(g.target?' من '+g.target+' ('+pct+'%)':' · لسه مفيش هدف')+(ok?' &#127881;':'')+'</div>'+
+    (g.target?'<div class="bar'+(ok?" ok":"")+'"><i style="width:'+pct+'%"></i></div>':'')+
+    (canSet(g)?'<div class="btns"><input type="number" min="0" inputmode="numeric" style="width:90px" data-gt="'+g.user_id+'" value="'+(g.target==null?"":g.target)+'" placeholder="الهدف"><button class="b s p" data-gs="'+g.user_id+'">حفظ</button>'+(g.target!=null?'<button class="b s d" data-gx="'+g.user_id+'">مسح الهدف</button>':'')+'</div>':'')+'</div>'});
+  return h+'<p class="mu">الـ Hired بيتحسب من أول Hire اتسجل بالكوميشن، والتيم ليدر واليونيت مانجر بيتحسبلهم Hired فريقهم.</p>';
+}
+/* ---------- daily ---------- */
+function dyText(d){
+  var L=["تقرير Apex ليوم "+d.day,"مرشحين جداد: "+d.new_apps,"اتكلّموا: "+d.to_contacted,"إنترفيو: "+d.to_interview,"مقبولين: "+d.to_accepted,"Hired: "+d.to_hired,"مرفوضين: "+d.to_rejected,"متابعات متأخرة: "+d.pending_followups,""];
+  (d.per_recruiter||[]).forEach(function(r){L.push("- "+r.name+": "+r.new+" جديد، "+r.actions+" حركة")});
+  if((d.inactive||[]).length){L.push("");L.push("من غير نشاط: "+d.inactive.join("، "))}
+  return L.join("\n");
+}
+function dyHTML(){
+  var d=S.daily,h='<div class="row" style="margin-bottom:10px"><label class="mu">اليوم</label><input type="date" id="dy" value="'+S.day+'"></div>';
+  if(!d)return h;
+  h+='<div class="sum"><div class="sc" style="--c:var(--blue)"><small>مرشحين جداد</small><b>'+d.new_apps+'</b></div><div class="sc"><small>اتكلّموا</small><b>'+d.to_contacted+'</b></div><div class="sc"><small>إنترفيو</small><b>'+d.to_interview+'</b></div><div class="sc" style="--c:var(--warn)"><small>مقبولين</small><b>'+d.to_accepted+'</b></div><div class="sc" style="--c:var(--ok)"><small>Hired</small><b>'+d.to_hired+'</b></div><div class="sc" style="--c:var(--bad)"><small>مرفوضين</small><b>'+d.to_rejected+'</b></div></div>';
+  h+='<div class="card"><div class="nm">الريكروترز</div>'+(d.per_recruiter||[]).map(function(r){return'<div class="lg"><span><b>'+esc(r.name)+'</b></span><span class="mu">'+r.new+' جديد · '+r.actions+' حركة</span></div>'}).join("")+'</div>';
+  if((d.inactive||[]).length)h+='<div class="card" style="--c:var(--bad)"><div class="nm">من غير نشاط النهاردة</div><div class="mu">'+d.inactive.map(esc).join("، ")+'</div></div>';
+  h+='<div class="mu">متابعات متأخرة حالياً: <b>'+d.pending_followups+'</b></div><div class="btns"><button class="b p" data-copy="dy">انسخ التقرير للواتساب</button></div><pre>'+esc(dyText(d))+'</pre>';
+  return h;
+}
+/* ---------- log ---------- */
+var LG_AR={app_create:"مرشح جديد",app_status:"غيّر الحالة",app_assign:"نقل مرشح",app_delete:"مسح مرشح",member_join:"عضو انضم",member_role:"غيّر منصب",member_disable:"عطّل حساب",member_enable:"فعّل حساب",member_delete:"اتشال عضو",reassign_removed:"رجّع مرشحين"};
+function lgDetail(l){
+  var d=l.detail||{};
+  if(l.action==="app_status")return(ST_AR[d.from]||d.from)+" ← "+(ST_AR[d.to]||d.to);
+  if(l.action==="app_assign")return(d.from||"بدون")+" ← "+(d.to||"بدون");
+  if(l.action==="member_role")return(ROLE_AR[d.from_role]||d.from_role)+" ← "+(ROLE_AR[d.to_role]||d.to_role)+(d.to_parent?" تحت "+d.to_parent:"");
+  if(l.action==="app_create")return d.offer||"";
+  if(l.action==="member_join")return ROLE_AR[d.role]||d.role||"";
+  if(l.action==="reassign_removed")return(d.moved||0)+" مرشح";
+  return"";
+}
+function lgHTML(){
+  var acts=Object.keys(LG_AR),h='<div class="chips"><button class="chip'+(!S.logf?" on":"")+'" data-lf="">الكل</button>'+acts.map(function(a){return'<button class="chip'+(S.logf===a?" on":"")+'" data-lf="'+a+'">'+LG_AR[a]+'</button>'}).join("")+'</div>';
+  var rows=S.logs.filter(function(l){return!S.logf||l.action===S.logf});
+  if(!rows.length)return h+'<div class="empty">مفيش سجلات.</div>';
+  return h+'<div class="card">'+rows.map(function(l){return'<div class="lg"><span class="tm">'+fdt(l.at)+'</span><span><b>'+esc(l.actor_name||"نظام")+'</b> · '+(LG_AR[l.action]||l.action)+' · '+esc(l.entity_name||"")+'<br><span class="mu">'+esc(lgDetail(l))+'</span></span></div>'}).join("")+'</div><p class="mu">بيتعرض آخر ٣٠٠ حدث. السجل بيبدأ من لحظة تشغيل ops_1.sql.</p>';
+}
+/* ---------- trash ---------- */
+function trHTML(){
+  var h='<h3 style="color:#ff8a8a;margin:4px 0 8px;font-size:15px">مرشحين اتمسحوا (بيتحفظوا ٣٠ يوم)</h3>';
+  if(!S.trash.length)h+='<div class="empty">سلة المحذوفات فاضية.</div>';
+  S.trash.forEach(function(t){
+    var left=30-Math.floor((Date.now()-new Date(t.deleted_at))/864e5);
+    h+='<div class="card"><div class="row"><span class="nm">'+esc(t.full_name)+'</span><span class="mu" dir="ltr">'+esc(t.phone)+'</span></div><div class="mu">اتمسح '+fd(t.deleted_at)+' بواسطة '+esc(t.deleted_by_name||"—")+' · فاضل '+Math.max(left,0)+' يوم</div><div class="btns"><button class="b s p" data-rs="'+t.id+'">استرجاع</button></div></div>'});
+  if(isOwner()&&S.trash.length)h+='<div class="btns"><button class="b s d" data-purge="1">امسح نهائياً الأقدم من ٣٠ يوم</button></div>';
+  if(isOwner()){
+    h+='<h3 style="color:#ff8a8a;margin:20px 0 8px;font-size:15px">أعضاء اتشالوا</h3>';
+    if(!S.rem.length)h+='<div class="empty">مفيش.</div>';
+    S.rem.forEach(function(m){
+      var n=(m.app_ids||[]).length;
+      h+='<div class="card"><div class="row"><span class="nm">'+esc(m.full_name)+'</span><span class="pill b2">'+esc(ROLE_AR[m.role]||m.role)+'</span></div><div class="mu">اتشال '+fd(m.removed_at)+(m.email?' · '+esc(m.email):'')+' · كان معاه '+n+' مرشح'+(m.restored?' · اترجّعوا':'')+'</div>'+
+      (n&&!m.restored?'<div class="mu">اعمله دعوة جديدة الأول، وبعد ما يسجل اختاره هنا:</div><div class="btns"><select data-rmsel="'+m.id+'">'+S.team.map(function(p){return'<option value="'+p.id+'">'+esc(p.full_name)+' ('+esc(ROLE_AR[p.role]||p.role)+')</option>'}).join("")+'</select><button class="b s p" data-rm="'+m.id+'">رجّع مرشحيه ليه</button></div>':'')+'</div>'});
+  }
+  return h;
+}
+/* ---------- templates ---------- */
+function tpHTML(){
+  var h='<div class="card"><div class="mu">المتغيرات اللي تقدر تستخدمها: {name} اسم المرشح، {offer} الأوفر، {time} ميعاد الإنترفيو، {recruiter} اسم الريكروتر.</div></div>';
+  S.tpl.forEach(function(t,i){h+='<div class="card"><input data-tt="'+t.id+'" value="'+esc(t.title)+'" style="width:100%;margin-bottom:6px"><textarea data-tb="'+t.id+'">'+esc(t.body)+'</textarea><div class="btns"><button class="b s p" data-ts="'+t.id+'">حفظ</button><button class="b s d" data-td="'+t.id+'">مسح</button></div></div>'});
+  return h+'<div class="card"><div class="nm">قالب جديد</div><input id="nt_t" placeholder="العنوان" style="width:100%;margin:6px 0"><textarea id="nt_b" placeholder="نص الرسالة"></textarea><div class="btns"><button class="b s p" data-tn="1">إضافة</button></div></div>';
+}
+/* ---------- payments ---------- */
+function payFlags(c){
+  var f=[],today=cairoDay();
+  if(c.resigned_at&&c.due_date&&c.resigned_at<c.due_date)f.push(["bad","استقال قبل نهاية الضمان، راجع الكوميشن"]);
+  else if(c.resigned_at)f.push(["w","استقال بعد الضمان"]);
+  if(!c.client_paid&&!c.resigned_at&&c.due_date){if(c.due_date<today)f.push(["bad","الضمان خلص ولسه مدفعش"]);else if(c.due_date<=addDays(today,7))f.push(["w","الضمان بيخلص خلال أسبوع"])}
+  return f;
+}
+function pyHTML(){
+  var all=S.pays,unpaid=0,paid=0,rev=0;
+  all.forEach(function(c){if(c.client_amount){if(c.client_paid)paid+=c.client_amount;else if(!c.resigned_at)unpaid+=c.client_amount};if(payFlags(c).some(function(x){return x[0]==="bad"}))rev++});
+  var h='<div class="sum"><div class="sc" style="--c:var(--ok)"><small>اتدفع</small><b>'+money(paid)+'</b></div><div class="sc" style="--c:var(--warn)"><small>لسه مستحق</small><b>'+money(unpaid)+'</b></div><div class="sc" style="--c:var(--bad)"><small>محتاج مراجعة</small><b>'+rev+'</b></div></div>'+
+  '<div class="chips">'+[["all","الكل"],["unpaid","مش مدفوع"],["rev","محتاج مراجعة"],["paid","مدفوع"]].map(function(x){return'<button class="chip'+(S.payf===x[0]?" on":"")+'" data-pf="'+x[0]+'">'+x[1]+'</button>'}).join("")+'</div>';
+  var list=all.filter(function(c){var bad=payFlags(c).some(function(x){return x[0]==="bad"});return S.payf==="all"||(S.payf==="unpaid"&&!c.client_paid)||(S.payf==="paid"&&c.client_paid)||(S.payf==="rev"&&bad)});
+  if(!list.length)return h+'<div class="empty">مفيش نتايج.</div>';
+  list.forEach(function(c){
+    var fl=payFlags(c);
+    h+='<div class="card" data-py="'+c.id+'" style="--c:'+(fl.some(function(x){return x[0]==="bad"})?"var(--bad)":c.client_paid?"var(--ok)":"var(--acc)")+'"><div class="row"><span class="nm">'+esc(c.cand_name)+'</span><span class="mu">'+fd(c.created_at)+'</span></div><div class="mu">'+esc(c.offer_label||"")+' · ريكروتر: '+esc(c.rec_name||"—")+(c.due_date?' · الضمان لحد '+c.due_date:'')+'</div>'+
+    fl.map(function(x){return'<div style="margin-top:4px"><span class="pill '+(x[0]==="bad"?"":"w")+'">'+x[1]+'</span></div>'}).join("")+
+    '<div class="g2" style="margin-top:8px"><div><label>المبلغ اللي العميل بيدفعه (EGP)</label><input type="number" inputmode="numeric" data-pa value="'+(c.client_amount==null?"":c.client_amount)+'"></div><div><label>تاريخ الاستقالة (لو حصلت)</label><input type="date" data-pr value="'+(c.resigned_at||"")+'"></div></div>'+
+    '<div class="ro" style="margin-top:8px"><label><input type="checkbox" data-pp'+(c.client_paid?" checked":"")+'> العميل دفع</label><input type="date" data-pd value="'+(c.client_paid_at||"")+'"></div>'+
+    '<input data-pn placeholder="ملاحظة" value="'+esc(c.pay_note||"")+'" style="width:100%;margin-top:8px"><div class="btns"><button class="b s p" data-ps="'+c.id+'">حفظ</button></div></div>'});
+  return h;
+}
+/* ---------- clients ---------- */
+function clHTML(){
+  if(!S.clients.length)return'<div class="empty">مفيش بيانات.</div>';
+  return S.clients.map(function(c){
+    return'<div class="card"><div class="row"><span class="nm">'+esc(c.company)+'</span><span class="pill g">تحويل '+c.hire_rate+'%</span></div>'+
+    '<div class="fun"><div><small>مرشحين</small><b>'+c.total+'</b></div><div><small>مقبول+</small><b>'+c.accepted+'</b></div><div><small>Hired</small><b style="color:var(--ok)">'+c.hired+'</b></div><div><small>مرفوض</small><b>'+c.rejected+'</b></div><div><small>مش مدفوع</small><b style="color:var(--warn)">'+c.unpaid_count+'</b></div></div>'+
+    '<div class="mu" style="margin-top:6px">اتدفع: <b>'+money(c.paid_amount)+'</b> · مستحق: <b>'+money(c.unpaid_amount)+'</b></div></div>'}).join("")+'<p class="mu">الصفحة دي ليك إنت بس (المالك).</p>';
+}
+/* ---------- backup ---------- */
+function lastBk(){try{return localStorage.getItem("apex_last_backup")||""}catch(e){return""}}
+function bkHTML(){
+  var lb=lastBk(),age=lb?Math.floor((Date.now()-new Date(lb))/864e5):null;
+  return'<div class="card" style="--c:'+(age==null||age>7?"var(--bad)":"var(--ok)")+'"><div class="nm">النسخة الاحتياطية</div><div class="mu">'+(lb?'آخر نسخة نزّلتها من هنا: '+fdt(lb)+' (من '+age+' يوم)':'لسه ما نزّلتش نسخة من هنا.')+(age!=null&&age>7?' &#9888;&#65039; عدّى أكتر من أسبوع.':'')+'</div>'+
+  '<div class="btns"><button class="b p" data-bk="json">نزّل نسخة كاملة (JSON)</button><button class="b" data-bk="csv">نزّل المرشحين (CSV)</button></div></div>'+
+  '<div class="card"><div class="mu">النسخة الكاملة فيها: الأعضاء، المرشحين، الكوميشن، الأسعار، الملاحظات، الأهداف، القوالب، الدعوات. حطها في Google Drive أو على جهازك.<br>عشان النسخ يبقى تلقائي كل يوم، استخدم ملف backup_to_drive.gs المرفق واتبع الخطوات اللي في أوله.</div></div>';
+}
+function dl(name,text,type){var b=new Blob(["﻿"+text],{type:type||"text/plain;charset=utf-8"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500)}
+function csvCell(v){if(v==null)return"";if(typeof v==="object")v=JSON.stringify(v);v=String(v);return/[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
+async function doBackup(kind){
+  var r=await sb.rpc("export_backup");if(r.error){toast(r.error.message);return}
+  var d=r.data,stamp=cairoDay();
+  if(kind==="json")dl("apex-backup-"+stamp+".json",JSON.stringify(d,null,1),"application/json");
+  else{
+    var rows=d.applications||[],cols=["full_name","phone","email","status","job_company","job_title","recruiter_id","created_at","interview_at","age","english_level","graduation","location","notes"];
+    dl("apex-candidates-"+stamp+".csv",[cols.join(",")].concat(rows.map(function(x){return cols.map(function(c){return csvCell(x[c])}).join(",")})).join("\n"),"text/csv;charset=utf-8");
+  }
+  try{localStorage.setItem("apex_last_backup",new Date().toISOString())}catch(e){}
+  toast("اتحمّلت");draw();
+}
+/* ---------- events ---------- */
+document.addEventListener("click",async function(e){
+  var b=e.target.closest("button,a");if(!b)return;var d=b.dataset;
+  if(d.tab){go(d.tab);return}
+  if(d.wa){waFor(d.wa);return}
+  if(d.done){
+    b.disabled=true;var r=await sb.from("candidate_notes").insert({app_id:d.done,author_id:S.me.id,author_name:S.me.full_name,kind:"call",body:"تم التواصل (من المتابعات)"});
+    if(r.error){toast(r.error.message);b.disabled=false;return}
+    S.fu=S.fu.filter(function(x){return x.id!==d.done});$("tabs").innerHTML=tabsHTML();draw();toast("تمام");return}
+  if(d.snz){
+    var days=parseInt(d.d,10),dt=new Date();dt.setDate(dt.getDate()+days);dt.setHours(10,0,0,0);
+    var r2=await sb.from("applications").update({followup_at:dt.toISOString()}).eq("id",d.snz);
+    if(r2.error){toast(r2.error.message);return}
+    S.fu=S.fu.filter(function(x){return x.id!==d.snz});$("tabs").innerHTML=tabsHTML();draw();toast("هفكّرك");return}
+  if(d.rg){setRange(d.rg);await go("pf");return}
+  if(d.gs){var v=document.querySelector('[data-gt="'+d.gs+'"]').value;if(v===""){toast("اكتب رقم");return}var r3=await sb.rpc("set_goal",{p_user:d.gs,p_month:S.gm+"-01",p_target:parseInt(v,10)});if(r3.error){toast(r3.error.message);return}toast("اتحفظ");await go("gl");return}
+  if(d.gx){var r4=await sb.rpc("set_goal",{p_user:d.gx,p_month:S.gm+"-01",p_target:-1});if(r4.error){toast(r4.error.message);return}await go("gl");return}
+  if(d.copy==="dy"){var tx=X(dyText(S.daily));try{await navigator.clipboard.writeText(tx);toast("اتنسخ")}catch(x){toast("انسخ من المربع تحت")}return}
+  if(d.lf!==undefined&&b.classList.contains("chip")){S.logf=d.lf;draw();return}
+  if(d.rs){if(!confirm("استرجاع المرشح ده؟"))return;var r5=await sb.rpc("restore_application",{p_id:d.rs});if(r5.error){toast(r5.error.message);return}toast("اترجّع");await go("tr");return}
+  if(d.purge){if(!confirm("مسح نهائي لكل اللي أقدم من ٣٠ يوم؟"))return;var r6=await sb.rpc("purge_trash",{p_days:30});if(r6.error){toast(r6.error.message);return}toast("اتمسح "+r6.data);await go("tr");return}
+  if(d.rm){var sel=document.querySelector('[data-rmsel="'+d.rm+'"]');if(!confirm("ترجّع مرشحيه للحساب المختار؟"))return;var r7=await sb.rpc("reassign_removed",{p_removed:d.rm,p_new:sel.value});if(r7.error){toast(r7.error.message);return}toast("اترجّع "+r7.data+" مرشح");await go("tr");return}
+  if(d.ts){var t1=document.querySelector('[data-tt="'+d.ts+'"]').value.trim(),b1=document.querySelector('[data-tb="'+d.ts+'"]').value.trim();if(!t1||!b1){toast("اكتب العنوان والنص");return}var r8=await sb.from("msg_templates").update({title:t1,body:b1}).eq("id",d.ts);toast(r8.error?r8.error.message:"اتحفظ");return}
+  if(d.td){if(!confirm("مسح القالب؟"))return;var r9=await sb.from("msg_templates").delete().eq("id",d.td);if(r9.error){toast(r9.error.message);return}await go("tp");return}
+  if(d.tn){var t2=$("nt_t").value.trim(),b2=$("nt_b").value.trim();if(!t2||!b2){toast("اكتب العنوان والنص");return}var r10=await sb.from("msg_templates").insert({title:t2,body:b2,sort:S.tpl.length+1});if(r10.error){toast(r10.error.message);return}await go("tp");return}
+  if(d.pf&&b.classList.contains("chip")){S.payf=d.pf;draw();return}
+  if(d.ja){var jr=await sb.rpc("set_team_app_status",{p_id:d.ja,p_status:d.js});if(jr.error){toast(jr.error.message);return}await go("jn");return}
+  if(d.qh){var qr=await sb.rpc("mark_question_handled",{p_id:d.qh,p_done:d.qv==="1"});if(qr.error){toast(qr.error.message);return}await go("qs");return}
+  if(d.ps){
+    var card=document.querySelector('[data-py="'+d.ps+'"]'),amt=card.querySelector("[data-pa]").value,paid=card.querySelector("[data-pp]").checked,pd=card.querySelector("[data-pd]").value,rs=card.querySelector("[data-pr]").value,nt=card.querySelector("[data-pn]").value.trim();
+    var upd={client_amount:amt===""?null:parseInt(amt,10),client_paid:paid,client_paid_at:paid?(pd||cairoDay()):null,resigned_at:rs||null,pay_note:nt||null};
+    var r11=await sb.from("commissions").update(upd).eq("id",d.ps).select().single();
+    if(r11.error){toast(r11.error.message);return}
+    var i=S.pays.findIndex(function(x){return x.id===d.ps});if(i>-1)S.pays[i]=r11.data;draw();toast("اتحفظ");return}
+  if(d.bk){await doBackup(d.bk);return}
+});
+document.addEventListener("change",async function(e){
+  var t=e.target;
+  if(t.id==="pf_f"||t.id==="pf_t"){S.from=$("pf_f").value;S.to=$("pf_t").value;S.range="";if(S.from&&S.to&&S.from<=S.to)await go("pf");return}
+  if(t.id==="gm"&&t.value){S.gm=t.value;await go("gl");return}
+  if(t.id==="dy"&&t.value){S.day=t.value;await go("dy");return}
+});
+boot();
+</script></body></html>

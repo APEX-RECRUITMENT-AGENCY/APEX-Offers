@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Join Apex Team</title><meta name="theme-color" content="#d91616">
+<style>
+:root{--bg:#0a0a0b;--card:#141416;--ink:#e6e8ea;--mute:#9a9ea3;--line:#2b2d31;--acc:#d91616;--ok:#6fd08c;--bad:#ff8a80;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.6 system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;padding:16px;padding-top:max(16px,env(safe-area-inset-top))}
+.w{max-width:620px;margin:0 auto}
+header{text-align:center;margin:6px 0 16px}header img{width:64px;height:64px;border-radius:16px}header h1{font-size:22px;margin:8px 0 2px}header p{margin:0;color:var(--mute);font-size:14px}
+.top{display:flex;justify-content:flex-end}.lg{font:inherit;font-size:13px;border:1px solid var(--line);background:none;color:var(--ink);border-radius:999px;padding:5px 12px;cursor:pointer}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
+h2{font-size:18px;margin:0 0 8px}.mu{color:var(--mute);font-size:14px}
+.ben{display:grid;gap:8px;margin-top:8px}.ben div{background:#101012;border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:15px}
+.roles{display:grid;gap:10px}.role{text-align:start;font:inherit;color:var(--ink);background:#101012;border:1px solid var(--line);border-radius:14px;padding:14px;cursor:pointer;width:100%}
+.role.on{border-color:var(--acc);background:#2a0d0d}.role b{display:block;font-size:17px}.role span{color:var(--mute);font-size:13px}
+label{display:block;margin-top:12px;color:var(--mute);font-size:13px}
+input,select,textarea{width:100%;font:inherit;background:#0f0f11;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px;margin-top:4px}
+textarea{min-height:84px;resize:vertical}
+.btn{font:inherit;font-weight:700;width:100%;margin-top:16px;border:0;background:var(--acc);color:#fff;border-radius:12px;padding:13px;cursor:pointer}.btn:disabled{opacity:.5}
+.err{color:var(--bad);font-size:14px;margin-top:10px;min-height:20px}
+.done{text-align:center}.done .big{font-size:48px}
+.hid{display:none}
+.chain{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;font-size:13px;color:var(--mute);margin-top:8px}.chain b{color:var(--ink)}
+</style></head><body><div class="w">
+<div class="top"><button class="lg" id="lg">English</button></div>
+<header><img src="icon-192.png" alt="Apex"><h1>Apex Recruitment Agency</h1><p data-t="sub"></p></header>
+<div id="app"></div>
+</div>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+var C=window.APEX_CONFIG,sb=supabase.createClient(C.SUPABASE_URL,C.SUPABASE_ANON_KEY);
+var LANG="ar";try{LANG=localStorage.getItem("apexJoinLang")||"ar"}catch(e){}
+var ROLE="",DONE=false;
+var T={
+ sub:["انضم لفريقنا","Join our team"],
+ h1:["ليه تشتغل مع Apex؟","Why work with Apex?"],
+ b1:["سيستم شغال أوتوماتيك: تقييم المرشحين بالـAI وحجز الانترفيو من غير مجهود منك","An automated system: AI candidate evaluation and interview booking, with no manual work"],
+ b2:["عروض جاهزة من شركات كتير ومحتوى وإعلانات جاهزين تنشرهم","Ready offers from many companies, plus ready-made content and ads to post"],
+ b3:["لوحة خاصة بيك تتابع بيها مرشحينك وعمولتك","Your own dashboard to follow your candidates and commission"],
+ b4:["مسار ترقية واضح","A clear promotion path"],
+ chain:["ريكروتر","Recruiter","تيم ليدر","Team Leader","يونيت مانجر","Unit Manager"],
+ pick:["اختار الدور اللي عايزه","Choose the role you want"],
+ r_recruiter:["ريكروتر","Recruiter"],r_recruiter_d:["بتجيب مرشحين وتتابعهم","You bring in candidates and follow them up"],
+ r_team_leader:["تيم ليدر","Team Leader"],r_team_leader_d:["بتقود فريق ريكروترز","You lead a team of recruiters"],
+ r_unit_manager:["يونيت مانجر","Unit Manager"],r_unit_manager_d:["بتدير تيم ليدرز وريكروترز","You manage team leaders and recruiters"],
+ det:["بياناتك","Your details"],
+ name:["الاسم بالكامل","Full name"],phone:["رقم الواتساب","WhatsApp number"],email:["الإيميل (اختياري)","Email (optional)"],
+ city:["المدينة / المنطقة","City / area"],age:["السن","Age"],
+ years:["خبرتك في التوظيف أو المبيعات","Your experience in recruitment or sales"],
+ y0:["من غير خبرة","No experience"],y1:["أقل من سنة","Less than 1 year"],y2:["من سنة لـ 3 سنين","1 to 3 years"],y3:["من 3 لـ 5 سنين","3 to 5 years"],y4:["أكتر من 5 سنين","More than 5 years"],
+ prev:["احكي باختصار عن خبرتك السابقة","Briefly describe your previous experience"],
+ cur:["بتشتغل إيه دلوقتي؟","What do you do now?"],
+ av:["الوقت اللي تقدر تدّيه","Time you can give"],a1:["دوام كامل","Full time"],a2:["دوام جزئي","Part time"],a3:["في أوقات فاضية","Spare time"],
+ why:["ليه عايز تنضم لينا؟","Why do you want to join us?"],
+ q_rec:["كام ريكروتر تقدر تجيبهم أو تديرهم دلوقتي؟","How many recruiters can you bring or manage now?"],
+ q_lead:["كام تيم ليدر تقدر تجيبهم أو تديرهم؟","How many team leaders can you bring or manage?"],
+ q_rec2:["وكام ريكروتر إجمالاً في الفريق كله؟","And how many recruiters in total across the team?"],
+ note_tl:["لو عندك فريق جاهز، اكتب عنه (بيشتغلوا فين، وإزاي بتديرهم)","If you already have a team, tell us about it (where they work, how you manage them)"],
+ send:["ابعت الطلب","Send application"],
+ bad:["اكتب الاسم ورقم واتساب صحيح","Enter your name and a valid WhatsApp number"],
+ pickr:["اختار الدور الأول","Choose a role first"],
+ fail:["حصلت مشكلة، حاول تاني","Something went wrong, please try again"],
+ ok:["وصل طلبك!","We received your application!"],
+ ok2:["هنتواصل معاك على الواتساب في أقرب وقت.","We will contact you on WhatsApp soon."]
+};
+function t(k){var x=T[k];return x?x[LANG==="ar"?0:1]:k}
+function $(i){return document.getElementById(i)}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function chain(){var c=T.chain,h="",i;for(i=0;i<3;i++){h+=(i?"<span>&rarr;</span>":"")+"<b>"+c[i*2+(LANG==="ar"?0:1)]+"</b>"}return'<div class="chain">'+h+'</div>'}
+function roleBtn(k){return'<button class="role'+(ROLE===k?" on":"")+'" data-r="'+k+'"><b>'+t("r_"+k)+'</b><span>'+t("r_"+k+"_d")+'</span></button>'}
+function roleFields(){
+  if(ROLE==="team_leader")return'<label>'+t("q_rec")+'</label><input id="n_rec" type="number" min="0" max="500" inputmode="numeric"><label>'+t("note_tl")+'</label><textarea id="tnote"></textarea>';
+  if(ROLE==="unit_manager")return'<label>'+t("q_lead")+'</label><input id="n_lead" type="number" min="0" max="500" inputmode="numeric"><label>'+t("q_rec2")+'</label><input id="n_rec" type="number" min="0" max="1000" inputmode="numeric"><label>'+t("note_tl")+'</label><textarea id="tnote"></textarea>';
+  return"";
+}
+function paint(){
+  document.documentElement.lang=LANG;document.documentElement.dir=LANG==="ar"?"rtl":"ltr";
+  $("lg").textContent=LANG==="ar"?"English":"عربي";
+  document.querySelector('header p').textContent=t("sub");
+  if(DONE){$("app").innerHTML='<div class="card done"><div class="big">&#127881;</div><h2>'+t("ok")+'</h2><div class="mu">'+t("ok2")+'</div></div>';return}
+  var keep={};document.querySelectorAll("#app input,#app textarea,#app select").forEach(function(i){keep[i.id]=i.value});
+  $("app").innerHTML=
+   '<div class="card"><h2>'+t("h1")+'</h2><div class="ben"><div>&#129302; '+t("b1")+'</div><div>&#128188; '+t("b2")+'</div><div>&#128200; '+t("b3")+'</div><div>&#11014;&#65039; '+t("b4")+chain()+'</div></div></div>'+
+   '<div class="card"><h2>'+t("pick")+'</h2><div class="roles">'+roleBtn("recruiter")+roleBtn("team_leader")+roleBtn("unit_manager")+'</div></div>'+
+   '<div class="card'+(ROLE?"":" hid")+'" id="form"><h2>'+t("det")+'</h2>'+
+   '<label>'+t("name")+'</label><input id="f_n" autocomplete="name">'+
+   '<label>'+t("phone")+'</label><input id="f_p" type="tel" inputmode="tel" dir="ltr" autocomplete="tel">'+
+   '<label>'+t("email")+'</label><input id="f_e" type="email" dir="ltr" autocomplete="email">'+
+   '<label>'+t("city")+'</label><input id="f_c">'+
+   '<label>'+t("age")+'</label><input id="f_a" type="number" min="16" max="80" inputmode="numeric">'+
+   '<label>'+t("years")+'</label><select id="f_y"><option>'+t("y0")+'</option><option>'+t("y1")+'</option><option>'+t("y2")+'</option><option>'+t("y3")+'</option><option>'+t("y4")+'</option></select>'+
+   '<label>'+t("prev")+'</label><textarea id="f_pv"></textarea>'+
+   '<label>'+t("cur")+'</label><input id="f_cu">'+
+   '<label>'+t("av")+'</label><select id="f_av"><option>'+t("a1")+'</option><option>'+t("a2")+'</option><option>'+t("a3")+'</option></select>'+
+   roleFields()+
+   '<label>'+t("why")+'</label><textarea id="f_w"></textarea>'+
+   '<div class="err" id="err"></div><button class="btn" id="go">'+t("send")+'</button></div>';
+  Object.keys(keep).forEach(function(k){if($(k)&&k!=="f_y"&&k!=="f_av")$(k).value=keep[k]});
+  document.querySelectorAll("[data-r]").forEach(function(b){b.onclick=function(){ROLE=b.dataset.r;paint();$("form").scrollIntoView({behavior:"smooth",block:"start"})}});
+  if($("go"))$("go").onclick=submit;
+}
+async function submit(){
+  var name=$("f_n").value.trim(),ph=$("f_p").value.trim(),dg=ph.replace(/\D/g,"");
+  if(!ROLE){$("err").textContent=t("pickr");return}
+  if(name.length<2||dg.length<10){$("err").textContent=t("bad");return}
+  var n=function(id){var e=$(id);return e&&e.value!==""?parseInt(e.value,10):null};
+  $("go").disabled=true;$("err").textContent="";
+  var r=await sb.rpc("submit_team_application",{p_role:ROLE,p_name:name,p_phone:ph,p_email:$("f_e").value.trim(),p_city:$("f_c").value.trim(),p_age:n("f_a"),
+    p_years:$("f_y").value,p_prev:$("f_pv").value.trim(),p_current:$("f_cu").value.trim(),p_avail:$("f_av").value,p_why:$("f_w").value.trim(),
+    p_recruiters:n("n_rec"),p_leaders:n("n_lead"),p_team_note:$("tnote")?$("tnote").value.trim():null});
+  if(r.error){$("go").disabled=false;$("err").textContent=t("fail");return}
+  DONE=true;paint();window.scrollTo(0,0);
+}
+$("lg").onclick=function(){LANG=LANG==="ar"?"en":"ar";try{localStorage.setItem("apexJoinLang",LANG)}catch(e){}paint()};
+paint();
+</script></body></html>

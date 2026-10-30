@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(git init)",
+      "PowerShell(git add .)",
+      "PowerShell(git commit -m \"Initialize project and add optimized files\")",
+      "PowerShell(git branch -M main)",
+      "PowerShell(git remote add origin https://github.com/APEX-RECRUITMENT-AGENCY/APEX-Offers)",
+      "PowerShell(git push -u origin main)"
+    ]
+  }
+}
