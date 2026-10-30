@@ -102,7 +102,7 @@ function paint(){
 async function submit(){
   var name=$("f_n").value.trim(),ph=$("f_p").value.trim(),dg=ph.replace(/\D/g,"");
   if(!ROLE){$("err").textContent=t("pickr");return}
-  if(name.length<2||dg.length<10){$("err").textContent=t("bad");return}
+  if(name.length<2||dg.length<8){$("err").textContent=t("bad");return}
   var n=function(id){var e=$(id);return e&&e.value!==""?parseInt(e.value,10):null};
   $("go").disabled=true;$("err").textContent="";
   var r=await sb.rpc("submit_team_application",{p_role:ROLE,p_name:name,p_phone:ph,p_email:$("f_e").value.trim(),p_city:$("f_c").value.trim(),p_age:n("f_a"),
