@@ -183,6 +183,12 @@ function draw(){
   $("app").innerHTML=h;
 }
 /* ---------- candidate questions ---------- */
+function jnMsg(a){
+  var n=String(a.full_name||"").trim().split(/\s+/)[0],r={recruiter:"ريكروتر",team_leader:"تيم ليدر",unit_manager:"يونيت مانجر"}[a.role_wanted]||"";
+  if(a.status==="accepted")return"مبروك يا "+n+" 🎉\nتم قبولك معانا في Apex Recruitment Agency كـ "+r+".\nهنجهّز لك حسابك على السيستم ونبعتلك بيانات الدخول وخطوات البداية. لو عندك أي سؤال أنا موجود.";
+  if(a.status==="rejected")return"مساء الخير يا "+n+"،\nشكراً لاهتمامك بالانضمام لفريق Apex. بعد مراجعة طلبك، مش هنقدر نكمّل معاك في الوقت الحالي، وهنبقى نتواصل معاك لو فيه فرصة مناسبة مستقبلاً. بالتوفيق 🙏";
+  return"مساء الخير يا "+n+" 👋\nشكراً لتقديمك في Apex Recruitment Agency على دور "+r+".\nاستلمنا طلبك وحابين نتعرّف عليك أكتر. ينفع نتكلم مكالمة قصيرة؟ قولي الوقت المناسب ليك النهارده أو بكرة.";
+}
 async function loadJn(){S.jn=err(await sb.rpc("team_apps_report"))||[];S.jn_n=S.jn.filter(function(a){return a.status==="new"}).length;$("tabs").innerHTML=tabsHTML()}
 function jnHTML(){
   if(!S.jn||!S.jn.length)return'<div class="empty">مفيش طلبات انضمام لسه. انشر لينك صفحة الانضمام.</div>';
@@ -196,7 +202,7 @@ function jnHTML(){
     (a.current_work?'<div class="mu">بيشتغل: '+esc(a.current_work)+'</div>':'')+
     (a.team_size_note?'<div class="mu" style="white-space:pre-wrap">عن فريقه: '+esc(a.team_size_note)+'</div>':'')+
     (a.why?'<div class="mu" style="white-space:pre-wrap">ليه: '+esc(a.why)+'</div>':'')+
-    '<div class="btns"><a class="b s" target="_blank" rel="noopener" href="https://wa.me/'+waNum(a.phone)+'">&#128172; واتساب</a><a class="b s" href="tel:'+esc(a.phone)+'">&#128222; اتصال</a>'+
+    '<div class="btns"><a class="b s" target="_blank" rel="noopener" href="https://wa.me/'+waNum(a.phone)+'?text='+encodeURIComponent(jnMsg(a))+'">&#128172; رد جاهز</a><a class="b s" href="tel:'+esc(a.phone)+'">&#128222; اتصال</a>'+
     ["contacted","accepted","rejected"].filter(function(x){return x!==a.status}).map(function(x){return'<button class="b s" data-ja="'+a.id+'" data-js="'+x+'">'+SL[x]+'</button>'}).join("")+'</div></div>'}).join("");
 }
 function qsHTML(){
