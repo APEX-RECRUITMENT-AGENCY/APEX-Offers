@@ -355,7 +355,7 @@ async function getAI(){
   const t=await user.getIdToken();
   const r=await fetch(AI_URL,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+t},body:JSON.stringify({messages:input})});
   if(r.status===429)throw{code:'rate_limited'};
-  if(!r.ok){let tx='';try{const j=await r.json();tx=(j&&j.error)||''}catch(x){}throw{code:'error',status:r.status,msg:tx}}
+  if(!r.ok)throw{code:'error',status:r.status};
   const d=await r.json();
   return{text:d.text||''};
  };
@@ -376,7 +376,7 @@ async function askAI(q){
   a.textContent=r.text;chat.push({role:'assistant',content:r.text});
  }catch(e){
   chat.pop();
-  a.textContent=e&&e.code==='rate_limited'?'استنى شوية وجرب تاني.':e&&e.code==='login'?'سجّل دخول الأول من فوق عشان تستخدم المساعد.':e&&e.code==='not_granted'?'لازم توافق على استخدام المساعد عشان يشتغل.':e&&e.status?'حصلت مشكلة (رقم '+e.status+(e.msg?': '+e.msg:'')+')، ابعتها للمطور.':e instanceof TypeError?'مفيش اتصال بالـ Worker، راجع الرابط وإعداد ALLOWED_ORIGIN.':'حصلت مشكلة، جرب تاني.';
+  a.textContent=e&&e.code==='rate_limited'?'استنى شوية وجرب تاني.':e&&e.code==='login'?'سجّل دخول الأول من فوق عشان تستخدم المساعد.':e&&e.code==='not_granted'?'لازم توافق على استخدام المساعد عشان يشتغل.':e&&e.status?'حصلت مشكلة (رقم '+e.status+')، ابعته للمطور.':e instanceof TypeError?'مفيش اتصال بالـ Worker، راجع الرابط وإعداد ALLOWED_ORIGIN.':'حصلت مشكلة، جرب تاني.';
  }
  busy=false;$('ask').disabled=false;$('q').value='';
 }

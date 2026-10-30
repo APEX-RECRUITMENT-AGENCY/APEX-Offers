@@ -135,11 +135,11 @@ function fill(t,o){return String(t).replace(/\{(\w+)\}/g,function(m,k){return o[
 
 var TABS=[
  {k:"fu",t:"&#128222; متابعات",all:1},{k:"pf",t:"&#128200; الأداء",all:1},{k:"gl",t:"&#127919; الأهداف",all:1},
- {k:"dy",t:"&#128221; تقرير اليوم",boss:1},{k:"qs",t:"&#10067; الأسئلة",boss:1},{k:"lg",t:"&#128269; السجل",boss:1},{k:"tr",t:"&#128465; المحذوفات",boss:1},
+ {k:"dy",t:"&#128221; تقرير اليوم",boss:1},{k:"qs",t:"&#10067; الأسئلة",boss:1},{k:"jn",t:"&#129309; طلبات الانضمام",boss:1},{k:"lg",t:"&#128269; السجل",boss:1},{k:"tr",t:"&#128465; المحذوفات",boss:1},
  {k:"tp",t:"&#128172; قوالب الرسائل",boss:1},{k:"py",t:"&#128179; الدفع والضمان",owner:1},{k:"cl",t:"&#127970; العملاء",owner:1},{k:"bk",t:"&#128190; نسخة احتياطية",boss:1}];
 function tabsHTML(){
   return TABS.filter(function(t){return t.all||(t.boss&&isBoss())||(t.owner&&isOwner())}).map(function(t){
-    return'<button class="tab'+(S.tab===t.k?" on":"")+'" data-tab="'+t.k+'">'+t.t+(t.k==="fu"&&S.fu.length?'<i>'+S.fu.length+'</i>':'')+(t.k==="qs"&&S.qn?'<i>'+S.qn+'</i>':'')+'</button>'}).join("");
+    return'<button class="tab'+(S.tab===t.k?" on":"")+'" data-tab="'+t.k+'">'+t.t+(t.k==="fu"&&S.fu.length?'<i>'+S.fu.length+'</i>':'')+(t.k==="qs"&&S.qn?'<i>'+S.qn+'</i>':'')+(t.k==="jn"&&S.jn_n?'<i>'+S.jn_n+'</i>':'')+'</button>'}).join("");
 }
 document.getElementById("lgb").textContent=LANG==="en"?"العربية":"English";
 async function boot(){
@@ -150,14 +150,14 @@ async function boot(){
   S.me=p.data;S.day=cairoDay();S.gm=S.day.slice(0,7);S.to=S.day;S.from=addDays(S.day,-7);
   var m=/#(\w+)/.exec(location.hash);if(m&&TABS.some(function(t){return t.k===m[1]}))S.tab=m[1];
   var t=await sb.from("msg_templates").select("*").order("sort");S.tpl=t.data||[];
-  if(isBoss()){try{var qc=await sb.rpc("open_questions_count");S.qn=qc.data||0}catch(x){}}
+  if(isBoss()){try{var qc=await sb.rpc("open_questions_count");S.qn=qc.data||0}catch(x){}try{var jc=await sb.rpc("open_team_apps_count");S.jn_n=jc.data||0}catch(x){}}
   await go(S.tab);
 }
 async function go(k){
   S.tab=k;$("tabs").innerHTML=tabsHTML();$("app").innerHTML='<div class="empty">جاري التحميل...</div>';
   try{
     if(k==="fu")await loadFu();else if(k==="pf")await loadPerf();else if(k==="gl")await loadGoals();else if(k==="dy")await loadDaily();
-    else if(k==="lg")await loadLog();else if(k==="tr")await loadTrash();else if(k==="py")await loadPays();else if(k==="cl")await loadClients();else if(k==="tp")await loadTpl();else if(k==="qs")await loadQs();
+    else if(k==="lg")await loadLog();else if(k==="tr")await loadTrash();else if(k==="py")await loadPays();else if(k==="cl")await loadClients();else if(k==="tp")await loadTpl();else if(k==="qs")await loadQs();else if(k==="jn")await loadJn();
   }catch(e){$("app").innerHTML='<div class="empty">تعذر التحميل: '+esc(e.message||e)+'<br>اتأكد إن ops_1.sql اتشغّل.</div>';return}
   draw();
 }
@@ -179,10 +179,26 @@ async function loadTpl(){var t=err(await sb.from("msg_templates").select("*").or
 function draw(){
   var k=S.tab,h="";
   if(k==="fu")h=fuHTML();else if(k==="pf")h=pfHTML();else if(k==="gl")h=glHTML();else if(k==="dy")h=dyHTML();else if(k==="lg")h=lgHTML();
-  else if(k==="tr")h=trHTML();else if(k==="tp")h=tpHTML();else if(k==="py")h=pyHTML();else if(k==="cl")h=clHTML();else if(k==="bk")h=bkHTML();else if(k==="qs")h=qsHTML();
+  else if(k==="tr")h=trHTML();else if(k==="tp")h=tpHTML();else if(k==="py")h=pyHTML();else if(k==="cl")h=clHTML();else if(k==="bk")h=bkHTML();else if(k==="qs")h=qsHTML();else if(k==="jn")h=jnHTML();
   $("app").innerHTML=h;
 }
 /* ---------- candidate questions ---------- */
+async function loadJn(){S.jn=err(await sb.rpc("team_apps_report"))||[];S.jn_n=S.jn.filter(function(a){return a.status==="new"}).length;$("tabs").innerHTML=tabsHTML()}
+function jnHTML(){
+  if(!S.jn||!S.jn.length)return'<div class="empty">مفيش طلبات انضمام لسه. انشر لينك صفحة الانضمام.</div>';
+  var RL={recruiter:"ريكروتر",team_leader:"تيم ليدر",unit_manager:"يونيت مانجر"},SL={"new":"جديد",contacted:"اتكلمنا",accepted:"اتقبل",rejected:"اترفض"};
+  return S.jn.map(function(a){
+    var tm=a.role_wanted==="unit_manager"?"تيم ليدرز: "+(a.leaders_count==null?"-":a.leaders_count)+" · ريكروترز: "+(a.recruiters_count==null?"-":a.recruiters_count):a.role_wanted==="team_leader"?"ريكروترز معاه: "+(a.recruiters_count==null?"-":a.recruiters_count):"";
+    return'<div class="card" style="--c:'+(a.status==="new"?"var(--acc)":"var(--ok)")+(a.status==="rejected"?";opacity:.6":"")+'"><div class="row"><span class="nm">'+esc(a.full_name)+'</span><span class="pill">'+esc(RL[a.role_wanted]||"")+' · '+esc(SL[a.status]||"")+'</span></div>'+
+    '<div class="mu">'+fdt(a.created_at)+(a.city?" · "+esc(a.city):"")+(a.age?" · "+esc(a.age)+" سنة":"")+'</div>'+
+    '<div style="margin:6px 0">الخبرة: <b>'+esc(a.years_exp||"-")+'</b> · الوقت: '+esc(a.availability||"-")+(tm?'<br><b>'+tm+'</b>':'')+'</div>'+
+    (a.prev_exp?'<div class="mu" style="white-space:pre-wrap">'+esc(a.prev_exp)+'</div>':'')+
+    (a.current_work?'<div class="mu">بيشتغل: '+esc(a.current_work)+'</div>':'')+
+    (a.team_size_note?'<div class="mu" style="white-space:pre-wrap">عن فريقه: '+esc(a.team_size_note)+'</div>':'')+
+    (a.why?'<div class="mu" style="white-space:pre-wrap">ليه: '+esc(a.why)+'</div>':'')+
+    '<div class="btns"><a class="b s" target="_blank" rel="noopener" href="https://wa.me/'+waNum(a.phone)+'">&#128172; واتساب</a><a class="b s" href="tel:'+esc(a.phone)+'">&#128222; اتصال</a>'+
+    ["contacted","accepted","rejected"].filter(function(x){return x!==a.status}).map(function(x){return'<button class="b s" data-ja="'+a.id+'" data-js="'+x+'">'+SL[x]+'</button>'}).join("")+'</div></div>'}).join("");
+}
 function qsHTML(){
   if(!S.qs.length)return'<div class="empty">مفيش أسئلة من المرشحين لسه.</div>';
   return S.qs.map(function(q){
@@ -385,6 +401,7 @@ document.addEventListener("click",async function(e){
   if(d.td){if(!confirm("مسح القالب؟"))return;var r9=await sb.from("msg_templates").delete().eq("id",d.td);if(r9.error){toast(r9.error.message);return}await go("tp");return}
   if(d.tn){var t2=$("nt_t").value.trim(),b2=$("nt_b").value.trim();if(!t2||!b2){toast("اكتب العنوان والنص");return}var r10=await sb.from("msg_templates").insert({title:t2,body:b2,sort:S.tpl.length+1});if(r10.error){toast(r10.error.message);return}await go("tp");return}
   if(d.pf&&b.classList.contains("chip")){S.payf=d.pf;draw();return}
+  if(d.ja){var jr=await sb.rpc("set_team_app_status",{p_id:d.ja,p_status:d.js});if(jr.error){toast(jr.error.message);return}await go("jn");return}
   if(d.qh){var qr=await sb.rpc("mark_question_handled",{p_id:d.qh,p_done:d.qv==="1"});if(qr.error){toast(qr.error.message);return}await go("qs");return}
   if(d.ps){
     var card=document.querySelector('[data-py="'+d.ps+'"]'),amt=card.querySelector("[data-pa]").value,paid=card.querySelector("[data-pp]").checked,pd=card.querySelector("[data-pd]").value,rs=card.querySelector("[data-pr]").value,nt=card.querySelector("[data-pn]").value.trim();
