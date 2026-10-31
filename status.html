@@ -142,16 +142,17 @@ function render(s){
   clearInterval(POLL);POLL=null;CURS=s;
   if(!s){show('<div class="card"><div class="big">&#128683;</div><h2>'+B("Link not found","اللينك غير صحيح")+'</h2><div class="mu" style="text-align:center">'+B("Please use the link you received after applying.","استخدم اللينك اللي ظهرلك بعد التقديم.")+'</div></div>');return}
   var n=esc(s.name||"");
+  var tipHtml = s.tip ? '<div class="card" style="border-color:var(--acc);background:rgba(217,22,22,0.05);text-align:center;font-size:14px;">'+esc(s.tip)+'</div>' : '';
   if(s.decision==="processing"&&Date.now()-T0>180000)s.decision="review";
   if(s.decision==="processing"){
-    show('<div class="card"><div class="sp"></div><h2>'+B("Hi "+n+", we are reviewing your voice note","أهلاً "+n+"، بنراجع التسجيل بتاعك")+'</h2><div class="mu" style="text-align:center">'+B("This takes about a minute. Keep this page open.","بياخد حوالي دقيقة. سيب الصفحة مفتوحة.")+'</div></div>');
+    show(tipHtml+'<div class="card"><div class="sp"></div><h2>'+B("Hi "+n+", we are reviewing your voice note","أهلاً "+n+"، بنراجع التسجيل بتاعك")+'</h2><div class="mu" style="text-align:center">'+B("This takes about a minute. Keep this page open.","بياخد حوالي دقيقة. سيب الصفحة مفتوحة.")+'</div></div>');
     POLL=setInterval(load,6000);return}
   if(s.decision==="review"){
-    show('<div class="card"><div class="big">&#9203;</div><h2>'+B("Thank you "+n+"!","شكراً يا "+n+"!")+'</h2><div class="mu" style="text-align:center">'+B("Your application is under review by our team. We will contact you on WhatsApp.","طلبك تحت المراجعة عند الفريق، هنتواصل معاك على واتساب.")+'</div></div><div class="card">'+detailsHTML(s)+'</div>');return}
+    show(tipHtml+'<div class="card"><div class="big">&#9203;</div><h2>'+B("Thank you "+n+"!","شكراً يا "+n+"!")+'</h2><div class="mu" style="text-align:center">'+B("Your application is under review by our team. We will contact you on WhatsApp.","طلبك تحت المراجعة عند الفريق، هنتواصل معاك على واتساب.")+'</div></div><div class="card">'+detailsHTML(s)+'</div>');return}
   if(s.decision==="rejected"){
-    show('<div class="card"><div class="big">&#128591;</div><h2>'+B("Thank you for applying, "+n,"شكراً لتقديمك يا "+n)+'</h2><div class="mu" style="text-align:center">'+B("Unfortunately your profile is not a match for this offer right now. You are welcome to apply again later or to other offers.","للأسف مستواك مش مناسب للوظيفة دي حالياً. تقدر تقدّم تاني بعد فترة أو على وظايف تانية.")+'</div></div>');return}
+    show(tipHtml+'<div class="card"><div class="big">&#128591;</div><h2>'+B("Thank you for applying, "+n,"شكراً لتقديمك يا "+n)+'</h2><div class="mu" style="text-align:center">'+B("Unfortunately your profile is not a match for this offer right now. You are welcome to apply again later or to other offers.","للأسف مستواك مش مناسب للوظيفة دي حالياً. تقدر تقدّم تاني بعد فترة أو على وظايف تانية.")+'</div></div>');return}
   // accepted
-  var h='<div class="card"><div class="big">&#127881;</div><h2>'+B("Congratulations "+n+"! You are accepted","مبروك يا "+n+"! تم قبولك")+'</h2></div>';
+  var h=tipHtml+'<div class="card"><div class="big">&#127881;</div><h2>'+B("Congratulations "+n+"! You are accepted","مبروك يا "+n+"! تم قبولك")+'</h2></div>';
   if(s.interview_at){
     h+='<div class="card"><h2>'+B("Your interview","ميعاد الإنترفيو")+'</h2><div class="kv"><b>Date</b>'+fDay(s.interview_at)+'</div><div class="kv"><b>Time</b>'+fTime(s.interview_at)+'</div>'+detailsHTML(s);
     if(s.confirmed)h+='<div class="row"><span style="color:var(--ok);font-weight:600">&#9989; '+"Attendance confirmed"+'</span></div>';
