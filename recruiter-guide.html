@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<title>دليل ريكروتر Apex</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<style>
+html{color-scheme:light dark}body{margin:0}
+
+/* Layout: one calm column, sticky section chips, a vertical journey line as the only decoration */
+:root{
+  --bg:#f5f6f7; --surface:#ffffff; --surface2:#eceef0; --ink:#17191c; --mute:#5d6369; --line:#d9dce0;
+  --accent:#c91414; --accent-ink:#ffffff; --accent-soft:#fbe6e6; --ok:#0f7a4a; --ok-soft:#dff3e9; --warn:#9a5b00; --warn-soft:#fbefd5;
+  --head:"Cairo","IBM Plex Sans Arabic",system-ui,sans-serif; --body:"IBM Plex Sans Arabic","Cairo",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e0f11; --surface:#17181b; --surface2:#202226; --ink:#eceef0; --mute:#a0a5ab; --line:#2d3035;
+  --accent:#ff5656; --accent-ink:#1a0000; --accent-soft:#2c1618; --ok:#4fd08f; --ok-soft:#14281f; --warn:#e8b25a; --warn-soft:#2b2210; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e0f11; --surface:#17181b; --surface2:#202226; --ink:#eceef0; --mute:#a0a5ab; --line:#2d3035;
+  --accent:#ff5656; --accent-ink:#1a0000; --accent-soft:#2c1618; --ok:#4fd08f; --ok-soft:#14281f; --warn:#e8b25a; --warn-soft:#2b2210; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-block:0 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:720px;margin:0 auto}
+h1,h2,h3{font-family:var(--head);line-height:1.35;margin:0;text-wrap:balance}
+h2{font-size:24px;font-weight:800;margin-bottom:6px}
+h3{font-size:17px;font-weight:700}
+p{margin:0}
+section{padding-top:44px;scroll-margin-top:64px}
+.lead{color:var(--mute);margin-bottom:18px}
+a{color:var(--accent)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+
+/* top bar + chips */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);margin-inline:calc(-1*max(16px,env(safe-area-inset-left,0px)));padding-inline:max(16px,env(safe-area-inset-left,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:10px 0;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chips a{flex:none;text-decoration:none;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px 14px;font-size:14px;font-weight:500}
+.chips a.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+
+/* hero */
+.hero{padding-top:36px}
+.tag{display:inline-block;font-size:13px;font-weight:600;color:var(--accent);background:var(--accent-soft);padding:2px 12px;border-radius:999px;margin-bottom:14px}
+h1{font-size:clamp(30px,8vw,44px);font-weight:800;letter-spacing:0}
+.hero p.big{font-size:18px;color:var(--mute);margin-top:14px;max-width:34em}
+.summary{margin-top:22px;display:grid;gap:10px}
+.summary div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 16px}
+.summary b{font-family:var(--head)}
+
+/* journey */
+.journey{list-style:none;margin:20px 0 0;padding:0;position:relative}
+.journey::before{content:"";position:absolute;top:14px;bottom:14px;right:15px;width:2px;background:var(--line)}
+.journey li{position:relative;padding:0 48px 18px 0}
+.journey li:last-child{padding-bottom:0}
+.journey .n{position:absolute;right:0;top:0;width:32px;height:32px;border-radius:50%;background:var(--surface);border:2px solid var(--line);display:grid;place-items:center;font-family:var(--head);font-weight:700;font-size:14px}
+.journey li.you .n{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.journey li.you h3::after{content:"أنت";margin-inline-start:8px;font-size:12px;font-weight:600;color:var(--accent);background:var(--accent-soft);padding:1px 10px;border-radius:999px;vertical-align:middle}
+.journey p{color:var(--mute);font-size:15px}
+
+/* checklist */
+.check{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:10px}
+.check label{display:flex;gap:12px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;cursor:pointer}
+.check input{margin-top:6px;width:20px;height:20px;accent-color:var(--accent);flex:none}
+.check span{min-width:0}
+.check b{display:block;font-family:var(--head)}
+.check small{color:var(--mute);font-size:14px}
+.check input:checked + span b{text-decoration:line-through;color:var(--mute)}
+.prog{margin-top:14px;font-size:14px;color:var(--mute)}
+.prog i{display:block;height:6px;border-radius:3px;background:var(--surface2);margin-top:6px;overflow:hidden}
+.prog i s{display:block;height:100%;width:0;background:var(--ok);transition:width .3s}
+
+/* tables / cards */
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:460px;font-size:15px}
+th,td{text-align:right;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+th{font-family:var(--head);font-size:13px;color:var(--mute);background:var(--surface2);font-weight:700}
+td:first-child{white-space:nowrap;font-weight:600}
+.pill{display:inline-block;padding:0 10px;border-radius:999px;font-size:13px;font-weight:600;background:var(--surface2)}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.bad{background:var(--accent-soft);color:var(--accent)}
+.pill.wait{background:var(--warn-soft);color:var(--warn)}
+
+.grid{display:grid;gap:12px;margin-top:16px}
+@media(min-width:620px){.grid.two{grid-template-columns:1fr 1fr}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0}
+.card p{color:var(--mute);font-size:15px;margin-top:4px}
+.dos{border-inline-start:4px solid var(--ok)}
+.donts{border-inline-start:4px solid var(--accent)}
+.card ul{margin:8px 0 0;padding:0 18px 0 0;font-size:15px}
+.card li{margin-bottom:6px}
+
+.copy{margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.num{direction:ltr;unicode-bidi:plaintext;font-weight:600;background:var(--surface2);border-radius:8px;padding:2px 12px;user-select:all}
+button{font:inherit;font-weight:600;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:6px 16px;cursor:pointer}
+button.p{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+
+details{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:0 16px;margin-top:10px}
+summary{cursor:pointer;font-family:var(--head);font-weight:700;padding:14px 0;list-style-position:inside}
+details p{color:var(--mute);padding-bottom:14px;font-size:15px}
+
+.note{margin-top:14px;background:var(--warn-soft);color:var(--warn);border-radius:12px;padding:12px 16px;font-size:15px}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--mute);font-size:14px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+</style>
+
+</head>
+<body>
+<div dir="rtl" lang="ar">
+<div class="wrap">
+
+<div class="bar"><nav class="chips" id="chips" aria-label="أقسام الدليل">
+  <a href="#start">ابدأ من هنا</a><a href="#journey">رحلة المرشح</a><a href="#day1">أول يوم</a>
+  <a href="#statuses">الحالات</a><a href="#follow">المتابعة</a><a href="#voice">تقييم الصوت</a>
+  <a href="#roles">الأدوار</a><a href="#money">الكوميشن</a><a href="#rules">قواعد الشغل</a><a href="#faq">أسئلة</a>
+</nav></div>
+
+<header class="hero" id="start">
+  <span class="tag">دليل الريكروتر الجديد</span>
+  <h1>أهلاً بيك في Apex</h1>
+  <p class="big">الدليل ده بيشرح شغلك من أول يوم لحد ما المرشح يتعيّن وانت تاخد كوميشنك. اقراه مرة واحدة على الموبايل، وارجعله وقت ما تحتاج.</p>
+  <div class="summary">
+    <div><b>شغلك في 3 كلمات:</b> تجيب، تتابع، تقفل.</div>
+    <div><b>بتجيب</b> مرشحين بلينكك الخاص، <b>وبتتابع</b> كل واحد من لوحة الفريق، <b>وبتقفل</b> لما يتعيّن.</div>
+  </div>
+</header>
+
+<section id="journey">
+  <h2>رحلة المرشح من أول لينك لآخر تعيين</h2>
+  <p class="lead">كل مرشح بيعدّي على نفس الخطوات. افهمها مرة وهتعرف انت فين في أي وقت.</p>
+  <ol class="journey">
+    <li class="you"><span class="n">1</span><h3>تبعت لينكك</h3><p>كل ريكروتر له لينك شخصي. أي مرشح يقدّم منه بيتسجّل باسمك أنت.</p></li>
+    <li><span class="n">2</span><h3>المرشح يقدّم</h3><p>بيملا بياناته ويسجّل فويس نوت بالإنجليزي (دقيقة على الأقل) أو يحط لينك Vocaroo.</p></li>
+    <li><span class="n">3</span><h3>الذكاء الاصطناعي يقيّم الفويس</h3><p>السيستم بيسمع الفويس ويديله تقييم، وبيظهرلك النتيجة جنب الطلب.</p></li>
+    <li class="you"><span class="n">4</span><h3>تتواصل معاه</h3><p>اتصال أو واتساب، وتحدد ميعاد الإنترفيو.</p></li>
+    <li><span class="n">5</span><h3>الإنترفيو والقبول</h3><p>المرشح بيأكد حضوره من صفحة حالته، وبعد الإنترفيو بتتحدد النتيجة.</p></li>
+    <li class="you"><span class="n">6</span><h3>تحدّث الحالة</h3><p>من "جديد" لحد "اتعيّن". تحديث الحالة في وقته هو اللي بيحفظ حقك.</p></li>
+    <li><span class="n">7</span><h3>الكوميشن</h3><p>بعد التعيين بيتسجّل في تبويب الكوميشن.</p></li>
+  </ol>
+</section>
+
+<section id="day1">
+  <h2>أول يوم: 6 خطوات</h2>
+  <p class="lead">علّم على كل خطوة لما تخلّصها. علامتك بتتحفظ على جهازك.</p>
+  <ul class="check" id="checklist">
+    <li><label><input type="checkbox" data-k="c1"><span><b>خُد كود دعوة من مديرك</b><small>من غيره مش هتقدر تعمل حساب. الكود بيتولّد من تبويب "الدعوات".</small></span></label></li>
+    <li><label><input type="checkbox" data-k="c2"><span><b>اعمل حسابك</b><small>افتح صفحة الفريق، اختار "حساب جديد"، اكتب إيميلك وباسورد والكود واسمك.</small></span></label></li>
+    <li><label><input type="checkbox" data-k="c3"><span><b>انسخ لينكك الشخصي</b><small>بيظهر في أول الصفحة فوق الكارت بتاعك، وتحته زرار "نسخ".</small></span></label></li>
+    <li><label><input type="checkbox" data-k="c4"><span><b>ابعت اللينك لـ 10 ناس النهارده</b><small>أصحاب، جروبات شغل، ستوري. التوزيع هو شغلك الأساسي.</small></span></label></li>
+    <li><label><input type="checkbox" data-k="c5"><span><b>أول ما يقدّم حد، كلّمه في نفس اليوم</b><small>أول ساعتين هي أحسن وقت. المرشح لسه متحمس.</small></span></label></li>
+    <li><label><input type="checkbox" data-k="c6"><span><b>حدّث الحالة بعد كل تواصل</b><small>ده اللي بيخلي لوحتك مظبوطة وبيحفظ حقك.</small></span></label></li>
+  </ul>
+  <div class="prog" id="prog">تقدمك: <span id="pn">0</span> من 6<i><s id="pb"></s></i></div>
+</section>
+
+<section id="statuses">
+  <h2>حالات المرشح</h2>
+  <p class="lead">الحالات دي هي اللي بتظهر في السيستم. بترتّبها من الأول للآخر.</p>
+  <div class="scroll"><table>
+    <tr><th>الحالة</th><th>معناها</th></tr>
+    <tr><td><span class="pill">جديد</span></td><td>لسه قدّم ومحدش كلّمه.</td></tr>
+    <tr><td><span class="pill">تم التواصل</span></td><td>كلمته أو بعتله واتساب.</td></tr>
+    <tr><td><span class="pill wait">مردش</span></td><td>حاولت وماردش. جرّب في وقت تاني قبل ما تقفلها.</td></tr>
+    <tr><td><span class="pill">انترفيو</span></td><td>اتحدد له ميعاد إنترفيو.</td></tr>
+    <tr><td><span class="pill ok">مقبول</span></td><td>عدّى الإنترفيو.</td></tr>
+    <tr><td><span class="pill ok">تم التحقق</span></td><td>الإدارة راجعت الحالة وأكدتها.</td></tr>
+    <tr><td><span class="pill ok">اتعيّن</span></td><td>اتعيّن فعلاً. هنا بيبقى الكوميشن مستحق.</td></tr>
+    <tr><td><span class="pill bad">مرفوض</span></td><td>مش مناسب أو مش مهتم.</td></tr>
+  </table></div>
+</section>
+
+<section id="follow">
+  <h2>إزاي تتابع مرشح</h2>
+  <p class="lead">افتح الطلب بتاعه من تبويب "المرشحين". هتلاقي الأدوات دي جاهزة:</p>
+  <div class="grid two">
+    <div class="card"><h3>📞 اتصال وواتساب</h3><p>زرارين مباشرين برقم المرشح. من غير نسخ ولصق.</p></div>
+    <div class="card"><h3>💬 رسالة جاهزة</h3><p>قوالب رسائل متكتبة. اختار واحدة وعدّل عليها قبل ما تبعتها.</p></div>
+    <div class="card"><h3>📅 ميعاد الإنترفيو</h3><p>حدد الميعاد، والمرشح بيشوفه ويأكد حضوره من صفحة حالته.</p></div>
+    <div class="card"><h3>⏰ ذكّرني بالمتابعة</h3><p>حط وقت، والسيستم يفكّرك تكلّمه تاني. ده بيمنع إن المرشحين يتنسوا.</p></div>
+  </div>
+  <div class="card" style="margin-top:12px"><h3>🔎 الفلاتر</h3><p>ابحث بالاسم أو الرقم، واحفظ الفلتر اللي بتستخدمه كل يوم (زي "مرشحين جداد").</p></div>
+</section>
+
+<section id="voice">
+  <h2>تقييم الفويس بالذكاء الاصطناعي</h2>
+  <p class="lead">كل طلب بيجي معاه فويس إنجليزي، والسيستم بيدّي نتيجة. دي معاني النتايج:</p>
+  <div class="scroll"><table>
+    <tr><th>النتيجة</th><th>تتصرف إزاي</th></tr>
+    <tr><td><span class="pill wait">في الانتظار</span></td><td>التقييم لسه شغال. استنى دقايق.</td></tr>
+    <tr><td><span class="pill ok">مقبول</span></td><td>مستواه مناسب. كلّمه وحدد إنترفيو.</td></tr>
+    <tr><td><span class="pill bad">مرفوض</span></td><td>مستواه مش كفاية دلوقتي.</td></tr>
+    <tr><td><span class="pill wait">إعادة</span></td><td>الفويس محتاج يتسجّل تاني.</td></tr>
+    <tr><td><span class="pill">مكرر</span></td><td>المرشح ده قدّم قبل كده.</td></tr>
+    <tr><td><span class="pill wait">لغة معلّقة</span></td><td>بيستنى فويس اللغة التانية.</td></tr>
+  </table></div>
+  <p class="note">التقييم بيساعدك، لكن القرار بتاعك. لو حاسس إن النتيجة مش مظبوطة، كلّم مديرك قبل ما تقفل المرشح.</p>
+</section>
+
+<section id="roles">
+  <h2>مين فوق مين</h2>
+  <p class="lead">كل دور بيقدر يدعو الأدوار اللي تحته بس.</p>
+  <div class="scroll"><table>
+    <tr><th>الدور</th><th>بيعمل إيه</th></tr>
+    <tr><td>المالك</td><td>كل الصلاحيات.</td></tr>
+    <tr><td>أدمن</td><td>إدارة الفريق وكل الطلبات.</td></tr>
+    <tr><td>يونيت مانجر</td><td>بيدير تيم ليدرز وريكروترز.</td></tr>
+    <tr><td>تيم ليدر</td><td>بيدير مجموعة ريكروترز.</td></tr>
+    <tr><td>سينيور ريكروتر</td><td>ريكروتر بخبرة، وبيقدر يدعو ريكروترز.</td></tr>
+    <tr><td>ريكروتر</td><td>بيجيب المرشحين ويتابعهم. ده دورك في البداية.</td></tr>
+  </table></div>
+</section>
+
+<section id="money">
+  <h2>الكوميشن</h2>
+  <p class="lead">فيه تبويب مخصوص اسمه "الكوميشن" جوه لوحة الفريق. بيسجّل المستحقات وتاريخ الاستلام.</p>
+  <div class="card">
+    <h3>نسبتك ومواعيد الاستلام</h3>
+    <p>بتتحدد مع الإدارة حسب العرض اللي المرشح اتعيّن عليه. اسأل مديرك عنها قبل ما تبدأ، واطلب الاتفاق مكتوب.</p>
+  </div>
+  <p class="note">الكوميشن بيتحسب بعد "اتعيّن" بس. الحالات الأخرى مش بتديك مستحقات.</p>
+</section>
+
+<section id="rules">
+  <h2>اعمل وما تعملش</h2>
+  <div class="grid two">
+    <div class="card dos"><h3>اعمل</h3><ul>
+      <li>كلّم المرشح في نفس اليوم.</li>
+      <li>قوله الحقيقة عن الشغل والمرتب والمكان.</li>
+      <li>حدّث الحالة بعد كل تواصل.</li>
+      <li>استخدم لينكك أنت بس.</li>
+      <li>سجّل ملاحظاتك على المرشح.</li>
+    </ul></div>
+    <div class="card donts"><h3>ما تعملش</h3><ul>
+      <li>متوعدش المرشح بحاجة مش مكتوبة في العرض.</li>
+      <li>متاخدش فلوس من المرشح مقابل أي حاجة.</li>
+      <li>متبعتش لينك ريكروتر تاني على إنه بتاعك.</li>
+      <li>متشاركش بيانات المرشحين برّه الشغل.</li>
+      <li>متسيبش مرشح من غير حالة محدثة.</li>
+    </ul></div>
+  </div>
+</section>
+
+<section id="faq">
+  <h2>أسئلة بتتكرر</h2>
+  <details><summary>مش عارف أعمل حساب</summary><p>اتأكد إن الكود صح وماستخدمهوش حد قبلك، وإن الإيميل مكتوب صح. لو لسه مش شغال، اطلب كود جديد من مديرك.</p></details>
+  <details><summary>الإيميل بتاعي iCloud، ينفع؟</summary><p>أيوه ينفع. لو ما وصلتكش رسالة تأكيد، دوّر في Junk أو Spam.</p></details>
+  <details><summary>مرشح قدّم من غير لينكي، أعمل إيه؟</summary><p>كلّم مديرك فوراً وقوله اسم المرشح ورقمه. الإدارة هي اللي تنقله لحسابك.</p></details>
+  <details><summary>المرشح مش بيرد عليا</summary><p>جرّب اتصال في وقت تاني، وبعده واتساب. لو لسه مردش بعد يومين، علّم الحالة "مردش".</p></details>
+  <details><summary>فين لينكي الشخصي؟</summary><p>في أول لوحة الفريق، تحت اسمك. دوس "نسخ" وابعته.</p></details>
+  <details><summary>المرشح عايز يغيّر ميعاد الإنترفيو</summary><p>غيّر الميعاد من صفحة المرشح، وابلّغه بالميعاد الجديد.</p></details>
+</section>
+
+<footer>
+  <p>محتاج مساعدة؟ كلّم مديرك مباشرة على واتساب.</p>
+  <div class="copy"><span class="num" id="wa">01115634954</span><button type="button" id="cp">نسخ الرقم</button></div>
+  <p style="margin-top:14px">آخر تحديث للدليل: نوفمبر 2026</p>
+</footer>
+
+</div>
+</div>
+
+<script>
+(function(){
+  // checklist progress (per-device convenience; page works without storage)
+  var boxes=[].slice.call(document.querySelectorAll('#checklist input'));
+  var KEY="apex-guide-v1";
+  function load(){try{return JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){return {}}}
+  function save(o){try{localStorage.setItem(KEY,JSON.stringify(o))}catch(e){}}
+  var st=load();
+  function paint(){var n=boxes.filter(function(b){return b.checked}).length;
+    document.getElementById('pn').textContent=n;document.getElementById('pb').style.width=(n/boxes.length*100)+'%'}
+  boxes.forEach(function(b){b.checked=!!st[b.dataset.k];
+    b.addEventListener('change',function(){st[b.dataset.k]=b.checked;save(st);paint()})});
+  paint();
+
+  // copy number
+  var cp=document.getElementById('cp'),num=document.getElementById('wa');
+  cp.addEventListener('click',function(){
+    function sel(){var r=document.createRange();r.selectNodeContents(num);var s=getSelection();s.removeAllRanges();s.addRange(r);cp.textContent="اتحدد، انسخه"}
+    try{navigator.clipboard.writeText(num.textContent).then(function(){cp.textContent="اتنسخ ✓"},sel)}catch(e){sel()}
+  });
+
+  // highlight current section chip
+  var chips=[].slice.call(document.querySelectorAll('#chips a'));
+  var secs=chips.map(function(a){return document.querySelector(a.getAttribute('href'))});
+  function onScroll(){var y=window.scrollY+120,cur=0;
+    secs.forEach(function(s,i){if(s&&s.offsetTop<=y)cur=i});
+    chips.forEach(function(a,i){a.classList.toggle('on',i===cur)});
+    var on=chips[cur];if(on){var c=document.getElementById('chips');c.scrollTo({left:on.offsetLeft-c.clientWidth/2+on.clientWidth/2,behavior:'auto'})}}
+  addEventListener('scroll',onScroll,{passive:true});onScroll();
+})();
+</script>
+</body>
+</html>
