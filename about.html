@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<title>Apex | من نحن</title>
+<meta name="description" content="Apex Recruitment Agency: وكالة توظيف في القاهرة. اعرف مين إحنا، وقدّم على الوظايف أو انضم لينا كريكروتر.">
+<meta name="theme-color" content="#0b0b0d">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<style>
+/* Concept: a mountain peak (the "apex") drawn in one red line over a dark field; everything else stays quiet. */
+:root{
+  --bg:#0b0b0d; --surface:#141417; --surface2:#1c1d21; --ink:#f2f3f4; --mute:#a3a7ad; --line:#2a2c31;
+  --accent:#e11d1d; --accent-ink:#fff; --glow:rgba(225,29,29,.28); --card-glow:rgba(225,29,29,.16);
+  --head:"Cairo","IBM Plex Sans Arabic",system-ui,sans-serif; --body:"IBM Plex Sans Arabic","Cairo",system-ui,sans-serif;
+  --ease:cubic-bezier(.2,.7,.2,1);
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){
+  --bg:#f6f6f7; --surface:#ffffff; --surface2:#ececee; --ink:#16171a; --mute:#5b6067; --line:#dcdde1;
+  --accent:#c91414; --glow:rgba(201,20,20,.16); --card-glow:rgba(201,20,20,.10); color-scheme:light}}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.8;overflow-x:hidden;
+  padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+h1,h2,h3{font-family:var(--head);margin:0;line-height:1.25;text-wrap:balance}
+p{margin:0}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:8px}
+.wrap{max-width:1080px;margin:0 auto;padding-inline:20px}
+section{padding-block:84px;position:relative}
+.eyebrow{font-family:var(--head);font-weight:700;font-size:14px;color:var(--accent);letter-spacing:.04em;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:28px;height:2px;background:var(--accent)}
+h2{font-size:clamp(28px,5.2vw,44px);font-weight:800}
+.sub{color:var(--mute);max-width:36em;margin-top:14px}
+
+/* reveal on scroll (content is visible without JS) */
+.js .rv{opacity:0;transform:translateY(28px);transition:opacity .8s var(--ease),transform .8s var(--ease);transition-delay:var(--d,0s)}
+.js .rv.in{opacity:1;transform:none}
+
+/* nav */
+nav{position:sticky;top:0;z-index:20;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);background:color-mix(in srgb,var(--bg) 78%,transparent);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:12px;height:64px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--head);font-weight:900;font-size:20px;letter-spacing:.06em}
+.brand img{width:34px;height:34px;border-radius:9px}
+.tools{display:flex;align-items:center;gap:10px}
+.lang{font:inherit;font-weight:600;font-size:14px;color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:999px;padding:4px 16px;cursor:pointer;transition:border-color .2s}
+.lang:hover{border-color:var(--accent)}
+.navcta{display:none}
+@media(min-width:640px){.navcta{display:inline-flex}}
+
+/* buttons */
+.btn{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:10px;text-decoration:none;font-family:var(--head);font-weight:700;font-size:16px;border-radius:12px;padding:12px 24px;border:1px solid var(--line);background:var(--surface);color:var(--ink);transition:transform .25s var(--ease),border-color .25s,box-shadow .25s}
+.btn:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 10px 30px -12px var(--glow)}
+.btn.p{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.p::after{content:"";position:absolute;inset-block:0;inset-inline-start:-60%;width:40%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.35),transparent);transform:skewX(-20deg);animation:shine 3.6s var(--ease) infinite}
+.btn .ar{transition:transform .25s var(--ease);display:inline-block}
+.btn:hover .ar{transform:translateX(-4px)}
+[dir=ltr] .btn:hover .ar{transform:translateX(4px)}
+[dir=ltr] .btn .ar{transform:scaleX(-1)}
+[dir=ltr] .btn:hover .ar{transform:scaleX(-1) translateX(-4px)}
+@keyframes shine{0%,60%{inset-inline-start:-60%}100%{inset-inline-start:140%}}
+
+/* hero */
+.hero{position:relative;padding-block:72px 96px;overflow:hidden}
+.hero .bgsvg{position:absolute;inset-inline:0;bottom:0;width:100%;height:46%;pointer-events:none;opacity:.55}
+@media(min-width:820px){.hero .bgsvg{height:100%;opacity:.7}}
+.hero .bgsvg path{fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;animation:draw 2.8s var(--ease) .3s forwards}
+.hero .bgsvg path.b{stroke:var(--line);stroke-width:1.5;animation-delay:.7s}
+@keyframes draw{to{stroke-dashoffset:0}}
+.orb{position:absolute;border-radius:50%;filter:blur(70px);pointer-events:none;background:var(--glow);animation:float 12s ease-in-out infinite}
+.orb.a{width:340px;height:340px;inset-block-start:-80px;inset-inline-end:-80px}
+.orb.b{width:260px;height:260px;inset-block-end:-60px;inset-inline-start:-60px;animation-delay:-5s;opacity:.7}
+@keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(24px,-30px)}}
+.hero .in{position:relative;z-index:1}
+.kick{display:inline-flex;align-items:center;gap:10px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 16px;font-size:14px;font-weight:500;color:var(--mute);margin-bottom:26px}
+.kick i{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 0 var(--glow);animation:pulse 2s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 10px transparent}100%{box-shadow:0 0 0 0 transparent}}
+h1{font-size:clamp(38px,9.4vw,84px);font-weight:900;letter-spacing:0}
+h1 .ln{display:block;overflow:hidden;padding-block:.08em}
+h1 .ln>span{display:block;animation:up 1s var(--ease) both}
+h1 .ln:nth-child(2)>span{animation-delay:.15s;color:var(--accent)}
+@keyframes up{from{transform:translateY(110%)}to{transform:none}}
+.hero p.lead{font-size:clamp(17px,2.4vw,21px);color:var(--mute);max-width:34em;margin-top:26px;animation:fade 1s var(--ease) .45s both}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px;animation:fade 1s var(--ease) .6s both}
+@keyframes fade{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* marquee */
+.strip{border-block:1px solid var(--line);overflow:hidden;background:var(--surface);padding-block:14px;direction:ltr}
+.track{display:flex;gap:44px;width:max-content;animation:slide 32s linear infinite;font-family:var(--head);font-weight:700;font-size:18px;color:var(--mute);white-space:nowrap}
+.track span::after{content:"▲";font-size:10px;color:var(--accent);margin-inline-start:44px;vertical-align:middle}
+@keyframes slide{to{transform:translateX(-50%)}}
+
+/* about */
+.about{display:grid;gap:36px}
+@media(min-width:820px){.about{grid-template-columns:1.15fr .85fr;align-items:center;gap:64px}}
+.about .txt p+p{margin-top:16px}
+.about .txt p{color:var(--mute)}
+.about .txt p b{color:var(--ink);font-weight:600}
+.founder{margin-top:26px;display:flex;align-items:center;gap:14px}
+.founder .av{width:48px;height:48px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-family:var(--head);font-weight:800;font-size:20px;flex:none}
+.founder b{display:block;font-family:var(--head);line-height:1.3}
+.founder small{color:var(--mute);font-size:14px}
+.peak{position:relative;aspect-ratio:1/1;max-width:420px;width:100%;margin-inline:auto;border:1px solid var(--line);border-radius:28px;background:var(--surface);overflow:hidden}
+.peak svg{position:absolute;inset:0;width:100%;height:100%}
+.peak .t{fill:none;stroke:var(--accent);stroke-width:3;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1}
+.peak.in .t{animation:draw 2.4s var(--ease) forwards}
+.peak .f{fill:var(--accent);opacity:0;transition:opacity 1s 1.8s}
+.peak.in .f{opacity:.14}
+.peak .flag{opacity:0;transform:translateY(8px);transition:all .8s var(--ease) 2.2s;fill:var(--accent)}
+.peak.in .flag{opacity:1;transform:none}
+.peak .cap{position:absolute;inset-inline:20px;bottom:18px;display:flex;justify-content:space-between;font-family:var(--head);font-weight:700;font-size:13px;color:var(--mute)}
+
+/* steps */
+.steps{display:grid;gap:14px;margin-top:40px;counter-reset:s}
+@media(min-width:640px){.steps{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:960px){.steps{grid-template-columns:repeat(4,1fr)}}
+.step{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:26px 22px 24px;overflow:hidden}
+.step::before{content:"";position:absolute;inset-inline:0;top:0;height:3px;background:var(--accent);transform:scaleX(0);transform-origin:right;transition:transform 1s var(--ease) calc(var(--d,0s) + .3s)}
+[dir=ltr] .step::before{transform-origin:left}
+.step.in::before{transform:scaleX(1)}
+.step .n{font-family:var(--head);font-weight:900;font-size:56px;line-height:1;color:transparent;-webkit-text-stroke:1.5px var(--accent);margin-bottom:14px}
+.step h3{font-size:19px;font-weight:800;margin-bottom:6px}
+.step p{color:var(--mute);font-size:15px;line-height:1.7}
+
+/* why */
+.why{display:grid;gap:14px;margin-top:40px}
+@media(min-width:700px){.why{grid-template-columns:1fr 1fr}}
+.card{--mx:50%;--my:50%;position:relative;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:26px;overflow:hidden;transition:border-color .3s,transform .3s var(--ease)}
+.card::before{content:"";position:absolute;inset:0;background:radial-gradient(260px circle at var(--mx) var(--my),var(--card-glow),transparent 70%);opacity:0;transition:opacity .3s}
+.card:hover{border-color:color-mix(in srgb,var(--accent) 60%,var(--line));transform:translateY(-4px)}
+.card:hover::before{opacity:1}
+.card>*{position:relative}
+.ic{width:46px;height:46px;border-radius:12px;background:color-mix(in srgb,var(--accent) 14%,transparent);display:grid;place-items:center;margin-bottom:16px;color:var(--accent)}
+.ic svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.card h3{font-size:20px;font-weight:800;margin-bottom:6px}
+.card p{color:var(--mute);font-size:16px}
+
+/* join */
+.go{display:grid;gap:16px;margin-top:40px}
+@media(min-width:820px){.go{grid-template-columns:1fr 1fr}}
+.door{--mx:50%;--my:50%;position:relative;display:flex;flex-direction:column;gap:12px;text-decoration:none;border:1px solid var(--line);border-radius:24px;padding:32px 28px;background:var(--surface);overflow:hidden;transition:transform .35s var(--ease),border-color .3s}
+.door::before{content:"";position:absolute;inset:0;background:radial-gradient(320px circle at var(--mx) var(--my),var(--glow),transparent 70%);opacity:0;transition:opacity .3s}
+.door:hover{transform:translateY(-6px);border-color:var(--accent)}
+.door:hover::before{opacity:1}
+.door>*{position:relative}
+.door .tag{font-family:var(--head);font-weight:700;font-size:13px;color:var(--accent)}
+.door h3{font-size:clamp(24px,4vw,32px);font-weight:900}
+.door p{color:var(--mute)}
+.door .go-l{margin-top:auto;padding-top:14px;display:flex;align-items:center;gap:10px;font-family:var(--head);font-weight:800;color:var(--ink)}
+.door .go-l b{width:38px;height:38px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;transition:transform .3s var(--ease)}
+.door:hover .go-l b{transform:translateX(-6px)}
+[dir=ltr] .door:hover .go-l b{transform:translateX(6px)}
+[dir=ltr] .door .go-l b span{display:inline-block;transform:scaleX(-1)}
+
+/* contact */
+.contact{text-align:center}
+.contact h2{margin-inline:auto}
+.contact .sub{margin-inline:auto}
+.num{direction:ltr;unicode-bidi:plaintext;display:inline-block;font-family:var(--head);font-weight:800;font-size:clamp(26px,6vw,40px);margin-top:18px;letter-spacing:.02em}
+.contact .cta{justify-content:center;animation:none}
+footer{border-top:1px solid var(--line);padding-block:28px calc(28px + env(safe-area-inset-bottom,0px));color:var(--mute);font-size:14px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:10px 24px;justify-content:space-between}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  .js .rv{opacity:1;transform:none}
+  .hero .bgsvg path,.peak .t{stroke-dashoffset:0}
+  .peak .f{opacity:.14}.peak .flag{opacity:1;transform:none}.step::before{transform:scaleX(1)}
+}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap nav">
+  <a class="brand" href="#top"><img src="logo.png" alt="" width="34" height="34" onerror="this.style.display='none'"><span>APEX</span></a>
+  <div class="tools">
+    <button class="lang" id="lang" type="button" aria-label="Language">English</button>
+    <a class="btn p navcta" href="index.html" data-ar="شوف الوظايف" data-en="Browse jobs">شوف الوظايف</a>
+  </div>
+</div></nav>
+
+<header class="hero" id="top">
+  <svg class="bgsvg" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+    <path class="b" pathLength="1" d="M-20 640 L220 440 L360 540 L560 330 L760 500 L900 400 L1220 660"/>
+    <path pathLength="1" d="M300 700 L600 190 L690 330 L760 260 L1000 700"/>
+  </svg>
+  <div class="orb a"></div><div class="orb b"></div>
+  <div class="wrap in">
+    <span class="kick"><i></i><span data-ar="Apex Recruitment Agency · القاهرة" data-en="Apex Recruitment Agency · Cairo">Apex Recruitment Agency · القاهرة</span></span>
+    <h1>
+      <span class="ln"><span data-ar="بنوصّل الناس الصح" data-en="We connect the right people">بنوصّل الناس الصح</span></span>
+      <span class="ln"><span data-ar="للشغل الصح." data-en="to the right jobs.">للشغل الصح.</span></span>
+    </h1>
+    <p class="lead" data-ar="Apex وكالة توظيف بتربط الباحثين عن شغل بشركات محتاجة ناس. نعرض الوظيفة بوضوح، ونقيّم بإنصاف، ونتابعك لحد ما تستلم شغلك." data-en="Apex is a recruitment agency that connects job seekers with companies that need people. We show the job clearly, assess fairly, and stay with you until you start work.">Apex وكالة توظيف بتربط الباحثين عن شغل بشركات محتاجة ناس. نعرض الوظيفة بوضوح، ونقيّم بإنصاف، ونتابعك لحد ما تستلم شغلك.</p>
+    <div class="cta">
+      <a class="btn p" href="index.html"><span data-ar="شوف الوظايف المتاحة" data-en="See open jobs">شوف الوظايف المتاحة</span><span class="ar">←</span></a>
+      <a class="btn" href="join.html"><span data-ar="انضم لينا كريكروتر" data-en="Join us as a recruiter">انضم لينا كريكروتر</span></a>
+    </div>
+  </div>
+</header>
+
+<div class="strip" aria-hidden="true"><div class="track" id="track"></div></div>
+
+<section id="about"><div class="wrap about">
+  <div class="txt rv">
+    <div class="eyebrow" data-ar="مين إحنا" data-en="Who we are">مين إحنا</div>
+    <h2 data-ar="وكالة توظيف بتشتغل مع الناس، مش على الورق." data-en="A recruitment agency that works with people, not paperwork.">وكالة توظيف بتشتغل مع الناس، مش على الورق.</h2>
+    <p style="margin-top:20px" data-ar="بدأنا Apex في القاهرة عشان نسهّل رحلة الشغل على الطرفين. الباحث عن شغل بيلاقي عروض واضحة ويقدّم من موبايله. والشركة بتستلم مرشحين اتقيّم مستواهم في اللغة قبل ما يوصلولها." data-en="We started Apex in Cairo to make hiring easier for both sides. Job seekers find clear offers and apply from their phone. Companies receive candidates whose language level has already been assessed.">بدأنا Apex في القاهرة عشان نسهّل رحلة الشغل على الطرفين. الباحث عن شغل بيلاقي عروض واضحة ويقدّم من موبايله. والشركة بتستلم مرشحين اتقيّم مستواهم في اللغة قبل ما يوصلولها.</p>
+    <p data-ar="بنستخدم نظام بنيناه بنفسنا يتابع كل طلب من أول التقديم لحد التعيين، ومعاه فريق ريكروترز بيكلّم كل مرشح بنفسه." data-en="We use a system we built ourselves that tracks every application from first submission to hiring, backed by a team of recruiters who speak to each candidate personally.">بنستخدم نظام بنيناه بنفسنا يتابع كل طلب من أول التقديم لحد التعيين، ومعاه فريق ريكروترز بيكلّم كل مرشح بنفسه.</p>
+    <div class="founder">
+      <div class="av">M</div>
+      <div><b>Mahmod Roshdy</b><small data-ar="مؤسس Apex" data-en="Founder, Apex">مؤسس Apex</small></div>
+    </div>
+  </div>
+  <div class="peak rv" style="--d:.15s" id="peak" aria-hidden="true">
+    <svg viewBox="0 0 400 400">
+      <path class="f" d="M40 330 L200 90 L260 190 L300 140 L360 330 Z"/>
+      <path class="t" pathLength="1" d="M40 330 L200 90 L260 190 L300 140 L360 330"/>
+      <g class="flag"><path d="M200 90 V58" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/><path d="M200 58 L228 68 L200 78 Z"/></g>
+    </svg>
+    <div class="cap"><span>APEX</span><span data-ar="القمة" data-en="THE PEAK">القمة</span></div>
+  </div>
+</div></section>
+
+<section id="how" style="background:var(--surface2);background:color-mix(in srgb,var(--surface) 55%,var(--bg))"><div class="wrap">
+  <div class="rv">
+    <div class="eyebrow" data-ar="طريقة الشغل" data-en="How it works">طريقة الشغل</div>
+    <h2 data-ar="من أول ضغطة لحد أول يوم شغل" data-en="From first tap to first day at work">من أول ضغطة لحد أول يوم شغل</h2>
+  </div>
+  <div class="steps">
+    <div class="step rv" style="--d:0s"><div class="n">1</div><h3 data-ar="اختار وظيفتك" data-en="Pick your job">اختار وظيفتك</h3><p data-ar="شوف العروض المتاحة بتفاصيلها: الشركة والمكان والمرتب." data-en="Browse the open offers with full details: company, location and pay.">شوف العروض المتاحة بتفاصيلها: الشركة والمكان والمرتب.</p></div>
+    <div class="step rv" style="--d:.1s"><div class="n">2</div><h3 data-ar="قدّم بصوتك" data-en="Apply with your voice">قدّم بصوتك</h3><p data-ar="املا بياناتك وسجّل فويس نوت بالإنجليزي، أو حط لينك Vocaroo." data-en="Fill in your details and record a short English voice note, or paste a Vocaroo link.">املا بياناتك وسجّل فويس نوت بالإنجليزي، أو حط لينك Vocaroo.</p></div>
+    <div class="step rv" style="--d:.2s"><div class="n">3</div><h3 data-ar="تقييم ومراجعة" data-en="Assessment and review">تقييم ومراجعة</h3><p data-ar="الذكاء الاصطناعي بيقيّم الفويس، وفريقنا بيراجع ويكلّمك." data-en="AI helps assess your voice note, and our team reviews it and contacts you.">الذكاء الاصطناعي بيقيّم الفويس، وفريقنا بيراجع ويكلّمك.</p></div>
+    <div class="step rv" style="--d:.3s"><div class="n">4</div><h3 data-ar="إنترفيو ومتابعة" data-en="Interview and follow-up">إنترفيو ومتابعة</h3><p data-ar="بتختار ميعاد الإنترفيو، وتتابع حالتك من لينك خاص بيك." data-en="You pick an interview time and follow your status from a personal link.">بتختار ميعاد الإنترفيو، وتتابع حالتك من لينك خاص بيك.</p></div>
+  </div>
+</div></section>
+
+<section id="why"><div class="wrap">
+  <div class="rv">
+    <div class="eyebrow" data-ar="ليه Apex" data-en="Why Apex">ليه Apex</div>
+    <h2 data-ar="أربع حاجات بنهتم بيها" data-en="Four things we care about">أربع حاجات بنهتم بيها</h2>
+  </div>
+  <div class="why">
+    <div class="card rv"><div class="ic"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg></div><h3 data-ar="عروض واضحة" data-en="Clear offers">عروض واضحة</h3><p data-ar="كل وظيفة معاها تفاصيلها قبل ما تقدّم. مفيش مفاجآت." data-en="Every job shows its details before you apply. No surprises.">كل وظيفة معاها تفاصيلها قبل ما تقدّم. مفيش مفاجآت.</p></div>
+    <div class="card rv" style="--d:.08s"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3v12"/><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></div><h3 data-ar="تقييم منصف" data-en="Fair assessment">تقييم منصف</h3><p data-ar="الذكاء الاصطناعي بيساعد في تقييم الإنجليزي، والقرار الأخير بيد فريقنا." data-en="AI helps assess your English, and the final call is made by our team.">الذكاء الاصطناعي بيساعد في تقييم الإنجليزي، والقرار الأخير بيد فريقنا.</p></div>
+    <div class="card rv"><div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><h3 data-ar="تابع طلبك" data-en="Track your application">تابع طلبك</h3><p data-ar="لينك شخصي يوريك حالتك وميعاد الإنترفيو في أي وقت." data-en="A personal link shows your status and interview time at any moment.">لينك شخصي يوريك حالتك وميعاد الإنترفيو في أي وقت.</p></div>
+    <div class="card rv" style="--d:.08s"><div class="ic"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/></svg></div><h3 data-ar="حد بيرد عليك" data-en="A real person replies">حد بيرد عليك</h3><p data-ar="أي سؤال تبعته على واتساب وفريقنا بيرد عليك." data-en="Send any question on WhatsApp and our team will answer.">أي سؤال تبعته على واتساب وفريقنا بيرد عليك.</p></div>
+  </div>
+</div></section>
+
+<section id="join" style="background:color-mix(in srgb,var(--surface) 55%,var(--bg))"><div class="wrap">
+  <div class="rv">
+    <div class="eyebrow" data-ar="ابدأ دلوقتي" data-en="Start now">ابدأ دلوقتي</div>
+    <h2 data-ar="انت جاي لأنهي واحدة؟" data-en="Which one are you?">انت جاي لأنهي واحدة؟</h2>
+  </div>
+  <div class="go">
+    <a class="door rv" href="index.html">
+      <span class="tag" data-ar="للباحثين عن شغل" data-en="FOR JOB SEEKERS">للباحثين عن شغل</span>
+      <h3 data-ar="دوّر على وظيفتك وقدّم" data-en="Find your job and apply">دوّر على وظيفتك وقدّم</h3>
+      <p data-ar="شوف كل العروض المتاحة دلوقتي وقدّم من موبايلك في دقايق." data-en="See every open offer now and apply from your phone in minutes.">شوف كل العروض المتاحة دلوقتي وقدّم من موبايلك في دقايق.</p>
+      <span class="go-l"><b><span>←</span></b><span data-ar="شوف الوظايف" data-en="See jobs">شوف الوظايف</span></span>
+    </a>
+    <a class="door rv" style="--d:.1s" href="join.html">
+      <span class="tag" data-ar="للريكروترز" data-en="FOR RECRUITERS">للريكروترز</span>
+      <h3 data-ar="اشتغل معانا كريكروتر" data-en="Work with us as a recruiter">اشتغل معانا كريكروتر</h3>
+      <p data-ar="هات مرشحين بلينكك الخاص، وتابعهم من لوحة الفريق، وخُد كوميشن على كل تعيين." data-en="Bring candidates with your own link, follow them in the team dashboard, and earn commission on every hire.">هات مرشحين بلينكك الخاص، وتابعهم من لوحة الفريق، وخُد كوميشن على كل تعيين.</p>
+      <span class="go-l"><b><span>←</span></b><span data-ar="قدّم كريكروتر" data-en="Apply as recruiter">قدّم كريكروتر</span></span>
+    </a>
+  </div>
+</div></section>
+
+<section class="contact" id="contact"><div class="wrap">
+  <div class="rv">
+    <div class="eyebrow" style="justify-content:center" data-ar="كلّمنا" data-en="Talk to us">كلّمنا</div>
+    <h2 data-ar="عندك سؤال؟ ابعتلنا واتساب" data-en="Got a question? Message us on WhatsApp">عندك سؤال؟ ابعتلنا واتساب</h2>
+    <p class="sub" data-ar="بنرد في أقرب وقت." data-en="We reply as soon as we can.">بنرد في أقرب وقت.</p>
+    <div class="num">01115634954</div>
+    <div class="cta"><a class="btn p" href="https://wa.me/201115634954" target="_blank" rel="noopener"><span data-ar="افتح واتساب" data-en="Open WhatsApp">افتح واتساب</span></a></div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <span>© <span id="yr">2026</span> Apex Recruitment Agency</span>
+  <span data-ar="القاهرة، مصر" data-en="Cairo, Egypt">القاهرة، مصر</span>
+</div></footer>
+
+<script>
+(function(){
+  var d=document,h=d.documentElement;h.classList.add('js');
+
+  // language (shares the offers site's choice when available)
+  var KEY="apexLang",lang="ar";
+  try{var s=localStorage.getItem(KEY);if(s==="en"||s==="ar")lang=s}catch(e){}
+  function setLang(l,keep){
+    lang=l;h.lang=l;h.dir=l==="ar"?"rtl":"ltr";
+    [].forEach.call(d.querySelectorAll('[data-ar]'),function(el){var v=el.getAttribute('data-'+l);if(v!=null)el.textContent=v});
+    d.getElementById('lang').textContent=l==="ar"?"English":"العربية";
+    d.title=l==="ar"?"Apex | من نحن":"Apex | About us";
+    if(!keep){try{localStorage.setItem(KEY,l)}catch(e){}}
+    buildTrack();
+  }
+  d.getElementById('lang').addEventListener('click',function(){setLang(lang==="ar"?"en":"ar")});
+
+  // marquee: role types, doubled for a seamless loop
+  function buildTrack(){
+    var w=lang==="ar"?["كول سنتر","خدمة عملاء","مبيعات","دعم فني","وظايف بالإنجليزي","تيليسيلز","سوشيال ميديا"]:["Call centre","Customer service","Sales","Tech support","English-speaking roles","Telesales","Social media"];
+    var html=w.concat(w).concat(w).concat(w).map(function(x){return "<span>"+x+"</span>"}).join("");
+    d.getElementById('track').innerHTML=html;
+  }
+
+  // reveal on scroll
+  var els=[].slice.call(d.querySelectorAll('.rv'));
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.15,rootMargin:'0px 0px -6% 0px'});
+    els.forEach(function(e){io.observe(e)});
+  }else{els.forEach(function(e){e.classList.add('in')})}
+
+  // glow that follows the pointer on cards
+  [].forEach.call(d.querySelectorAll('.card,.door'),function(c){
+    c.addEventListener('pointermove',function(e){var r=c.getBoundingClientRect();c.style.setProperty('--mx',(e.clientX-r.left)+'px');c.style.setProperty('--my',(e.clientY-r.top)+'px')});
+  });
+
+  d.getElementById('yr').textContent=new Date().getFullYear();
+  setLang(lang,true);
+})();
+</script>
+</body>
+</html>
