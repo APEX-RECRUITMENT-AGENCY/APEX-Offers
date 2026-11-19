@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<title>هل أنا مناسب؟ | Apex</title>
+<meta name="description" content="اكتب سنك ومستوى إنجليزيك ومؤهلك، وشوف الوظايف اللي تنطبق عليك من عروض Apex.">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="tools.css">
+</head>
+<body>
+<div id="bar"></div>
+<main class="wrap">
+  <div class="ph anim">
+    <div class="eyebrow" data-ar="أداة" data-en="Tool">أداة</div>
+    <h1 data-ar="هل أنا مناسب؟" data-en="Am I a fit?">هل أنا مناسب؟</h1>
+    <p class="lead" data-ar="اكتب بياناتك، وهنوريك الوظايف اللي شروطها بتنطبق عليك، من غير ما تفتح عرض عرض." data-en="Enter your details and we show the jobs whose requirements match you, without opening offer after offer.">اكتب بياناتك، وهنوريك الوظايف اللي شروطها بتنطبق عليك، من غير ما تفتح عرض عرض.</p>
+  </div>
+
+  <form class="card stack anim" id="f" style="margin-top:18px;animation-delay:.1s" novalidate>
+    <div class="fld" style="margin-top:0"><label for="age" data-ar="سنك" data-en="Your age">سنك</label><input id="age" type="number" inputmode="numeric" min="16" max="70" placeholder="25"></div>
+    <div class="fld"><label for="lvl" data-ar="مستوى الإنجليزي" data-en="English level">مستوى الإنجليزي</label>
+      <select id="lvl">
+        <option value="" data-ar="مش عارف" data-en="Not sure">مش عارف</option>
+        <option value="2">A2</option><option value="3">B1</option><option value="4">B2</option><option value="4.5">B2+</option><option value="5">C1</option><option value="6">C2</option>
+      </select>
+      <div class="hint"><a href="english-test.html" data-ar="مش عارف مستواك؟ اعمل الاختبار السريع" data-en="Not sure of your level? Take the quick test">مش عارف مستواك؟ اعمل الاختبار السريع</a></div></div>
+    <div class="fld"><span class="l" data-ar="لغات تانية بتتكلمها (اختياري)" data-en="Other languages you speak (optional)">لغات تانية بتتكلمها (اختياري)</span>
+      <div class="chips" id="langs">
+        <label><input type="checkbox" value="french"><span data-ar="فرنسي" data-en="French">فرنسي</span></label>
+        <label><input type="checkbox" value="dutch"><span data-ar="هولندي" data-en="Dutch">هولندي</span></label>
+        <label><input type="checkbox" value="portuguese"><span data-ar="برتغالي" data-en="Portuguese">برتغالي</span></label>
+        <label><input type="checkbox" value="spanish"><span data-ar="إسباني" data-en="Spanish">إسباني</span></label>
+        <label><input type="checkbox" value="german"><span data-ar="ألماني" data-en="German">ألماني</span></label>
+        <label><input type="checkbox" value="italian"><span data-ar="إيطالي" data-en="Italian">إيطالي</span></label>
+      </div></div>
+    <div class="fld"><span class="l" data-ar="مؤهلك" data-en="Education">مؤهلك</span>
+      <div class="chips">
+        <label><input type="radio" name="edu" value="grad" checked><span data-ar="خريج" data-en="Graduate">خريج</span></label>
+        <label><input type="radio" name="edu" value="under"><span data-ar="لسه بدرس" data-en="Still studying">لسه بدرس</span></label>
+        <label><input type="radio" name="edu" value="drop"><span data-ar="سايب الدراسة / سنة فجوة" data-en="Dropout / gap year">سايب الدراسة / سنة فجوة</span></label>
+      </div></div>
+    <div class="fld"><span class="l" data-ar="الجنسية" data-en="Nationality">الجنسية</span>
+      <div class="chips">
+        <label><input type="radio" name="nat" value="eg" checked><span data-ar="مصري" data-en="Egyptian">مصري</span></label>
+        <label><input type="radio" name="nat" value="fo"><span data-ar="أجنبي" data-en="Foreigner">أجنبي</span></label>
+      </div></div>
+    <div class="fld"><span class="l" data-ar="عندك خبرة في المبيعات أو الكول سنتر؟" data-en="Experience in sales or call centres?">عندك خبرة في المبيعات أو الكول سنتر؟</span>
+      <div class="chips">
+        <label><input type="radio" name="exp" value="no" checked><span data-ar="لا" data-en="No">لا</span></label>
+        <label><input type="radio" name="exp" value="yes"><span data-ar="أيوه" data-en="Yes">أيوه</span></label>
+      </div></div>
+    <div class="fld"><span class="l" data-ar="طريقة الشغل (اختياري)" data-en="Work mode (optional)">طريقة الشغل (اختياري)</span>
+      <div class="chips">
+        <label><input type="radio" name="wm" value="" checked><span data-ar="أي حاجة" data-en="Any">أي حاجة</span></label>
+        <label><input type="radio" name="wm" value="WFS"><span data-ar="من المكتب" data-en="On-site">من المكتب</span></label>
+        <label><input type="radio" name="wm" value="Hybrid"><span data-ar="هايبرد" data-en="Hybrid">هايبرد</span></label>
+        <label><input type="radio" name="wm" value="WFH"><span data-ar="من البيت" data-en="Remote">من البيت</span></label>
+      </div></div>
+    <div class="err" id="err" role="alert"></div>
+    <button class="btn p" type="submit"><span data-ar="شوف الوظايف المناسبة" data-en="Show matching jobs">شوف الوظايف المناسبة</span></button>
+  </form>
+
+  <div id="res" aria-live="polite"></div>
+</main>
+<div id="foot"></div>
+
+<script src="tools.js"></script>
+<script>
+(function(){
+  var d=document,A=APEX,$=function(i){return d.getElementById(i)},OFFERS=null,last=null;
+  var LANGS={french:"French",dutch:"Dutch",portuguese:"Portuguese",spanish:"Spanish",german:"German",italian:"Italian"};
+  var RANK={A1:1,A2:2,B1:3,B2:4,C1:5,C2:6};
+
+  /* ---------- parsing the offer's requirements ---------- */
+  function langReq(s){ // -> {english:rank|0|null, french:..} (null = not required)
+    var out={},re=/(English|French|Dutch|Portuguese|Spanish|German|Italian)\s*:?\s*(A1|A2|B1|B2|C1|C2)?(\+)?/gi,m;
+    while((m=re.exec(s||""))){var k=m[1].toLowerCase(),r=m[2]?RANK[m[2].toUpperCase()]+(m[3]?0.5:0):0;
+      if(!(k in out)||(r&&(!out[k]||r<out[k])))out[k]=r}
+    return out}
+  function ageReq(s){s=s||"";var m;
+    if(/up to|max|until|under|below/i.test(s)){var ns=(s.match(/\d{2}/g)||[]).map(Number);if(ns.length)return {max:Math.max.apply(null,ns)}}
+    if((m=/(\d{2})\s*(?:[–\-]|to)\s*(\d{2})/i.exec(s)))return {min:+m[1],max:+m[2]};
+    if((m=/(\d{2})\s*\+/.exec(s)))return {min:+m[1]};
+    if((m=/(?:min|from|above|over)\s*(\d{2})/i.exec(s)))return {min:+m[1]};
+    return null}
+  function eduTokens(s){s=(s||"").toLowerCase();var t={};
+    if(/grad/.test(s))t.grad=1;if(/undergrad|student|studying/.test(s))t.under=1;if(/drop/.test(s))t.drop=1;if(/gap/.test(s))t.drop=1;
+    return t}
+  var NOEXP=/not required|not stated|not specified|no experience|none|fresh|n\/a|^0|not needed|optional/i;
+
+  function check(o,u){
+    var why=[];
+    var ar=ageReq(o.age);
+    if(ar&&u.age){ if((ar.min&&u.age<ar.min)||(ar.max&&u.age>ar.max))why.push({k:"age",v:o.age}) }
+    var lr=langReq(o.lang);
+    if("english" in lr&&lr.english&&u.lvl&&u.lvl<lr.english){why.push({k:"english",v:o.lang})}
+    Object.keys(LANGS).forEach(function(k){ if(k in lr&&u.langs.indexOf(k)<0)why.push({k:"lang",v:LANGS[k]}) });
+    var et=eduTokens(o.grad),has=Object.keys(et).length;
+    if(has&&u.edu!=="grad"&&!et[u.edu])why.push({k:"edu",v:o.grad});
+    if(u.nat==="fo"&&o.nat&&/egypt/i.test(o.nat)&&!/foreign/i.test(o.nat))why.push({k:"nat",v:o.nat});
+    if(u.exp==="no"&&o.exp&&!NOEXP.test(o.exp.trim()))why.push({k:"exp",v:o.exp});
+    return why}
+  var WHY={
+    age:function(v){return A.t("السن المطلوب: "+v,"Required age: "+v)},
+    english:function(v){return A.t("مستوى الإنجليزي المطلوب: "+v,"Required English: "+v)},
+    lang:function(v){return A.t("بيطلب لغة "+v,"Requires "+v)},
+    edu:function(v){return A.t("المؤهل المطلوب: "+v,"Education required: "+v)},
+    nat:function(v){return A.t("الجنسية: "+v,"Nationality: "+v)},
+    exp:function(v){return A.t("بيطلب خبرة: "+v,"Requires experience: "+v)}};
+
+  function card(o,why){
+    var wm={WFS:A.t("من المكتب","On-site"),Hybrid:A.t("هايبرد","Hybrid"),WFH:A.t("من البيت","Remote")}[o.w];
+    return '<div class="card job anim"><h3>'+A.esc(o.t)+'</h3><div class="co">'+A.esc(o.c)+(o.loc?' · '+A.esc(o.loc):'')+'</div>'+
+      '<div class="meta"><span class="pill">'+A.esc(wm)+'</span>'+(o.lang?'<span class="pill">'+A.esc(o.lang)+'</span>':'')+(o.age?'<span class="pill">'+A.esc(o.age)+'</span>':'')+'</div>'+
+      (o.pay?'<div class="pay">'+A.esc(o.pay)+'</div>':'')+
+      (why&&why.length?'<div class="why">⚠ '+why.map(function(w){return A.esc(WHY[w.k](w.v))}).join(' · ')+'</div>':'')+
+      '<div class="acts"><a class="btn sm" href="job.html?id='+o.id+'">'+A.t("التفاصيل","Details")+'</a><a class="btn p sm" href="'+A.indexUrl()+'">'+A.t("قدّم","Apply")+'</a></div></div>'}
+
+  function readUser(){
+    var chk=function(n){var e=d.querySelector('input[name='+n+']:checked');return e?e.value:""};
+    return {age:+$('age').value||0,lvl:parseFloat($('lvl').value)||0,
+      langs:[].slice.call(d.querySelectorAll('#langs input:checked')).map(function(i){return i.value}),
+      edu:chk('edu'),nat:chk('nat'),exp:chk('exp'),wm:chk('wm')}}
+
+  function render(){
+    if(!last)return;
+    var u=last,full=[],near=[];
+    OFFERS.forEach(function(o){
+      if(u.wm&&o.w!==u.wm)return;
+      var w=check(o,u);if(!w.length)full.push(o);else if(w.length===1)near.push({o:o,w:w})});
+    var h='';
+    h+='<div class="sect"><h2>'+A.t("مناسب ليك","Matches you")+' <b>'+full.length+'</b></h2>'+
+      (full.length?'<div class="stack">'+full.map(function(o){return card(o)}).join('')+'</div>':'<div class="card"><p class="hint" style="font-size:15px">'+A.t("مفيش وظيفة بتنطبق عليك بالكامل دلوقتي. شوف الوظايف القريبة تحت.","No job matches you fully right now. See the close ones below.")+'</p></div>')+'</div>';
+    if(near.length)h+='<div class="sect"><h2>'+A.t("قريبة منك (شرط واحد ناقص)","Close (one requirement short)")+' <b>'+near.length+'</b></h2><div class="stack">'+near.map(function(x){return card(x.o,x.w)}).join('')+'</div></div>';
+    if(!u.lvl)h+='<p class="hint" style="margin-top:18px">'+A.t("ماحددتش مستوى الإنجليزي، فمش اتحسب ضمن الشروط. ","You did not set an English level, so it was not counted. ")+'<a href="english-test.html">'+A.t("اعمل الاختبار","Take the test")+'</a></p>';
+    h+='<p class="hint" style="margin-top:10px">'+A.t("النتيجة تقريبية حسب بيانات العروض. القرار النهائي للشركة والمراجعة بتتم من فريقنا.","Results are approximate based on offer data. The hiring company and our team make the final decision.")+'</p>';
+    $('res').innerHTML=h;
+  }
+
+  $('f').addEventListener('submit',function(e){
+    e.preventDefault();$('err').textContent='';
+    var u=readUser();
+    if(u.age&&(u.age<16||u.age>70)){$('err').textContent=A.t("اكتب سن صحيح.","Enter a valid age.");return}
+    if(!OFFERS){$('err').textContent=A.t("بنحمّل العروض، جرّب كمان ثانية.","Loading offers, try again in a second.");return}
+    last=u;try{localStorage.setItem("apexMatch",JSON.stringify(u))}catch(x){}
+    render();$('res').scrollIntoView({behavior:'smooth',block:'start'});
+  });
+
+  /* prefill from last visit or ?lvl= from the English test */
+  try{var sv=JSON.parse(localStorage.getItem("apexMatch")||"null");if(sv){
+    if(sv.age)$('age').value=sv.age;if(sv.lvl)$('lvl').value=String(sv.lvl);
+    sv.langs.forEach(function(v){var i=d.querySelector('#langs input[value='+v+']');if(i)i.checked=true});
+    ['edu','nat','exp','wm'].forEach(function(n){var i=d.querySelector('input[name='+n+'][value="'+(sv[n]||"")+'"]');if(i)i.checked=true})}}catch(e){}
+  var q=/[?&]lvl=([\d.]+)/.exec(location.search);if(q)$('lvl').value=q[1];
+
+  A.onLang(function(l){d.title=l==="ar"?"هل أنا مناسب؟ | Apex":"Am I a fit? | Apex";render()});
+  A.start();
+  $('res').innerHTML='<p class="hint" style="margin-top:18px">'+A.t("بنحمّل أحدث العروض…","Loading the latest offers…")+'</p>';
+  A.loadOffers(function(o){OFFERS=o;if(last)render();else $('res').innerHTML=''},function(){$('res').innerHTML='<div class="card" style="margin-top:18px"><p>'+A.t("مقدرناش نحمّل العروض دلوقتي. جرّب تفتح صفحة الوظايف.","We could not load offers right now. Try the jobs page.")+' <a href="index.html">index</a></p></div>'});
+})();
+</script>
+</body>
+</html>

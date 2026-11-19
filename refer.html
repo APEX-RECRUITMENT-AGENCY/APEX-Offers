@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<title>جايب صاحبك | Apex</title>
+<meta name="description" content="ابعت لصاحبك رسالة جاهزة بوظايف Apex، ولو اتعيّن اذكر اسمك.">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="tools.css">
+<style>
+.msg{white-space:pre-wrap;background:var(--bg);border:1px dashed var(--line);border-radius:14px;padding:16px;font-size:16px;line-height:1.8;word-break:break-word}
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<main class="wrap">
+  <div class="ph anim">
+    <div class="eyebrow" data-ar="أداة" data-en="Tool">أداة</div>
+    <h1 data-ar="جايب صاحبك" data-en="Refer a friend">جايب صاحبك</h1>
+    <p class="lead" data-ar="لو تعرف حد بيدوّر على شغل، ابعتله رسالة جاهزة فيها وظايفنا. وهو لما يتواصل معانا هيذكر اسمك." data-en="Know someone looking for work? Send them a ready message with our jobs. When they contact us they will mention your name.">لو تعرف حد بيدوّر على شغل، ابعتله رسالة جاهزة فيها وظايفنا. وهو لما يتواصل معانا هيذكر اسمك.</p>
+  </div>
+
+  <section class="card stack anim" style="margin-top:18px;animation-delay:.1s">
+    <div class="fld" style="margin-top:0"><label for="me" data-ar="اسمك (عشان صاحبك يذكره)" data-en="Your name (so your friend can mention it)">اسمك (عشان صاحبك يذكره)</label><input id="me" type="text" dir="auto" autocomplete="name"></div>
+    <div class="fld" style="margin-top:0"><label for="fr" data-ar="اسم صاحبك (اختياري)" data-en="Your friend's name (optional)">اسم صاحبك (اختياري)</label><input id="fr" type="text" dir="auto"></div>
+    <div><div class="l" style="font-weight:600;font-family:var(--head);font-size:15px;margin-bottom:8px" data-ar="الرسالة" data-en="The message">الرسالة</div><div class="msg" id="msg" dir="auto"></div></div>
+    <div class="row">
+      <button class="btn p" id="share" type="button"><span data-ar="ابعتها على واتساب" data-en="Send on WhatsApp">ابعتها على واتساب</span></button>
+      <button class="btn" id="copy" type="button"><span data-ar="نسخ الرسالة" data-en="Copy message">نسخ الرسالة</span></button>
+    </div>
+    <div class="err" id="err" role="alert"></div>
+    <div class="ok" id="okm"></div>
+    <p class="hint" data-ar="لما صاحبك يتواصل معانا على واتساب ويذكر اسمك، بنسجّل إنك اللي رشّحته. تفاصيل أي مكافأة بتتحدد مع فريق Apex." data-en="When your friend contacts us on WhatsApp and mentions your name, we record that you referred them. Any reward details are agreed with the Apex team.">لما صاحبك يتواصل معانا على واتساب ويذكر اسمك، بنسجّل إنك اللي رشّحته. تفاصيل أي مكافأة بتتحدد مع فريق Apex.</p>
+  </section>
+</main>
+<div id="foot"></div>
+
+<script src="tools.js"></script>
+<script>
+(function(){
+  var d=document,A=APEX,$=function(i){return d.getElementById(i)};
+  function site(){return location.href.replace(/[^\/]*$/,"").replace(/[?#].*$/,"")+"index.html"}
+  function text(){
+    var me=$('me').value.trim(),fr=$('fr').value.trim();
+    var hi=fr?(A.lang()==="ar"?"أهلاً "+fr+" 👋\n":"Hi "+fr+" 👋\n"):(A.lang()==="ar"?"أهلاً 👋\n":"Hi 👋\n");
+    return A.lang()==="ar"
+      ?hi+"لو بتدوّر على شغل (كول سنتر، مبيعات، خدمة عملاء) شوف وظايف Apex Recruitment Agency:\n"+site()+"\n\nوللتقديم كلّمهم على واتساب: 01115634954\nواكتب إن "+(me||"[اسمي]")+" رشّحك."
+      :hi+"If you're looking for a job (call centre, sales, customer service), see the openings at Apex Recruitment Agency:\n"+site()+"\n\nTo apply, message them on WhatsApp: 01115634954\nand mention that "+(me||"[my name]")+" referred you."}
+  function show(){$('msg').textContent=text()}
+  ['me','fr'].forEach(function(i){$(i).addEventListener('input',show)});
+  function need(){if($('me').value.trim().length<2){$('err').textContent=A.t("اكتب اسمك الأول.","Enter your name first.");$('me').focus();return false}$('err').textContent='';return true}
+  $('share').addEventListener('click',function(){
+    if(!need())return;var u="https://wa.me/?text="+encodeURIComponent(text()),w=null;try{w=window.open(u,"_blank","noopener")}catch(e){}if(!w)location.href=u});
+  $('copy').addEventListener('click',function(){
+    if(!need())return;var t=text(),ok=$('okm');
+    function done(){ok.textContent=A.t("اتنسخت ✓ الصقها في أي شات.","Copied ✓ paste it in any chat.");ok.classList.add('show')}
+    try{navigator.clipboard.writeText(t).then(done,function(){sel()})}catch(e){sel()}
+    function sel(){var r=d.createRange();r.selectNodeContents($('msg'));var s=getSelection();s.removeAllRanges();s.addRange(r);ok.textContent=A.t("اتحددت الرسالة، انسخها بإيدك.","The message is selected, copy it manually.");ok.classList.add('show')}
+  });
+  A.onLang(function(l){d.title=l==="ar"?"جايب صاحبك | Apex":"Refer a friend | Apex";show()});
+  A.start();show();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<meta name="robots" content="noindex,nofollow">
+<title>لوحة أرقام Apex</title>
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="tools.css">
+<style>
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:20px}
+@media(min-width:700px){.kpis{grid-template-columns:repeat(4,1fr)}}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px}
+.kpi b{display:block;font-family:var(--head);font-weight:900;font-size:34px;line-height:1.1;font-variant-numeric:tabular-nums}
+.kpi span{color:var(--mute);font-size:14px}
+.chart{width:100%;height:auto;display:block}
+.chart text{fill:var(--mute);font-size:10px;font-family:var(--body)}
+.chart .bar{fill:var(--accent)}
+.chart .grid{stroke:var(--line);stroke-width:1}
+.fun{display:grid;gap:10px}
+.fun div{display:grid;grid-template-columns:96px 1fr 40px;gap:10px;align-items:center;font-size:14px}
+.fun i{display:block;height:10px;border-radius:5px;background:var(--surface2);overflow:hidden}
+.fun i b{display:block;height:100%;background:var(--accent);border-radius:5px}
+.fun em{font-style:normal;text-align:end;font-variant-numeric:tabular-nums;font-weight:700}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:420px;font-size:15px}
+th,td{padding:10px 14px;text-align:start;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-size:13px;color:var(--mute);background:var(--surface2);font-family:var(--head)}
+tr:last-child td{border:0}
+td.n{text-align:end;font-variant-numeric:tabular-nums}
+th.n{text-align:end}
+.upd{color:var(--mute);font-size:13px;margin-top:22px}
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<main class="wrap wide">
+  <div class="ph anim">
+    <div class="eyebrow" data-ar="للمالك فقط" data-en="Owner only">للمالك فقط</div>
+    <h1 data-ar="لوحة أرقام Apex" data-en="Apex dashboard">لوحة أرقام Apex</h1>
+  </div>
+
+  <section class="card" id="login" hidden style="max-width:420px;margin-top:20px">
+    <p data-ar="سجّل دخول بحساب المالك أو الأدمن." data-en="Sign in with an owner or admin account.">سجّل دخول بحساب المالك أو الأدمن.</p>
+    <div class="fld"><label for="em" data-ar="الإيميل" data-en="Email">الإيميل</label><input id="em" type="email" dir="ltr" autocomplete="username"></div>
+    <div class="fld"><label for="pw" data-ar="الباسورد" data-en="Password">الباسورد</label><input id="pw" type="password" dir="ltr" autocomplete="current-password"></div>
+    <div class="err" id="lerr" role="alert"></div>
+    <button class="btn p" id="lgo" type="button"><span data-ar="دخول" data-en="Sign in">دخول</span></button>
+  </section>
+
+  <div id="msg" class="hint" style="margin-top:24px"></div>
+
+  <div id="dash" hidden>
+    <div class="row" style="margin-top:6px;align-items:center">
+      <div class="chips" id="range">
+        <label><input type="radio" name="r" value="7"><span data-ar="7 أيام" data-en="7 days">7 أيام</span></label>
+        <label><input type="radio" name="r" value="30" checked><span data-ar="30 يوم" data-en="30 days">30 يوم</span></label>
+        <label><input type="radio" name="r" value="90"><span data-ar="90 يوم" data-en="90 days">90 يوم</span></label>
+      </div>
+      <button class="btn sm" id="rf" type="button"><span data-ar="تحديث" data-en="Refresh">تحديث</span></button>
+      <button class="btn sm" id="lo" type="button"><span data-ar="خروج" data-en="Sign out">خروج</span></button>
+    </div>
+    <div class="kpis" id="kpis"></div>
+    <div class="sect"><h2 data-ar="التقديمات يوم بيوم" data-en="Applications per day">التقديمات يوم بيوم</h2><div class="card"><div id="days"></div></div></div>
+    <div class="sect"><h2 data-ar="حالة الطلبات" data-en="Application status">حالة الطلبات</h2><div class="card"><div class="fun" id="st"></div></div></div>
+    <div class="sect"><h2 data-ar="الريكروترز" data-en="Recruiters">الريكروترز</h2><div class="tw" id="rec"></div></div>
+    <div class="sect"><h2 data-ar="أكتر العروض تقديماً" data-en="Most applied offers">أكتر العروض تقديماً</h2><div class="tw" id="off"></div></div>
+    <div class="sect"><h2 data-ar="تقييم الفويس" data-en="Voice assessment">تقييم الفويس</h2><div class="kpis" id="vc"></div></div>
+    <p class="upd" id="upd"></p>
+  </div>
+</main>
+<div id="foot"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<script src="tools.js"></script>
+<script>
+(function(){
+  var d=document,A=APEX,$=function(i){return d.getElementById(i)},CF=window.APEX_CONFIG||{},sb=null,DATA=null;
+  try{if(CF.SUPABASE_URL&&CF.SUPABASE_ANON_KEY&&window.supabase)sb=window.supabase.createClient(CF.SUPABASE_URL,CF.SUPABASE_ANON_KEY)}catch(e){}
+  var ST={new:["جديد","New"],contacted:["تم التواصل","Contacted"],interview:["انترفيو","Interview"],accepted:["مقبول","Accepted"],validated:["تم التحقق","Validated"],hired:["اتعيّن","Hired"],rejected:["مرفوض","Rejected"],no_answer:["مردش","No answer"]};
+  var RL={owner:["مالك","Owner"],admin:["أدمن","Admin"],unit_manager:["يونت مانجر","Unit manager"],team_leader:["تيم ليدر","Team leader"],senior_recruiter:["سينيور","Senior"],recruiter:["ريكروتر","Recruiter"]};
+  function n(v){return Number(v||0).toLocaleString(A.lang()==="ar"?"ar-EG":"en-US")}
+  function days(){var e=d.querySelector('#range input:checked');return +(e?e.value:30)}
+
+  function show(which,text){
+    $('login').hidden=which!=="login";$('dash').hidden=which!=="dash";$('msg').textContent=text||"";
+  }
+
+  async function load(){
+    if(!sb){show("none",A.t("الاتصال بالقاعدة غير جاهز. تأكد إن config.js موجود.","Database connection is not ready. Make sure config.js is present."));return}
+    var s=(await sb.auth.getSession()).data.session;
+    if(!s){show("login");return}
+    show("none",A.t("بنحمّل الأرقام…","Loading the numbers…"));
+    var r=await sb.rpc("owner_stats",{p_days:days()});
+    if(r.error){
+      if(/not allowed/i.test(r.error.message||""))show("none",A.t("الصفحة دي للمالك والأدمن فقط.","This page is for the owner and admins only."));
+      else if(/function .*owner_stats|schema cache/i.test(r.error.message||""))show("none",A.t("لازم تشغّل ملف owner_stats.sql في Supabase الأول.","Run the owner_stats.sql file in Supabase first."));
+      else show("none",A.t("حصلت مشكلة في تحميل الأرقام: ","Could not load the numbers: ")+(r.error.message||""));
+      return}
+    DATA=r.data;show("dash");render();
+  }
+
+  function dayChart(rows){
+    var W=640,H=170,pl=30,pb=22,pt=10,mx=Math.max.apply(null,rows.map(function(r){return r.n}).concat([1]));
+    var top=mx<=4?4:(Math.ceil(mx/5)*5),bw=(W-pl)/rows.length,ch=H-pb-pt;
+    var g='',y;
+    [0,.5,1].forEach(function(f){y=pt+ch-(ch*f);g+='<line class="grid" x1="'+pl+'" x2="'+W+'" y1="'+y+'" y2="'+y+'"/><text x="'+(pl-6)+'" y="'+(y+3)+'" text-anchor="end">'+Math.round(top*f)+'</text>'});
+    var bars=rows.map(function(r,i){var h=ch*r.n/top,x=pl+i*bw+bw*.15;return '<rect class="bar" x="'+x.toFixed(1)+'" y="'+(pt+ch-h).toFixed(1)+'" width="'+(bw*.7).toFixed(1)+'" height="'+h.toFixed(1)+'" rx="2"><title>'+r.day+': '+r.n+'</title></rect>'}).join('');
+    var lab='<text x="'+pl+'" y="'+(H-6)+'">'+rows[0].day.slice(5)+'</text><text x="'+W+'" y="'+(H-6)+'" text-anchor="end">'+rows[rows.length-1].day.slice(5)+'</text>';
+    return '<svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+A.t("التقديمات يوم بيوم","Applications per day")+'" style="direction:ltr">'+g+bars+lab+'</svg>'}
+
+  function table(head,rows){
+    return '<table><thead><tr>'+head.map(function(h,i){return '<th'+(i?' class="n"':'')+'>'+A.esc(h)+'</th>'}).join('')+'</tr></thead><tbody>'+
+      rows.map(function(r){return '<tr>'+r.map(function(c,i){return '<td'+(i?' class="n"':'')+' dir="auto">'+A.esc(c)+'</td>'}).join('')+'</tr>'}).join('')+'</tbody></table>'}
+
+  function render(){
+    if(!DATA)return;var t=DATA.totals,L=A.lang()==="ar"?0:1;
+    $('kpis').innerHTML=[[t.today,A.t("النهارده","Today")],[t.in_range,A.t("آخر "+DATA.days+" يوم","Last "+DATA.days+" days")],[t.interview_in_range,A.t("وصلوا للإنترفيو","Reached interview")],[t.hired_in_range,A.t("اتعيّنوا","Hired")]]
+      .map(function(k){return '<div class="kpi"><b>'+n(k[0])+'</b><span>'+k[1]+'</span></div>'}).join('');
+    $('days').innerHTML=dayChart(DATA.by_day||[]);
+    var mx=Math.max.apply(null,(DATA.by_status||[]).map(function(s){return s.n}).concat([1]));
+    $('st').innerHTML=(DATA.by_status||[]).map(function(s){return '<div><span>'+A.esc((ST[s.status]||[s.status,s.status])[L])+'</span><i><b style="width:'+(s.n/mx*100)+'%"></b></i><em>'+n(s.n)+'</em></div>'}).join('')||'<p class="hint">'+A.t("مفيش بيانات في الفترة دي.","No data in this period.")+'</p>';
+    $('rec').innerHTML=(DATA.by_recruiter||[]).length?table([A.t("الاسم","Name"),A.t("الدور","Role"),A.t("متقدمين","Applicants"),A.t("إنترفيو","Interviews"),A.t("اتعيّنوا","Hired")],DATA.by_recruiter.map(function(r){return [r.name,(RL[r.role]||[r.role,r.role])[L],n(r.applicants),n(r.interviews),n(r.hired)]})):'<p class="hint" style="padding:14px">'+A.t("مفيش بيانات.","No data.")+'</p>';
+    $('off').innerHTML=(DATA.by_offer||[]).length?table([A.t("الشركة","Company"),A.t("الوظيفة","Position"),A.t("الطلبات","Applications")],DATA.by_offer.map(function(o){return [o.company||"-",o.title||"-",n(o.n)]})):'<p class="hint" style="padding:14px">'+A.t("مفيش بيانات.","No data.")+'</p>';
+    var v=DATA.voice||{};
+    $('vc').innerHTML=[[v.with_ai,A.t("اتقيّموا بالـAI","AI-assessed")],[v.avg_ai_score==null?"-":v.avg_ai_score,A.t("متوسط الدرجة","Average score")],[v.pending_review,A.t("مستنيين مراجعة","Awaiting review")],[v.ai_errors,A.t("أخطاء تقييم","Assessment errors")]]
+      .map(function(k){return '<div class="kpi"><b>'+(typeof k[0]==="number"?n(k[0]):A.esc(k[0]==null?0:k[0]))+'</b><span>'+k[1]+'</span></div>'}).join('');
+    $('upd').textContent=A.t("آخر تحديث: ","Last updated: ")+new Date(DATA.generated_at).toLocaleString(A.lang()==="ar"?"ar-EG":"en-GB")+A.t(" (بتوقيت جهازك)"," (your device time)");
+  }
+
+  $('lgo').addEventListener('click',async function(){
+    $('lerr').textContent='';if(!sb)return;
+    var r=await sb.auth.signInWithPassword({email:$('em').value.trim(),password:$('pw').value});
+    if(r.error){$('lerr').textContent=A.t("الإيميل أو الباسورد غلط.","Wrong email or password.");return}
+    $('pw').value='';load()});
+  $('pw').addEventListener('keydown',function(e){if(e.key==="Enter")$('lgo').click()});
+  $('rf').addEventListener('click',load);
+  $('range').addEventListener('change',load);
+  $('lo').addEventListener('click',async function(){if(sb)await sb.auth.signOut();DATA=null;show("login")});
+
+  A.onLang(function(l){d.title=l==="ar"?"لوحة أرقام Apex":"Apex dashboard";render()});
+  A.start();load();
+})();
+</script>
+</body>
+</html>

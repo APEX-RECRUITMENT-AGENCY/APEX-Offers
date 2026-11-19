@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<title>وظيفة | Apex</title>
+<meta name="description" content="تفاصيل الوظيفة من Apex Recruitment Agency.">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="tools.css">
+<style>
+.dl{display:grid;gap:0;margin:0}
+.dl div{display:grid;grid-template-columns:130px 1fr;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.dl div:last-child{border:0}
+.dl dt{color:var(--mute);font-size:14px;font-weight:600}
+.dl dd{margin:0;word-break:break-word}
+@media(max-width:420px){.dl div{grid-template-columns:1fr;gap:2px}}
+.hd .co{color:var(--mute)}
+.hd h1{margin-top:6px}
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<main class="wrap">
+  <div id="out"><p class="hint" style="margin-top:30px" data-ar="بنحمّل الوظيفة…" data-en="Loading the job…">بنحمّل الوظيفة…</p></div>
+</main>
+<div id="foot"></div>
+
+<script src="tools.js"></script>
+<script>
+(function(){
+  var d=document,A=APEX,$=function(i){return d.getElementById(i)},J=null,ALL=[];
+  var id=(/[?&]id=([a-z0-9]+)/i.exec(location.search)||[])[1]||"";
+  var LB={pay:["المرتب والمزايا","Pay and benefits"],sh:["مواعيد الشغل","Working hours"],w:["طريقة الشغل","Work mode"],loc:["المكان","Location"],exp:["الخبرة","Experience"],lang:["اللغة والمستوى","Language and level"],grad:["المؤهل","Education"],nat:["الجنسية","Nationality"],age:["السن","Age"],tr:["المواصلات","Transportation"],iv:["الإنترفيو","Interview"],note:["ملاحظات","Notes"]};
+  var ORDER=["pay","sh","w","loc","lang","exp","grad","nat","age","tr","iv","note"];
+  function wmText(w){return {WFS:A.t("من المكتب","On-site"),Hybrid:A.t("هايبرد","Hybrid"),WFH:A.t("من البيت","Remote")}[w]||w}
+  function pageUrl(){return location.href.replace(/[#].*$/,"")}
+
+  function render(){
+    var out=$('out');
+    if(!ALL.length)return;
+    if(!J){
+      out.innerHTML='<div class="ph"><h1>'+A.t("الوظيفة دي مش موجودة","This job is not available")+'</h1><p class="lead">'+A.t("ممكن تكون اتقفلت. شوف باقي الوظايف المتاحة.","It may have been closed. See the other open jobs.")+'</p></div><div class="row" style="margin-top:16px"><a class="btn p" href="'+A.indexUrl()+'">'+A.t("كل الوظايف","All jobs")+'</a><a class="btn" href="match.html">'+A.t("هل أنا مناسب؟","Am I a fit?")+'</a></div>';
+      d.title=A.t("وظيفة غير متاحة | Apex","Job unavailable | Apex");return}
+    var rows=ORDER.filter(function(k){return J[k]&&!/^(not stated|n\/a|-)$/i.test(J[k])}).map(function(k){
+      var v=k==="w"?wmText(J.w):J[k];return '<div><dt>'+A.esc(A.t(LB[k][0],LB[k][1]))+'</dt><dd dir="auto">'+A.esc(v)+'</dd></div>'}).join("");
+    var map=/^https?:\/\//.test(J.link||"")?'<a class="btn sm" href="'+A.esc(J.link)+'" target="_blank" rel="noopener">'+A.t("الموقع / اللينك","Location / link")+'</a>':'';
+    var more=ALL.filter(function(o){return o.id!==J.id&&o.c===J.c}).slice(0,3);
+    out.innerHTML='<div class="ph hd anim"><div class="eyebrow">'+A.t("وظيفة","Job")+'</div><div class="co">'+A.esc(J.c)+'</div><h1 dir="auto">'+A.esc(J.t)+'</h1>'+
+      '<div class="meta" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px"><span class="pill">'+A.esc(wmText(J.w))+'</span>'+(J.loc?'<span class="pill">'+A.esc(J.loc)+'</span>':'')+(J.lang?'<span class="pill">'+A.esc(J.lang)+'</span>':'')+'</div></div>'+
+      '<div class="card anim" style="margin-top:20px;animation-delay:.08s"><dl class="dl">'+rows+'</dl></div>'+
+      '<div class="row" style="margin-top:18px"><a class="btn p" href="'+A.indexUrl()+'">'+A.t("قدّم على الوظيفة","Apply for this job")+'</a><a class="btn" href="match.html">'+A.t("هل أنا مناسب؟","Am I a fit?")+'</a>'+map+'</div>'+
+      '<p class="hint" style="margin-top:10px">'+A.t("التقديم بيتم من خلال لينك الريكروتر بتاعك. لو معندكش، كلّمنا على واتساب.","Applying is through your recruiter's link. If you do not have one, message us on WhatsApp.")+'</p>'+
+      '<div class="sect"><h2>'+A.t("شارك الوظيفة","Share this job")+'</h2><div class="row"><button class="btn sm" id="sh" type="button">'+A.t("ابعتها على واتساب","Send on WhatsApp")+'</button><button class="btn sm" id="cp" type="button">'+A.t("نسخ اللينك","Copy link")+'</button></div><div class="ok" id="okm"></div></div>'+
+      (more.length?'<div class="sect"><h2>'+A.t("وظايف تانية من نفس الشركة","More from this company")+'</h2><div class="stack">'+more.map(function(o){return '<a class="card job" href="job.html?id='+o.id+'" style="text-decoration:none"><h3 dir="auto">'+A.esc(o.t)+'</h3><div class="co">'+A.esc(o.c)+(o.loc?' · '+A.esc(o.loc):'')+'</div></a>'}).join("")+'</div></div>':'');
+    d.title=J.t+" | "+J.c+" | Apex";
+    var md=d.querySelector('meta[name=description]');if(md)md.content=J.t+" - "+J.c+(J.loc?" - "+J.loc:"")+(J.pay?" - "+J.pay:"");
+    var share=$('sh'),cp=$('cp');
+    if(share)share.addEventListener('click',function(){
+      var t=J.t+" - "+J.c+(J.loc?" ("+J.loc+")":"")+"\n"+pageUrl(),u="https://wa.me/?text="+encodeURIComponent(t),w=null;try{w=window.open(u,"_blank","noopener")}catch(e){}if(!w)location.href=u});
+    if(cp)cp.addEventListener('click',function(){var ok=$('okm');
+      function done(m){ok.textContent=m;ok.classList.add('show')}
+      try{navigator.clipboard.writeText(pageUrl()).then(function(){done(A.t("اتنسخ ✓","Copied ✓"))},function(){done(pageUrl())})}catch(e){done(pageUrl())}});
+  }
+  A.onLang(function(){render()});
+  A.start();
+  A.loadOffers(function(o){ALL=o;J=o.filter(function(x){return x.id===id})[0]||null;render()},function(){$('out').innerHTML='<div class="card" style="margin-top:24px"><p>'+A.t("مقدرناش نحمّل الوظيفة دلوقتي. جرّب تاني.","We could not load the job right now. Try again.")+'</p></div>'});
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<title>اعمل CV مجاني | Apex</title>
+<meta name="description" content="املا بياناتك واعمل CV نظيف بالإنجليزي جاهز تحفظه PDF وتقدّم بيه.">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="tools.css">
+<style>
+.grid2{display:grid;gap:22px;margin-top:20px}
+@media(min-width:960px){.grid2{grid-template-columns:420px 1fr;align-items:start}.stickyp{position:sticky;top:76px}}
+.rep{border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:10px;background:var(--bg)}
+.rep .rm{float:inline-end;font:inherit;font-size:13px;color:var(--accent);background:none;border:0;cursor:pointer;font-weight:600}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.two>*{min-width:0}
+h2.s{font-size:18px;font-weight:800;margin:26px 0 0;padding-top:18px;border-top:1px solid var(--line)}
+h2.s:first-of-type{border:0;margin-top:0;padding-top:0}
+
+/* the CV sheet: always black on white */
+.paper{overflow-x:auto;border-radius:14px;border:1px solid var(--line);background:#e9eaec;padding:14px}
+.sheet{background:#fff;color:#16171a;width:100%;max-width:794px;min-height:520px;margin:0 auto;padding:36px 38px;font-family:Inter,"IBM Plex Sans Arabic",Arial,sans-serif;font-size:13.5px;line-height:1.55;box-shadow:0 10px 30px -14px rgba(0,0,0,.4)}
+.sheet h1{font-family:Inter,"Cairo",Arial,sans-serif;font-size:28px;font-weight:800;margin:0;line-height:1.15}
+.sheet .jt{font-size:15px;color:#c91414;font-weight:600;margin-top:2px}
+.sheet .ct{margin-top:8px;color:#444;font-size:12.5px;display:flex;flex-wrap:wrap;gap:2px 14px}
+.sheet h2{font-family:Inter,"Cairo",Arial,sans-serif;font-size:12px;letter-spacing:.12em;text-transform:uppercase;border-bottom:1.5px solid #16171a;padding-bottom:3px;margin:18px 0 8px;font-weight:800}
+.sheet .it{margin-bottom:9px}
+.sheet .it .h{display:flex;justify-content:space-between;gap:12px;font-weight:700}
+.sheet .it .h span:last-child{font-weight:500;color:#555;white-space:nowrap}
+.sheet .it .sub{color:#444}
+.sheet ul{margin:4px 0 0;padding-inline-start:18px}
+.sheet .chip{display:inline-block;border:1px solid #bbb;border-radius:4px;padding:0 8px;margin:0 6px 6px 0;font-size:12.5px}
+.sheet .empty{color:#9aa0a6;font-style:italic}
+@media print{
+  .grid2{display:block}.stickyp{position:static}
+  .paper{border:0;padding:0;background:none;overflow:visible}
+  .sheet{box-shadow:none;max-width:none;padding:0;min-height:0}
+  @page{margin:14mm}
+}
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<main class="wrap wide">
+  <div class="ph noprint anim">
+    <div class="eyebrow" data-ar="أداة" data-en="Tool">أداة</div>
+    <h1 data-ar="اعمل CV مجاني" data-en="Build a free CV">اعمل CV مجاني</h1>
+    <p class="lead" data-ar="املا البيانات (يفضّل بالإنجليزي) والـCV بيتكوّن قدامك. لما تخلّص دوس حفظ PDF." data-en="Fill in your details (English works best) and your CV builds live. When done, tap Save as PDF.">املا البيانات (يفضّل بالإنجليزي) والـCV بيتكوّن قدامك. لما تخلّص دوس حفظ PDF.</p>
+  </div>
+
+  <div class="grid2">
+    <form class="card noprint" id="f" onsubmit="return false" autocomplete="off">
+      <h2 class="s" data-ar="بياناتك" data-en="About you">بياناتك</h2>
+      <div class="fld"><label for="name" data-ar="الاسم الكامل" data-en="Full name">الاسم الكامل</label><input id="name" type="text" dir="auto"></div>
+      <div class="fld"><label for="title" data-ar="المسمى الوظيفي المطلوب" data-en="Target job title">المسمى الوظيفي المطلوب</label><input id="title" type="text" dir="auto" placeholder="Customer Service Representative"></div>
+      <div class="two">
+        <div class="fld"><label for="phone" data-ar="التليفون" data-en="Phone">التليفون</label><input id="phone" type="tel" dir="ltr"></div>
+        <div class="fld"><label for="email" data-ar="الإيميل" data-en="Email">الإيميل</label><input id="email" type="email" dir="ltr"></div>
+      </div>
+      <div class="fld"><label for="city" data-ar="المدينة" data-en="City">المدينة</label><input id="city" type="text" dir="auto" placeholder="Cairo, Egypt"></div>
+      <div class="fld"><label for="sum" data-ar="نبذة عنك (2 أو 3 جمل)" data-en="Short summary (2 or 3 sentences)">نبذة عنك (2 أو 3 جمل)</label><textarea id="sum" dir="auto"></textarea></div>
+
+      <h2 class="s" data-ar="الخبرات" data-en="Experience">الخبرات</h2>
+      <div id="exps"></div>
+      <button class="btn sm" type="button" id="addExp" style="margin-top:10px"><span data-ar="+ أضف خبرة" data-en="+ Add experience">+ أضف خبرة</span></button>
+      <div class="hint" data-ar="مفيش خبرة؟ سيبها فاضية، وضيف مشاريعك أو كورسات تحت." data-en="No experience? Leave it empty and add projects or courses below.">مفيش خبرة؟ سيبها فاضية، وضيف مشاريعك أو كورسات تحت.</div>
+
+      <h2 class="s" data-ar="التعليم" data-en="Education">التعليم</h2>
+      <div id="edus"></div>
+      <button class="btn sm" type="button" id="addEdu" style="margin-top:10px"><span data-ar="+ أضف مؤهل" data-en="+ Add education">+ أضف مؤهل</span></button>
+
+      <h2 class="s" data-ar="المهارات واللغات" data-en="Skills and languages">المهارات واللغات</h2>
+      <div class="fld"><label for="skills" data-ar="المهارات (افصل بينها بفاصلة)" data-en="Skills (comma separated)">المهارات (افصل بينها بفاصلة)</label><textarea id="skills" dir="auto" style="min-height:70px" placeholder="Communication, Sales, MS Office, CRM"></textarea></div>
+      <div class="fld"><label for="langs" data-ar="اللغات (سطر لكل لغة)" data-en="Languages (one per line)">اللغات (سطر لكل لغة)</label><textarea id="langs" dir="auto" style="min-height:70px" placeholder="Arabic: Native&#10;English: C1"></textarea></div>
+      <div class="fld"><label for="extra" data-ar="كورسات أو مشاريع (سطر لكل واحد)" data-en="Courses or projects (one per line)">كورسات أو مشاريع (سطر لكل واحد)</label><textarea id="extra" dir="auto" style="min-height:70px"></textarea></div>
+      <div class="row" style="margin-top:18px"><button class="btn" type="button" id="clear"><span data-ar="مسح الكل" data-en="Clear all">مسح الكل</span></button></div>
+    </form>
+
+    <div class="stickyp">
+      <div class="row noprint" style="margin-bottom:10px">
+        <button class="btn p" type="button" id="print"><span data-ar="حفظ PDF" data-en="Save as PDF">حفظ PDF</span></button>
+      </div>
+      <p class="hint noprint" style="margin:0 0 10px" data-ar="هتفتحلك شاشة الطباعة. اختار «Save as PDF» (حفظ كملف PDF) كوجهة." data-en="The print dialog opens. Choose “Save as PDF” as the destination.">هتفتحلك شاشة الطباعة. اختار «Save as PDF» (حفظ كملف PDF) كوجهة.</p>
+      <div class="paper"><div class="sheet" id="sheet"></div></div>
+    </div>
+  </div>
+</main>
+<div id="foot"></div>
+
+<script src="tools.js"></script>
+<script>
+(function(){
+  var d=document,A=APEX,$=function(i){return d.getElementById(i)},KEY="apexCV";
+  var F=["name","title","phone","email","city","sum","skills","langs","extra"];
+  var S={exps:[],edus:[]};
+
+  function load(){try{var s=JSON.parse(localStorage.getItem(KEY)||"null");if(s){F.forEach(function(k){if(s[k]!=null)$(k).value=s[k]});S.exps=s.exps||[];S.edus=s.edus||[]}}catch(e){}
+    if(!S.exps.length)S.exps=[{}];if(!S.edus.length)S.edus=[{}]}
+  function save(){var o={exps:S.exps,edus:S.edus};F.forEach(function(k){o[k]=$(k).value});try{localStorage.setItem(KEY,JSON.stringify(o))}catch(e){}}
+
+  function repHTML(kind,i,o){
+    var L=kind==="exps"?[["role",A.t("المسمى","Job title")],["org",A.t("الشركة","Company")],["when",A.t("الفترة","Period")]]:[["role",A.t("الدرجة / التخصص","Degree / major")],["org",A.t("الجامعة / المعهد","University / school")],["when",A.t("السنة","Year")]];
+    var h='<div class="rep" data-k="'+kind+'" data-i="'+i+'"><button type="button" class="rm" data-rm="1">'+A.t("حذف","Remove")+'</button>';
+    L.forEach(function(f){h+='<div class="fld" style="margin-top:8px"><label>'+f[1]+'</label><input type="text" dir="auto" data-f="'+f[0]+'" value="'+A.esc(o[f[0]]||"")+'"></div>'});
+    if(kind==="exps")h+='<div class="fld" style="margin-top:8px"><label>'+A.t("اللي عملته (سطر لكل نقطة)","What you did (one line per point)")+'</label><textarea dir="auto" data-f="pts" style="min-height:80px">'+A.esc(o.pts||"")+'</textarea></div>';
+    return h+'</div>'}
+  function buildReps(){
+    $('exps').innerHTML=S.exps.map(function(o,i){return repHTML("exps",i,o)}).join("");
+    $('edus').innerHTML=S.edus.map(function(o,i){return repHTML("edus",i,o)}).join("")}
+  function onRep(e){
+    var r=e.target.closest('.rep');if(!r)return;var k=r.dataset.k,i=+r.dataset.i;
+    if(e.type==="click"&&e.target.dataset.rm){S[k].splice(i,1);if(!S[k].length)S[k]=[{}];buildReps();render();save();return}
+    if(e.type==="input"&&e.target.dataset.f){S[k][i][e.target.dataset.f]=e.target.value;render();save()}}
+  $('exps').addEventListener('input',onRep);$('exps').addEventListener('click',onRep);
+  $('edus').addEventListener('input',onRep);$('edus').addEventListener('click',onRep);
+  $('addExp').addEventListener('click',function(){S.exps.push({});buildReps()});
+  $('addEdu').addEventListener('click',function(){S.edus.push({});buildReps()});
+  F.forEach(function(k){$(k).addEventListener('input',function(){render();save()})});
+
+  function lines(s){return (s||"").split(/\r?\n/).map(function(x){return x.trim()}).filter(Boolean)}
+  function item(o,sub){var any=o.role||o.org||o.when;if(!any)return"";
+    return '<div class="it"><div class="h"><span dir="auto">'+A.esc(o.role||"")+'</span><span dir="auto">'+A.esc(o.when||"")+'</span></div>'+(o.org?'<div class="sub" dir="auto">'+A.esc(o.org)+'</div>':'')+sub+'</div>'}
+
+  function render(){
+    var v=function(k){return $(k).value.trim()},h='';
+    h+='<h1 dir="auto">'+(v('name')?A.esc(v('name')):'<span class="empty">Your Name</span>')+'</h1>';
+    if(v('title'))h+='<div class="jt" dir="auto">'+A.esc(v('title'))+'</div>';
+    var ct=[v('phone'),v('email'),v('city')].filter(Boolean);
+    if(ct.length)h+='<div class="ct">'+ct.map(function(x){return '<span dir="auto">'+A.esc(x)+'</span>'}).join('')+'</div>';
+    if(v('sum'))h+='<h2>Summary</h2><div dir="auto">'+A.esc(v('sum'))+'</div>';
+    var ex=S.exps.map(function(o){return item(o,lines(o.pts).length?'<ul>'+lines(o.pts).map(function(p){return '<li dir="auto">'+A.esc(p)+'</li>'}).join('')+'</ul>':'')}).join('');
+    if(ex)h+='<h2>Experience</h2>'+ex;
+    var ed=S.edus.map(function(o){return item(o,'')}).join('');
+    if(ed)h+='<h2>Education</h2>'+ed;
+    var sk=(v('skills')).split(/[,،\n]/).map(function(x){return x.trim()}).filter(Boolean);
+    if(sk.length)h+='<h2>Skills</h2><div>'+sk.map(function(x){return '<span class="chip" dir="auto">'+A.esc(x)+'</span>'}).join('')+'</div>';
+    var lg=lines(v('langs'));
+    if(lg.length)h+='<h2>Languages</h2><ul>'+lg.map(function(x){return '<li dir="auto">'+A.esc(x)+'</li>'}).join('')+'</ul>';
+    var xt=lines(v('extra'));
+    if(xt.length)h+='<h2>Courses and projects</h2><ul>'+xt.map(function(x){return '<li dir="auto">'+A.esc(x)+'</li>'}).join('')+'</ul>';
+    $('sheet').innerHTML=h;
+  }
+
+  $('print').addEventListener('click',function(){window.print()});
+  $('clear').addEventListener('click',function(){
+    if(!$('clear').dataset.sure){$('clear').dataset.sure=1;$('clear').firstChild.textContent=A.t("دوس تاني للتأكيد","Tap again to confirm");setTimeout(function(){delete $('clear').dataset.sure;$('clear').firstChild.textContent=A.t("مسح الكل","Clear all")},3000);return}
+    F.forEach(function(k){$(k).value=""});S.exps=[{}];S.edus=[{}];buildReps();render();save();delete $('clear').dataset.sure;$('clear').firstChild.textContent=A.t("مسح الكل","Clear all")});
+
+  A.onLang(function(l){d.title=l==="ar"?"اعمل CV مجاني | Apex":"Build a free CV | Apex";buildReps()});
+  load();A.start();buildReps();render();
+})();
+</script>
+</body>
+</html>

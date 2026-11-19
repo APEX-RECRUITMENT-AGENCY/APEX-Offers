@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<title>أدوات Apex للباحثين عن شغل</title>
+<meta name="description" content="أدوات مجانية من Apex: هل أنا مناسب؟، اختبار إنجليزي، CV، تنبيهات وظايف، وجايب صاحبك.">
+<meta property="og:title" content="أدوات Apex للباحثين عن شغل">
+<meta property="og:description" content="أدوات مجانية تساعدك تلاقي الشغل المناسب وتقدّم عليه.">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="tools.css">
+<style>
+.tg{display:grid;gap:14px;margin-top:26px}
+@media(min-width:700px){.tg{grid-template-columns:1fr 1fr}}
+.tool{--mx:50%;--my:50%;position:relative;display:flex;gap:16px;align-items:flex-start;text-decoration:none;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px;overflow:hidden;transition:transform .3s var(--ease),border-color .3s}
+.tool::before{content:"";position:absolute;inset:0;background:radial-gradient(260px circle at var(--mx) var(--my),var(--card-glow),transparent 70%);opacity:0;transition:opacity .3s}
+.tool:hover{transform:translateY(-4px);border-color:var(--accent)}
+.tool:hover::before{opacity:1}
+.tool>*{position:relative}
+.ic{flex:none;width:48px;height:48px;border-radius:13px;display:grid;place-items:center;background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent)}
+.ic svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tool h3{font-size:19px;font-weight:800}
+.tool p{color:var(--mute);font-size:15px;margin-top:2px;line-height:1.65}
+.tool.first{border-color:color-mix(in srgb,var(--accent) 55%,var(--line))}
+.badge{display:inline-block;font-size:12px;font-weight:700;color:var(--accent-ink);background:var(--accent);border-radius:999px;padding:0 10px;margin-inline-start:8px;vertical-align:middle;font-family:var(--body)}
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<main class="wrap wide">
+  <div class="ph anim">
+    <div class="eyebrow" data-ar="مجاني" data-en="Free">مجاني</div>
+    <h1 data-ar="أدوات تساعدك تلاقي الشغل" data-en="Tools to help you find work">أدوات تساعدك تلاقي الشغل</h1>
+    <p class="lead" data-ar="كل الأدوات دي مجانية ومن غير تسجيل. ابدأ بأي واحدة." data-en="All of these tools are free and need no sign-up. Start with any of them.">كل الأدوات دي مجانية ومن غير تسجيل. ابدأ بأي واحدة.</p>
+  </div>
+  <div class="tg">
+    <a class="tool first anim" href="match.html"><span class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></svg></span><span><h3><span data-ar="هل أنا مناسب؟" data-en="Am I a fit?">هل أنا مناسب؟</span><span class="badge" data-ar="ابدأ من هنا" data-en="Start here">ابدأ من هنا</span></h3><p data-ar="اكتب بياناتك وشوف الوظايف اللي شروطها بتنطبق عليك." data-en="Enter your details and see the jobs whose requirements match you.">اكتب بياناتك وشوف الوظايف اللي شروطها بتنطبق عليك.</p></span></a>
+    <a class="tool anim" style="animation-delay:.05s" href="english-test.html"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg></span><span><h3 data-ar="اختبار إنجليزي سريع" data-en="Quick English test">اختبار إنجليزي سريع</h3><p data-ar="12 سؤال في 3 دقايق تعرف بيها مستواك التقريبي." data-en="12 questions in 3 minutes to find your approximate level.">12 سؤال في 3 دقايق تعرف بيها مستواك التقريبي.</p></span></a>
+    <a class="tool anim" style="animation-delay:.1s" href="cv.html"><span class="ic"><svg viewBox="0 0 24 24"><path d="M7 3h8l4 4v14H7z"/><path d="M15 3v4h4M10 12h6M10 16h6"/></svg></span><span><h3 data-ar="اعمل CV مجاني" data-en="Build a free CV">اعمل CV مجاني</h3><p data-ar="املا بياناتك وحمّل CV نظيف PDF." data-en="Fill in your details and download a clean PDF CV.">املا بياناتك وحمّل CV نظيف PDF.</p></span></a>
+    <a class="tool anim" style="animation-delay:.15s" href="alerts.html"><span class="ic"><svg viewBox="0 0 24 24"><path d="M6 17V11a6 6 0 0 1 12 0v6l2 2H4z"/><path d="M10 21a2 2 0 0 0 4 0"/></svg></span><span><h3 data-ar="تنبيهات الوظايف" data-en="Job alerts">تنبيهات الوظايف</h3><p data-ar="سيب رقمك وهنبعتلك العروض الجديدة على واتساب." data-en="Leave your number and we WhatsApp you new offers.">سيب رقمك وهنبعتلك العروض الجديدة على واتساب.</p></span></a>
+    <a class="tool anim" style="animation-delay:.2s" href="refer.html"><span class="ic"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M18 8v6M15 11h6"/></svg></span><span><h3 data-ar="جايب صاحبك" data-en="Refer a friend">جايب صاحبك</h3><p data-ar="ابعت لصاحبك رسالة جاهزة بوظايفنا." data-en="Send your friend a ready message with our jobs.">ابعت لصاحبك رسالة جاهزة بوظايفنا.</p></span></a>
+    <a class="tool anim" style="animation-delay:.25s" href="index.html"><span class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></svg></span><span><h3 data-ar="كل الوظايف" data-en="All jobs">كل الوظايف</h3><p data-ar="شوف كل العروض المتاحة دلوقتي وقدّم." data-en="Browse every open offer and apply.">شوف كل العروض المتاحة دلوقتي وقدّم.</p></span></a>
+  </div>
+</main>
+<div id="foot"></div>
+<script src="tools.js"></script>
+<script>
+(function(){
+  [].forEach.call(document.querySelectorAll('.tool'),function(c){c.addEventListener('pointermove',function(e){var r=c.getBoundingClientRect();c.style.setProperty('--mx',(e.clientX-r.left)+'px');c.style.setProperty('--my',(e.clientY-r.top)+'px')})});
+  APEX.onLang(function(l){document.title=l==="ar"?"أدوات Apex للباحثين عن شغل":"Apex tools for job seekers"});
+  APEX.start({hub:true});
+})();
+</script>
+</body>
+</html>

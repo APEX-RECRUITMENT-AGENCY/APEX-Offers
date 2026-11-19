@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<title>تنبيهات الوظايف على واتساب | Apex</title>
+<meta name="description" content="سيب رقمك ونوع الوظيفة اللي بتدوّر عليها، وهنبعتلك أول ما ينزل عرض مناسب.">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="tools.css">
+</head>
+<body>
+<div id="bar"></div>
+<main class="wrap">
+  <div class="ph anim">
+    <div class="eyebrow" data-ar="أداة" data-en="Tool">أداة</div>
+    <h1 data-ar="تنبيهات الوظايف على واتساب" data-en="Job alerts on WhatsApp">تنبيهات الوظايف على واتساب</h1>
+    <p class="lead" data-ar="قولنا بتدوّر على إيه، وأول ما ينزل عرض مناسب هنبعتهولك على واتساب." data-en="Tell us what you are looking for and we will WhatsApp you as soon as a suitable offer is posted.">قولنا بتدوّر على إيه، وأول ما ينزل عرض مناسب هنبعتهولك على واتساب.</p>
+  </div>
+
+  <form class="card anim" id="f" style="margin-top:18px;animation-delay:.1s" novalidate>
+    <div class="fld" style="margin-top:0"><label for="name" data-ar="اسمك" data-en="Your name">اسمك</label><input id="name" type="text" autocomplete="name"></div>
+    <div class="fld"><label for="ph" data-ar="رقم الواتساب" data-en="WhatsApp number">رقم الواتساب</label><input id="ph" type="tel" inputmode="tel" dir="ltr" autocomplete="tel" placeholder="01xxxxxxxxx"></div>
+    <div class="fld"><span class="l" data-ar="نوع الوظيفة (اختار اللي يناسبك)" data-en="Job type (pick any)">نوع الوظيفة (اختار اللي يناسبك)</span>
+      <div class="chips" id="roles">
+        <label><input type="checkbox" value="Telesales"><span>Telesales</span></label>
+        <label><input type="checkbox" value="Customer service"><span data-ar="خدمة عملاء" data-en="Customer service">خدمة عملاء</span></label>
+        <label><input type="checkbox" value="Back office"><span>Back office</span></label>
+        <label><input type="checkbox" value="French"><span data-ar="فرنسي" data-en="French">فرنسي</span></label>
+        <label><input type="checkbox" value="Dutch"><span data-ar="هولندي" data-en="Dutch">هولندي</span></label>
+        <label><input type="checkbox" value="Portuguese"><span data-ar="برتغالي" data-en="Portuguese">برتغالي</span></label>
+        <label><input type="checkbox" value="Spanish"><span data-ar="إسباني" data-en="Spanish">إسباني</span></label>
+      </div><div class="hint" data-ar="لو ماختارتش حاجة هنبعتلك أي عرض مناسب." data-en="If you pick nothing we send any suitable offer.">لو ماختارتش حاجة هنبعتلك أي عرض مناسب.</div></div>
+    <div class="fld"><label for="lvl" data-ar="مستوى الإنجليزي" data-en="English level">مستوى الإنجليزي</label>
+      <select id="lvl"><option value="" data-ar="مش عارف" data-en="Not sure">مش عارف</option><option>A2</option><option>B1</option><option>B2</option><option>B2+</option><option>C1</option><option>C2</option></select></div>
+    <div class="fld"><span class="l" data-ar="طريقة الشغل" data-en="Work mode">طريقة الشغل</span>
+      <div class="chips">
+        <label><input type="radio" name="wm" value="" checked><span data-ar="أي حاجة" data-en="Any">أي حاجة</span></label>
+        <label><input type="radio" name="wm" value="On-site"><span data-ar="من المكتب" data-en="On-site">من المكتب</span></label>
+        <label><input type="radio" name="wm" value="Hybrid"><span data-ar="هايبرد" data-en="Hybrid">هايبرد</span></label>
+        <label><input type="radio" name="wm" value="Remote"><span data-ar="من البيت" data-en="Remote">من البيت</span></label>
+      </div></div>
+    <div class="fld"><label for="area" data-ar="المنطقة اللي تناسبك (اختياري)" data-en="Preferred area (optional)">المنطقة اللي تناسبك (اختياري)</label><input id="area" type="text" dir="auto" placeholder="Nasr City, Maadi…"></div>
+    <div class="fld"><label class="chips" style="display:flex;gap:10px;align-items:flex-start;font-weight:500;font-family:var(--body)"><input id="ok" type="checkbox" style="position:static;opacity:1;pointer-events:auto;width:20px;height:20px;margin-top:5px;accent-color:var(--accent);flex:none"><span style="border:0;background:none;padding:0;cursor:default;font-size:15px;color:var(--mute)" data-ar="موافق إن Apex تتواصل معايا على واتساب بخصوص الوظايف." data-en="I agree that Apex may contact me on WhatsApp about jobs.">موافق إن Apex تتواصل معايا على واتساب بخصوص الوظايف.</span></label></div>
+    <div class="err" id="err" role="alert"></div>
+    <button class="btn p" type="submit"><span data-ar="اشترك عن طريق واتساب" data-en="Subscribe via WhatsApp">اشترك عن طريق واتساب</span></button>
+    <div class="ok" id="okm" data-ar="هنفتحلك واتساب برسالة جاهزة. دوس إرسال عشان اشتراكك يتسجّل." data-en="WhatsApp opens with a ready message. Tap send to complete your subscription.">هنفتحلك واتساب برسالة جاهزة. دوس إرسال عشان اشتراكك يتسجّل.</div>
+    <p class="hint" style="margin-top:14px" data-ar="اشتراكك بيوصل لينا كرسالة واتساب منك. تقدر توقّفه في أي وقت بإنك تبعتلنا «وقف».  بنتواصل بس بخصوص الوظايف." data-en="Your subscription reaches us as a WhatsApp message from you. You can stop it any time by sending “stop”. We only contact you about jobs.">اشتراكك بيوصل لينا كرسالة واتساب منك. تقدر توقّفه في أي وقت بإنك تبعتلنا «وقف».  بنتواصل بس بخصوص الوظايف.</p>
+  </form>
+</main>
+<div id="foot"></div>
+
+<script src="tools.js"></script>
+<script>
+(function(){
+  var d=document,A=APEX,$=function(i){return d.getElementById(i)};
+  $('f').addEventListener('submit',function(e){
+    e.preventDefault();$('err').textContent='';$('okm').classList.remove('show');
+    var name=$('name').value.trim(),ph=$('ph').value.trim();
+    if(name.length<2||ph.replace(/\D/g,'').length<10){$('err').textContent=A.t("اكتب اسمك ورقم واتساب صحيح.","Enter your name and a valid WhatsApp number.");return}
+    if(!$('ok').checked){$('err').textContent=A.t("لازم توافق على التواصل عشان نبعتلك التنبيهات.","Please agree to be contacted so we can send alerts.");return}
+    var roles=[].slice.call(d.querySelectorAll('#roles input:checked')).map(function(i){return i.value}).join(", ")||A.t("أي وظيفة مناسبة","Any suitable job");
+    var lvl=$('lvl').value||A.t("مش محدد","not set"),wm=(d.querySelector('input[name=wm]:checked')||{}).value||A.t("أي حاجة","Any"),area=$('area').value.trim();
+    var msg=A.lang()==="ar"
+      ?"أهلاً Apex، عايز أشترك في تنبيهات الوظايف الجديدة.\nالاسم: "+name+"\nرقمي: "+ph+"\nنوع الوظيفة: "+roles+"\nمستوى الإنجليزي: "+lvl+"\nطريقة الشغل: "+wm+(area?"\nالمنطقة: "+area:"")+"\nموافق على التواصل على واتساب."
+      :"Hello Apex, I'd like to subscribe to new job alerts.\nName: "+name+"\nMy number: "+ph+"\nJob type: "+roles+"\nEnglish level: "+lvl+"\nWork mode: "+wm+(area?"\nArea: "+area:"")+"\nI agree to be contacted on WhatsApp.";
+    $('okm').classList.add('show');A.openWA(msg);
+  });
+  A.onLang(function(l){d.title=l==="ar"?"تنبيهات الوظايف على واتساب | Apex":"Job alerts on WhatsApp | Apex"});
+  A.start();
+})();
+</script>
+</body>
+</html>
