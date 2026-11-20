@@ -160,7 +160,7 @@
   A.onLang(function(l){d.title=l==="ar"?"هل أنا مناسب؟ | Apex":"Am I a fit? | Apex";render()});
   A.start();
   $('res').innerHTML='<p class="hint" style="margin-top:18px">'+A.t("بنحمّل أحدث العروض…","Loading the latest offers…")+'</p>';
-  A.loadOffers(function(o){OFFERS=o;if(last)render();else $('res').innerHTML=''},function(){$('res').innerHTML='<div class="card" style="margin-top:18px"><p>'+A.t("مقدرناش نحمّل العروض دلوقتي. جرّب تفتح صفحة الوظايف.","We could not load offers right now. Try the jobs page.")+' <a href="index.html">index</a></p></div>'});
+  A.loadOffers(function(o){OFFERS=o;if(last)render();else $('res').innerHTML=''},function(){$('res').innerHTML='<div class="card" style="margin-top:18px"><p>'+A.t("مقدرناش نحمّل العروض دلوقتي. جرّب تفتح صفحة الوظايف.","We could not load offers right now. Try the jobs page.")+' <a href="offers.html">index</a></p></div>'});
 })();
 </script>
 </body>
