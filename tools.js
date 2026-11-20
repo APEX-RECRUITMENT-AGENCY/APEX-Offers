@@ -40,7 +40,7 @@
     try{if(m){localStorage.setItem("apexRefTool",m[1])}else{m=[0,localStorage.getItem("apexRefTool")||""]}}catch(e){}
     return (m&&m[1])||"";
   }
-  function indexUrl(){var r=getRef();return "index.html"+(r?"?ref="+r:"")}
+  function indexUrl(id){var r=getRef(),q=[];if(id)q.push("job="+id);if(r)q.push("ref="+r);return "index.html"+(q.length?"?"+q.join("&"):"")}
 
   /* ---- chrome: top bar, whatsapp button, footer ---- */
   var ICON_WA='<svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/></svg>';

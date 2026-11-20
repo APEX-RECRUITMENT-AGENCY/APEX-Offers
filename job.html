@@ -47,14 +47,12 @@
     var rows=ORDER.filter(function(k){return J[k]&&!/^(not stated|n\/a|-)$/i.test(J[k])}).map(function(k){
       var v=k==="w"?wmText(J.w):J[k];return '<div><dt>'+A.esc(A.t(LB[k][0],LB[k][1]))+'</dt><dd dir="auto">'+A.esc(v)+'</dd></div>'}).join("");
     var map=/^https?:\/\//.test(J.link||"")?'<a class="btn sm" href="'+A.esc(J.link)+'" target="_blank" rel="noopener">'+A.t("الموقع / اللينك","Location / link")+'</a>':'';
-    var more=ALL.filter(function(o){return o.id!==J.id&&o.c===J.c}).slice(0,3);
     out.innerHTML='<div class="ph hd anim"><div class="eyebrow">'+A.t("وظيفة","Job")+'</div><div class="co">'+A.esc(J.c)+'</div><h1 dir="auto">'+A.esc(J.t)+'</h1>'+
       '<div class="meta" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px"><span class="pill">'+A.esc(wmText(J.w))+'</span>'+(J.loc?'<span class="pill">'+A.esc(J.loc)+'</span>':'')+(J.lang?'<span class="pill">'+A.esc(J.lang)+'</span>':'')+'</div></div>'+
       '<div class="card anim" style="margin-top:20px;animation-delay:.08s"><dl class="dl">'+rows+'</dl></div>'+
-      '<div class="row" style="margin-top:18px"><a class="btn p" href="'+A.indexUrl()+'">'+A.t("قدّم على الوظيفة","Apply for this job")+'</a><a class="btn" href="match.html">'+A.t("هل أنا مناسب؟","Am I a fit?")+'</a>'+map+'</div>'+
+      '<div class="row" style="margin-top:18px"><a class="btn p" href="'+A.indexUrl(J.id)+'">'+A.t("قدّم على الوظيفة","Apply for this job")+'</a><a class="btn" href="match.html">'+A.t("هل أنا مناسب؟","Am I a fit?")+'</a>'+map+'</div>'+
       '<p class="hint" style="margin-top:10px">'+A.t("التقديم بيتم من خلال لينك الريكروتر بتاعك. لو معندكش، كلّمنا على واتساب.","Applying is through your recruiter's link. If you do not have one, message us on WhatsApp.")+'</p>'+
-      '<div class="sect"><h2>'+A.t("شارك الوظيفة","Share this job")+'</h2><div class="row"><button class="btn sm" id="sh" type="button">'+A.t("ابعتها على واتساب","Send on WhatsApp")+'</button><button class="btn sm" id="cp" type="button">'+A.t("نسخ اللينك","Copy link")+'</button></div><div class="ok" id="okm"></div></div>'+
-      (more.length?'<div class="sect"><h2>'+A.t("وظايف تانية من نفس الشركة","More from this company")+'</h2><div class="stack">'+more.map(function(o){return '<a class="card job" href="job.html?id='+o.id+'" style="text-decoration:none"><h3 dir="auto">'+A.esc(o.t)+'</h3><div class="co">'+A.esc(o.c)+(o.loc?' · '+A.esc(o.loc):'')+'</div></a>'}).join("")+'</div></div>':'');
+      '<div class="sect"><h2>'+A.t("شارك الوظيفة","Share this job")+'</h2><div class="row"><button class="btn sm" id="sh" type="button">'+A.t("ابعتها على واتساب","Send on WhatsApp")+'</button><button class="btn sm" id="cp" type="button">'+A.t("نسخ اللينك","Copy link")+'</button></div><div class="ok" id="okm"></div></div>';
     d.title=J.t+" | "+J.c+" | Apex";
     var md=d.querySelector('meta[name=description]');if(md)md.content=J.t+" - "+J.c+(J.loc?" - "+J.loc:"")+(J.pay?" - "+J.pay:"");
     var share=$('sh'),cp=$('cp');
