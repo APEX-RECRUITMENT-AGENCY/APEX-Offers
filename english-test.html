@@ -104,7 +104,7 @@
       '<p style="margin-top:6px">'+A.t("جاوبت صح على "+score+" من "+Q.length+".","You got "+score+" of "+Q.length+" right.")+'</p>'+
       '<div class="bars">'+bars+'</div>'+
       '<p class="hint" style="margin-top:14px">'+A.t("ده تقدير تقريبي من اختبار قصير للقواعد والمفردات، مش شهادة. التقييم الحقيقي في Apex بيتم بالفويس (نطق وطلاقة).","This is a rough estimate from a short grammar and vocabulary test, not a certificate. The real assessment at Apex is by voice (pronunciation and fluency).")+'</p>'+
-      '<div class="row" style="margin-top:16px"><a class="btn p" href="match.html?lvl='+r.v+'">'+A.t("شوف الوظايف المناسبة لمستواك","See jobs that fit your level")+'</a><button class="btn" id="again" type="button">'+A.t("أعد الاختبار","Retake")+'</button></div>';
+      '<div class="row" style="margin-top:16px"><a class="btn p" href="match?lvl='+r.v+'">'+A.t("شوف الوظايف المناسبة لمستواك","See jobs that fit your level")+'</a><button class="btn" id="again" type="button">'+A.t("أعد الاختبار","Retake")+'</button></div>';
     $('again').addEventListener('click',reset);
     try{localStorage.setItem("apexEnglish",JSON.stringify({c:r.c,v:r.v,score:score}))}catch(e){}
   }

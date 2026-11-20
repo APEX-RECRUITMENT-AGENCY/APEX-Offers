@@ -40,18 +40,18 @@
     try{if(m){localStorage.setItem("apexRefTool",m[1])}else{m=[0,localStorage.getItem("apexRefTool")||""]}}catch(e){}
     return (m&&m[1])||"";
   }
-  function indexUrl(id){var r=getRef(),q=[];if(id)q.push("job="+id);if(r)q.push("ref="+r);return "offers.html"+(q.length?"?"+q.join("&"):"")}
+  function indexUrl(id){var r=getRef(),q=[];if(id)q.push("job="+id);if(r)q.push("ref="+r);return "offers"+(q.length?"?"+q.join("&"):"")}
 
   /* ---- chrome: top bar, whatsapp button, footer ---- */
   var ICON_WA='<svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/></svg>';
   function chrome(opts){
     opts=opts||{};
     var bar=d.getElementById("bar");
-    if(bar)bar.innerHTML='<div class="bar"><div class="wrap wide in"><a class="brand" href="tools.html"><img src="logo.png" alt="" width="32" height="32" onerror="this.style.display=\'none\'"><span>APEX</span></a><div class="tools-r">'+
-      (opts.hub?'':'<a class="pillbtn" href="tools.html" data-ar="كل الأدوات" data-en="All tools">كل الأدوات</a>')+
+    if(bar)bar.innerHTML='<div class="bar"><div class="wrap wide in"><a class="brand" href="tools"><img src="logo.png" alt="" width="32" height="32" onerror="this.style.display=\'none\'"><span>APEX</span></a><div class="tools-r">'+
+      (opts.hub?'':'<a class="pillbtn" href="tools" data-ar="كل الأدوات" data-en="All tools">كل الأدوات</a>')+
       '<button class="pillbtn" id="lang" type="button" aria-label="Language">English</button></div></div></div>';
     var ft=d.getElementById("foot");
-    if(ft)ft.innerHTML='<footer><div class="wrap wide"><span>© <span id="yr"></span> Apex Recruitment Agency</span><span><a href="offers.html" data-ar="الوظايف" data-en="Jobs">الوظايف</a> · <a href="about.html" data-ar="من نحن" data-en="About us">من نحن</a></span></div></footer>'+
+    if(ft)ft.innerHTML='<footer><div class="wrap wide"><span>© <span id="yr"></span> Apex Recruitment Agency</span><span><a href="offers" data-ar="الوظايف" data-en="Jobs">الوظايف</a> · <a href="about" data-ar="من نحن" data-en="About us">من نحن</a></span></div></footer>'+
       '<a class="fab" href="https://wa.me/'+WA+'" target="_blank" rel="noopener" aria-label="WhatsApp">'+ICON_WA+'</a>';
     var yr=d.getElementById("yr");if(yr)yr.textContent=new Date().getFullYear();
     var lb=d.getElementById("lang");if(lb)lb.addEventListener("click",function(){setLang(lang==="ar"?"en":"ar")});

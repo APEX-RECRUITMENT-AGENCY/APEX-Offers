@@ -27,12 +27,12 @@
 <script>
 (function(){
   var d=document,A=APEX,$=function(i){return d.getElementById(i)},ALL=[];
-  function url(o){return location.href.replace(/[^\/]*$/,"").replace(/[?#].*$/,"")+"job.html?id="+o.id}
+  function url(o){return location.href.replace(/[^\/]*$/,"").replace(/[?#].*$/,"")+"job?id="+o.id}
   function msg(o){return o.t+" - "+o.c+(o.loc?" ("+o.loc+")":"")+"\n"+url(o)}
   function render(){
     var q=$('q').value.trim().toLowerCase();
     var rows=ALL.filter(function(o){return !q||(o.c+" "+o.t).toLowerCase().indexOf(q)>-1});
-    $('list').innerHTML=rows.map(function(o){var i=ALL.indexOf(o);return '<div class="card job"><h3 dir="auto">'+A.esc(o.t)+'</h3><div class="co">'+A.esc(o.c)+(o.loc?' · '+A.esc(o.loc):'')+'</div><div class="row" style="margin-top:12px"><button class="btn p sm" data-c="'+i+'" type="button">'+A.t("نسخ اللينك","Copy link")+'</button><button class="btn sm" data-w="'+i+'" type="button">'+A.t("واتساب","WhatsApp")+'</button><a class="btn sm" href="job.html?id='+o.id+'" target="_blank" rel="noopener">'+A.t("فتح","Open")+'</a></div></div>'}).join("")||'<p class="hint">'+A.t("مفيش نتايج.","No results.")+'</p>';
+    $('list').innerHTML=rows.map(function(o){var i=ALL.indexOf(o);return '<div class="card job"><h3 dir="auto">'+A.esc(o.t)+'</h3><div class="co">'+A.esc(o.c)+(o.loc?' · '+A.esc(o.loc):'')+'</div><div class="row" style="margin-top:12px"><button class="btn p sm" data-c="'+i+'" type="button">'+A.t("نسخ اللينك","Copy link")+'</button><button class="btn sm" data-w="'+i+'" type="button">'+A.t("واتساب","WhatsApp")+'</button><a class="btn sm" href="job?id='+o.id+'" target="_blank" rel="noopener">'+A.t("فتح","Open")+'</a></div></div>'}).join("")||'<p class="hint">'+A.t("مفيش نتايج.","No results.")+'</p>';
   }
   function say(m){var ok=$('okm');ok.textContent=m;ok.classList.add('show');clearTimeout(say.t);say.t=setTimeout(function(){ok.classList.remove('show')},2500)}
   $('list').addEventListener('click',function(e){

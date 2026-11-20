@@ -42,7 +42,7 @@
 <script>
 (function(){
   var d=document,A=APEX,$=function(i){return d.getElementById(i)};
-  function site(){return location.href.replace(/[^\/]*$/,"").replace(/[?#].*$/,"")+"offers.html"}
+  function site(){return location.href.replace(/[^\/]*$/,"").replace(/[?#].*$/,"")+"offers"}
   function text(){
     var me=$('me').value.trim(),fr=$('fr').value.trim();
     var hi=fr?(A.lang()==="ar"?"أهلاً "+fr+" 👋\n":"Hi "+fr+" 👋\n"):(A.lang()==="ar"?"أهلاً 👋\n":"Hi 👋\n");
