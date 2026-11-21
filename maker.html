@@ -73,6 +73,21 @@ textarea{min-height:120px;resize:vertical}
         <button class="btn" id="shr" type="button" hidden><span data-ar="مشاركة" data-en="Share">مشاركة</span></button>
       </div>
       <div class="ok" id="okm"></div>
+      <div class="row" style="margin-top:10px"><button class="btn" id="vd" type="button"><span data-ar="تحميل فيديو (8 ثواني)" data-en="Download video (8s)">تحميل فيديو (8 ثواني)</span></button></div>
+      <p class="hint" data-ar="الفيديو بيظهر فيه البوست بحركة بسيطة، من غير صوت. ضيف الموسيقى جوه تيك توك أو ريلز. سيب الشاشة مفتوحة وقت التسجيل." data-en="The video animates the post with no sound. Add music inside TikTok or Reels. Keep the screen on while it records.">الفيديو بيظهر فيه البوست بحركة بسيطة، من غير صوت. ضيف الموسيقى جوه تيك توك أو ريلز. سيب الشاشة مفتوحة وقت التسجيل.</p>
+      <div class="ok" id="vm"></div>
+      <section class="card stack" id="capbox" style="margin-top:16px">
+        <div class="l" style="font-weight:700;font-family:var(--head)" data-ar="الكابشن / الرسالة الجاهزة" data-en="Ready caption / message">الكابشن / الرسالة الجاهزة</div>
+        <div class="chips" id="plat">
+          <label><input type="radio" name="plat" value="fb" checked><span data-ar="فيسبوك" data-en="Facebook">فيسبوك</span></label>
+          <label><input type="radio" name="plat" value="li"><span data-ar="لينكدإن" data-en="LinkedIn">لينكدإن</span></label>
+          <label><input type="radio" name="plat" value="wa"><span data-ar="واتساب" data-en="WhatsApp">واتساب</span></label>
+          <label><input type="radio" name="plat" value="tt"><span data-ar="تيك توك" data-en="TikTok">تيك توك</span></label>
+        </div>
+        <textarea id="cap" dir="auto" style="min-height:230px"></textarea>
+        <div class="row"><button class="btn p" id="cpy" type="button"><span data-ar="نسخ النص" data-en="Copy text">نسخ النص</span></button><button class="btn" id="wsend" type="button"><span data-ar="ابعتها واتساب" data-en="Send on WhatsApp">ابعتها واتساب</span></button></div>
+        <div class="ok" id="cm"></div>
+      </section>
     </aside>
   </div>
 </main>
@@ -184,12 +199,75 @@ textarea{min-height:120px;resize:vertical}
     }
   }
 
+
+  var curOffer=null;
+  function base(){return location.href.replace(/[^\/]*$/,"").replace(/[?#].*$/,"")}
+  function linkFor(){return curOffer?base()+"job?id="+curOffer.id:base()+"offers"}
+  function caption(){
+    var p=d.querySelector('input[name=plat]:checked').value,tag=val('tag').trim(),ttl=val('ttl').trim(),cta=val('cta').trim(),wa=val('wa').trim(),
+      L=val('lns').split("\n").map(function(x){return x.trim()}).filter(Boolean),lk=linkFor(),t=tpl();
+    var bullets=function(c){return L.map(function(x){return c+" "+x}).join("\n")};
+    var tagsAr="#وظائف_مصر #وظايف_كول_سنتر #فرص_عمل #كول_سنتر #مبيعات #Apex",tagsEn="#Hiring #Egypt #CallCenter #Telesales #CustomerService #Recruitment";
+    var out="";
+    if(p==="fb"){
+      out=(tag?"\ud83d\udd25 "+tag+"\n":"")+ttl+(L.length?"\n\n"+bullets("\u2022"):"")+"\n\n"+(cta||"")+"\n\ud83d\udd17 "+lk+(wa?"\n\ud83d\udcf2 \u0648\u0627\u062a\u0633\u0627\u0628: "+wa:"")+"\n\n"+tagsAr;
+    }else if(p==="li"){
+      out=ttl+(L.length?"\n\n"+bullets("-"):"")+"\n\n"+(cta?cta+": ":"")+lk+"\n\nApex Recruitment Agency\n"+tagsEn;
+    }else if(p==="wa"){
+      out=(tag?"*"+tag+"*\n":"")+"*"+ttl+"*"+(L.length?"\n\n"+bullets("\u2022"):"")+"\n\n"+lk+(wa?"\n\u0644\u0644\u0627\u0633\u062a\u0641\u0633\u0627\u0631: "+wa:"");
+    }else{
+      var first=L[0]?" | "+L[0]:"";out=ttl+first+"\n\u0627\u0644\u0644\u064a\u0646\u0643 \u0641\u064a \u0627\u0644\u0628\u0627\u064a\u0648\n#\u0648\u0638\u0627\u0626\u0641_\u0645\u0635\u0631 #\u0643\u0648\u0644_\u0633\u0646\u062a\u0631 #\u0641\u0631\u0635_\u0639\u0645\u0644 #Hiring #Egypt";
+    }
+    $('cap').value=out;
+  }
+  $('plat').addEventListener('change',caption);
+  $('cpy').addEventListener('click',function(){var t=$('cap').value,m=$('cm');
+    function done(){m.textContent=A.t("اتنسخ \u2713 الصقه في البوست.","Copied \u2713 paste it into your post.");m.classList.add('show')}
+    try{navigator.clipboard.writeText(t).then(done,function(){$('cap').select();m.textContent=A.t("اتحدد النص، انسخه بإيدك.","Text selected, copy it manually.");m.classList.add('show')})}catch(e){$('cap').select()}});
+  $('wsend').addEventListener('click',function(){var u="https://wa.me/?text="+encodeURIComponent($('cap').value),w=null;try{w=window.open(u,"_blank","noopener")}catch(e){}if(!w)location.href=u});
+
+  // short animated video of the post (no sound)
+  var recording=false;
+  function ease(x){return 1-Math.pow(1-x,3)}
+  function video(){
+    var vm=$('vm');function vsay(m){vm.textContent=m;vm.classList.add('show')}
+    if(recording)return;
+    var types=["video/mp4;codecs=avc1","video/mp4","video/webm;codecs=vp9","video/webm;codecs=vp8","video/webm"];
+    var mt=window.MediaRecorder?types.filter(function(t){return MediaRecorder.isTypeSupported(t)})[0]:null;
+    if(!mt||!cv.captureStream){vsay(A.t("المتصفح ده مش بيدعم تسجيل الفيديو. جرّب كروم.","This browser cannot record video. Try Chrome."));return}
+    var S=SZ[size()],W=S[0],H=S[1];draw();
+    var snap=d.createElement('canvas');snap.width=W;snap.height=H;snap.getContext('2d').drawImage(cv,0,0);
+    var rc=d.createElement('canvas');rc.width=W;rc.height=H;var c=rc.getContext('2d');
+    var rec,chunks=[];
+    try{rec=new MediaRecorder(rc.captureStream(30),{mimeType:mt,videoBitsPerSecond:5000000})}catch(e){vsay(A.t("مقدرناش نبدأ التسجيل.","Could not start recording."));return}
+    rec.ondataavailable=function(e){if(e.data&&e.data.size)chunks.push(e.data)};
+    rec.onstop=function(){
+      recording=false;$('vd').disabled=false;
+      var type=mt.split(";")[0],b=new Blob(chunks,{type:type}),ext=type==="video/mp4"?"mp4":"webm";
+      var a=d.createElement('a');a.href=URL.createObjectURL(b);a.download="apex-"+tpl()+"."+ext;d.body.appendChild(a);a.click();a.remove();
+      vsay(A.t("الفيديو اتحمّل \u2713","Video downloaded \u2713")+(ext==="webm"?A.t(" (بصيغة webm. لو تيك توك ما قبلهوش، حوّله لـ mp4 من أي تطبيق تحويل).", " (webm format; if TikTok rejects it, convert to mp4)."):""))};
+    recording=true;$('vd').disabled=true;
+    var DUR=8000,t0=performance.now(),Hh=H;
+    rec.start(250);
+    function frame(now){
+      var t=Math.min(1,(now-t0)/DUR),p=ease(Math.min(1,t/.7)),z=1+.05*t;
+      c.fillStyle="#0b0b0d";c.fillRect(0,0,W,H);
+      c.save();c.translate(W/2,H/2);c.scale(z,z);c.translate(-W/2,-H/2);
+      var step=16,reach=p*Hh*1.3;
+      for(var y=0;y<H;y+=step){var al=Math.max(0,Math.min(1,(reach-y)/(Hh*.25)));if(al<=0)break;c.globalAlpha=al;c.drawImage(snap,0,y,W,step,0,y,W,step)}
+      c.restore();c.globalAlpha=1;
+      if(t<1){vsay(A.t("بيتسجّل... ","Recording... ")+Math.ceil((1-t)*DUR/1000)+A.t(" ثواني"," s"));requestAnimationFrame(frame)}else{setTimeout(function(){rec.stop()},300)}
+    }
+    requestAnimationFrame(frame);
+  }
+  $('vd').addEventListener('click',video);
+
   function save(){try{localStorage.setItem("apexMaker",JSON.stringify({site:val('site'),wa:val('wa')}))}catch(e){}}
   function load(){var o={};try{o=JSON.parse(localStorage.getItem("apexMaker")||"{}")}catch(e){}
     $('site').value=o.site||location.host||"";$('wa').value=o.wa||"01115634954"}
 
   function fromOffer(){
-    var i=$('off').value;if(i==="")return;var o=OFFERS[+i],hide=$('hide').checked;
+    var i=$('off').value;if(i==="")return;var o=OFFERS[+i],hide=$('hide').checked;curOffer=o;
     $('tag').value=A.t("وظيفة جديدة","New job");
     $('ttl').value=(hide?"":o.c+" - ")+o.t;
     var wm={WFS:A.t("من المكتب","On-site"),Hybrid:A.t("هايبرد","Hybrid"),WFH:A.t("من البيت","Remote")}[o.w]||o.w;
@@ -200,7 +278,7 @@ textarea{min-height:120px;resize:vertical}
     if(o.sh)L.push(A.t("المواعيد: ","Hours: ")+o.sh);
     function cut(s){if(s.length<=75)return s;var t=s.slice(0,75),i=Math.max(t.lastIndexOf(" +"),t.lastIndexOf(";"),t.lastIndexOf(",")),j=t.lastIndexOf(" ");t=t.slice(0,i>35?i:(j>35?j:75));return t.replace(/[\s+;,]+$/,"")+"…"}
     $('lns').value=L.map(cut).join("\n");
-    draw()}
+    draw();caption()}
 
   function say(m){var ok=$('okm');ok.textContent=m;ok.classList.add('show')}
   function blob(cb){cv.toBlob(cb,"image/png")}
@@ -209,15 +287,15 @@ textarea{min-height:120px;resize:vertical}
   if(navigator.canShare){$('shr').hidden=false;$('shr').addEventListener('click',function(){
     blob(function(b){var f=new File([b],"apex-post.png",{type:"image/png"});if(navigator.canShare({files:[f]}))navigator.share({files:[f]}).catch(function(){});else say(A.t("المشاركة مش مدعومة هنا، استخدم التحميل.","Sharing is not supported here, use download."))})})}
 
-  ['tag','ttl','lns','cta','site','wa'].forEach(function(i){$(i).addEventListener('input',function(){save();draw()})});
+  ['tag','ttl','lns','cta','site','wa'].forEach(function(i){$(i).addEventListener('input',function(){save();draw();caption()})});
   $('tpl').addEventListener('change',function(){
     var t=tpl();if(t==="cover"&&["sq","st"].indexOf(size())>-1)d.querySelector('input[name=sz][value=fb]').checked=true;
-    setFromTpl();draw()});
+    curOffer=null;setFromTpl();draw();caption()});
   $('sz').addEventListener('change',draw);
   $('off').addEventListener('change',fromOffer);$('hide').addEventListener('change',fromOffer);
-  A.onLang(function(){setFromTpl();draw()});
+  A.onLang(function(){setFromTpl();draw();caption()});
   A.start();load();setFromTpl();
-  var go=function(){draw()};
+  var go=function(){draw();caption()};
   if(d.fonts&&d.fonts.load){Promise.all([d.fonts.load("900 40px Cairo"),d.fonts.load("800 40px Cairo"),d.fonts.load("600 40px Cairo"),d.fonts.load("700 40px Cairo")]).then(go,go)}else go();
   A.loadOffers(function(o){OFFERS=o;$('off').innerHTML='<option value="">—</option>'+o.map(function(x,i){return '<option value="'+i+'">'+A.esc(x.c+" — "+x.t)+'</option>'}).join("")},function(){});
 })();
