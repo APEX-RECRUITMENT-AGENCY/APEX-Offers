@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<meta name="robots" content="noindex,nofollow">
+<title>صانع بوستات Apex</title>
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="tools.css">
+<style>
+.mk{display:grid;gap:18px;margin-top:18px}
+@media(min-width:900px){.mk{grid-template-columns:minmax(0,1fr) 420px;align-items:start}.mk .pv{position:sticky;top:76px}}
+.pv canvas{width:100%;height:auto;display:block;border-radius:14px;border:1px solid var(--line);background:#0b0b0d}
+.pv .row{margin-top:12px}
+textarea{min-height:120px;resize:vertical}
+.sel{width:100%}
+.chk{display:flex;gap:10px;align-items:center;margin-top:12px;font-size:15px}
+.chk input{width:22px;height:22px;flex:none}
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<main class="wrap wide">
+  <div class="ph anim">
+    <div class="eyebrow" data-ar="للفريق" data-en="For the team">للفريق</div>
+    <h1 data-ar="صانع بوستات Apex" data-en="Apex post maker">صانع بوستات Apex</h1>
+    <p class="lead" data-ar="اختار القالب، اكتب الكلام (أو اختار أوفر جاهز)، ونزّل الصورة وانشرها على فيسبوك ولينكدإن وتيك توك وواتساب." data-en="Pick a template, type the text (or pick an offer), then download the image and post it.">اختار القالب، اكتب الكلام (أو اختار أوفر جاهز)، ونزّل الصورة وانشرها على فيسبوك ولينكدإن وتيك توك وواتساب.</p>
+  </div>
+
+  <div class="mk">
+    <section class="card stack" id="form">
+      <div class="fld"><label data-ar="القالب" data-en="Template">القالب</label>
+        <div class="chips" id="tpl">
+          <label><input type="radio" name="tpl" value="job" checked><span data-ar="وظيفة" data-en="Job">وظيفة</span></label>
+          <label><input type="radio" name="tpl" value="urgent"><span data-ar="مطلوب فوراً" data-en="Urgent">مطلوب فوراً</span></label>
+          <label><input type="radio" name="tpl" value="tip"><span data-ar="نصيحة" data-en="Tip">نصيحة</span></label>
+          <label><input type="radio" name="tpl" value="ask"><span data-ar="سؤال للجمهور" data-en="Question">سؤال للجمهور</span></label>
+          <label><input type="radio" name="tpl" value="quote"><span data-ar="رأي حقيقي" data-en="Real review">رأي حقيقي</span></label>
+          <label><input type="radio" name="tpl" value="cover"><span data-ar="غلاف" data-en="Cover">غلاف</span></label>
+        </div>
+      </div>
+      <div class="fld"><label data-ar="المقاس" data-en="Size">المقاس</label>
+        <div class="chips" id="sz">
+          <label><input type="radio" name="sz" value="sq" checked><span data-ar="مربع (فيسبوك/لينكدإن/إنستجرام)" data-en="Square">مربع (فيسبوك/لينكدإن)</span></label>
+          <label><input type="radio" name="sz" value="st"><span data-ar="ستوري / تيك توك" data-en="Story / TikTok">ستوري / تيك توك</span></label>
+          <label><input type="radio" name="sz" value="li"><span data-ar="لينكدإن عريض" data-en="LinkedIn wide">لينكدإن عريض</span></label>
+          <label><input type="radio" name="sz" value="fb"><span data-ar="غلاف فيسبوك" data-en="Facebook cover">غلاف فيسبوك</span></label>
+          <label><input type="radio" name="sz" value="lb"><span data-ar="بانر لينكدإن" data-en="LinkedIn banner">بانر لينكدإن</span></label>
+        </div>
+      </div>
+
+      <div class="fld" id="offbox"><label for="off" data-ar="اختار أوفر جاهز (اختياري)" data-en="Pick an offer (optional)">اختار أوفر جاهز (اختياري)</label>
+        <select id="off" class="sel"><option value="">—</option></select>
+        <label class="chk"><input id="hide" type="checkbox" checked><span data-ar="إخفاء اسم الشركة (مفضّل)" data-en="Hide the company name (recommended)">إخفاء اسم الشركة (مفضّل)</span></label>
+      </div>
+
+      <div class="fld"><label for="tag" data-ar="العنوان الصغير (فوق)" data-en="Small label">العنوان الصغير (فوق)</label><input id="tag" type="text" dir="auto"></div>
+      <div class="fld"><label for="ttl" data-ar="العنوان الكبير" data-en="Main title">العنوان الكبير</label><input id="ttl" type="text" dir="auto"></div>
+      <div class="fld"><label for="lns" data-ar="التفاصيل (كل سطر لوحده، لحد 6 أسطر)" data-en="Details (one per line, up to 6)">التفاصيل (كل سطر لوحده، لحد 6 أسطر)</label><textarea id="lns" dir="auto"></textarea></div>
+      <div class="fld"><label for="cta" data-ar="جملة الدعوة (تحت)" data-en="Call to action">جملة الدعوة (تحت)</label><input id="cta" type="text" dir="auto"></div>
+      <div class="fld"><label for="site" data-ar="الموقع" data-en="Website">الموقع</label><input id="site" type="text" dir="ltr"></div>
+      <div class="fld"><label for="wa" data-ar="رقم واتساب" data-en="WhatsApp number">رقم واتساب</label><input id="wa" type="text" dir="ltr" inputmode="tel"></div>
+      <p class="hint" id="qnote" hidden data-ar="استخدم قالب «رأي حقيقي» لآراء حقيقية اتقالت فعلاً وبإذن صاحبها بس. ممنوع تألف آراء." data-en="Use the Real review template only for real reviews, with the person's permission. Never make reviews up.">استخدم قالب «رأي حقيقي» لآراء حقيقية اتقالت فعلاً وبإذن صاحبها بس. ممنوع تألف آراء.</p>
+    </section>
+
+    <aside class="pv">
+      <canvas id="cv" width="1080" height="1080" aria-label="preview"></canvas>
+      <div class="row">
+        <button class="btn p" id="dl" type="button"><span data-ar="تحميل الصورة" data-en="Download image">تحميل الصورة</span></button>
+        <button class="btn" id="shr" type="button" hidden><span data-ar="مشاركة" data-en="Share">مشاركة</span></button>
+      </div>
+      <div class="ok" id="okm"></div>
+    </aside>
+  </div>
+</main>
+<div id="foot"></div>
+
+<script src="tools.js"></script>
+<script>
+(function(){
+  var d=document,A=APEX,$=function(i){return d.getElementById(i)},cv=$('cv'),ctx=cv.getContext('2d');
+  var SZ={sq:[1080,1080],st:[1080,1920],li:[1200,627],fb:[1640,624],lb:[1584,396]};
+  var TP={
+    job:{tag:["وظيفة جديدة","New job"],ttl:["كول سنتر إنجليزي","English call center"],lns:"المكان: القاهرة\nالمرتب: ...\nاللغة: إنجليزي B2\nالمواعيد: ...",cta:["قدّم دلوقتي من اللينك","Apply now"]},
+    urgent:{tag:["مطلوب فوراً","Hiring now"],ttl:["بنوظّف دلوقتي","We are hiring"],lns:"تعيين سريع\nبدون خبرة (حسب الوظيفة)\nمقابلات الأسبوع ده",cta:["كلّمنا على واتساب","Message us on WhatsApp"]},
+    tip:{tag:["نصيحة","Tip"],ttl:["3 حاجات تعملها قبل الإنترفيو","3 things before the interview"],lns:"1- اتدرّب على تقديم نفسك في دقيقة\n2- اعرف الشركة والوظيفة\n3- جرّب الميكروفون والنت قبلها",cta:["فيه وظايف مناسبة ليك على الموقع","More jobs on our site"]},
+    ask:{tag:["سؤال اليوم","Question"],ttl:["إيه أصعب حاجة في البحث عن شغل؟","What is the hardest part of job hunting?"],lns:"أ) مفيش خبرة\nب) الإنجليزي\nج) مش لاقي وظايف مناسبة\nاكتب إجابتك في الكومنتات",cta:["وظايف جديدة كل يوم","New jobs every day"]},
+    quote:{tag:["رأي حقيقي","Real review"],ttl:["اكتب هنا الكلام زي ما اتقال بالظبط","Type the exact words here"],lns:"— اسم صاحب الرأي",cta:["قدّم عن طريقنا","Apply with us"]},
+    cover:{tag:["","" ],ttl:["Apex Recruitment Agency","Apex Recruitment Agency"],lns:"بنوصّلك بأحسن وظايف الكول سنتر والمبيعات في مصر",cta:["",""]}
+  };
+  var F={ar:"'Cairo','IBM Plex Sans Arabic','Segoe UI',Tahoma,sans-serif"};
+  var logo=new Image(),logoOK=false;logo.onload=function(){logoOK=true;draw()};logo.src="logo.png";
+  var OFFERS=[];
+
+  function val(i){return $(i).value}
+  function setFromTpl(){
+    var t=TP[tpl()],L=A.lang()==="ar"?0:1;
+    $('tag').value=t.tag[L];$('ttl').value=t.ttl[L];$('lns').value=t.lns;$('cta').value=t.cta[L];
+    $('qnote').hidden=tpl()!=="quote";$('offbox').hidden=!(tpl()==="job"||tpl()==="urgent");
+  }
+  function tpl(){return d.querySelector('input[name=tpl]:checked').value}
+  function size(){return d.querySelector('input[name=sz]:checked').value}
+
+  function wrap(text,maxW){
+    var words=String(text).split(/\s+/),lines=[],cur="";
+    words.forEach(function(w){var t=cur?cur+" "+w:w;if(ctx.measureText(t).width>maxW&&cur){lines.push(cur);cur=w}else cur=t});
+    if(cur)lines.push(cur);return lines}
+  function fit(text,maxW,maxLines,start,min,weight){
+    var s=start,ls;
+    for(;s>=min;s-=2){ctx.font=weight+" "+s+"px "+F.ar;ls=wrap(text,maxW);if(ls.length<=maxLines)return{s:s,ls:ls}}
+    ctx.font=weight+" "+min+"px "+F.ar;return{s:min,ls:wrap(text,maxW).slice(0,maxLines)}}
+  function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+
+  function draw(){
+    var S=SZ[size()],W=S[0],H=S[1];cv.width=W;cv.height=H;
+    var wide=W/H>1.5,tp=tpl(),rtl=true;
+    ctx.direction="rtl";ctx.textBaseline="alphabetic";
+    // background
+    ctx.fillStyle="#0b0b0d";ctx.fillRect(0,0,W,H);
+    var g=ctx.createRadialGradient(W*.88,H*.08,10,W*.88,H*.08,Math.max(W,H)*.75);g.addColorStop(0,"rgba(225,29,29,.42)");g.addColorStop(1,"rgba(225,29,29,0)");ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+    var g2=ctx.createRadialGradient(W*.05,H*.98,10,W*.05,H*.98,Math.max(W,H)*.5);g2.addColorStop(0,"rgba(200,205,215,.12)");g2.addColorStop(1,"rgba(200,205,215,0)");ctx.fillStyle=g2;ctx.fillRect(0,0,W,H);
+    ctx.strokeStyle="rgba(255,255,255,.04)";ctx.lineWidth=1;var gs=Math.round(Math.min(W,H)/20);
+    ctx.beginPath();for(var x=0;x<W;x+=gs){ctx.moveTo(x,0);ctx.lineTo(x,H)}for(var y=0;y<H;y+=gs){ctx.moveTo(0,y);ctx.lineTo(W,y)}ctx.stroke();
+    ctx.fillStyle="#e11d1d";ctx.fillRect(W-Math.max(8,W*.008),0,Math.max(8,W*.008),H);
+
+    var p=Math.round(Math.min(W,H)*(wide?.075:.075)),R=W-p-Math.max(8,W*.008),Lx=p;
+    var tagTxt=val('tag').trim(),ttl=val('ttl').trim(),lines=val('lns').split("\n").map(function(s){return s.trim()}).filter(Boolean).slice(0,6),cta=val('cta').trim();
+    var site=val('site').trim(),wa=val('wa').trim();
+    var logoS=wide?Math.round(H*.62):Math.round(W*.1);
+
+    if(wide){
+      // logo on the left, text on the right
+      var lx=p,ly=(H-logoS)/2;
+      if(logoOK){ctx.save();rr(lx,ly,logoS,logoS,logoS*.18);ctx.clip();ctx.drawImage(logo,lx,ly,logoS,logoS);ctx.restore()}
+      var tx2=R,tw=W-p*2-logoS-p*.8-Math.max(8,W*.008);
+      var y2=H*.2;
+      if(tagTxt){var ts=Math.round(H*.07);ctx.font="800 "+ts+"px "+F.ar;var tw2=ctx.measureText(tagTxt).width+ts*1.4;ctx.fillStyle="#e11d1d";rr(tx2-tw2,y2-ts*.9,tw2,ts*1.5,ts*.75);ctx.fill();ctx.fillStyle="#fff";ctx.textAlign="right";ctx.fillText(tagTxt,tx2-ts*.7,y2+ts*.12);y2+=ts*1.9}
+      var f=fit(ttl,tw,2,Math.round(H*.17),Math.round(H*.07),900);ctx.fillStyle="#fff";ctx.textAlign="right";ctx.font="900 "+f.s+"px "+F.ar;
+      f.ls.forEach(function(l){y2+=f.s*1.05;ctx.fillText(l,tx2,y2)});y2+=f.s*.35;
+      var ls=Math.round(Math.max(H*.06,22));ctx.font="600 "+ls+"px "+F.ar;ctx.fillStyle="#c9ced6";
+      lines.slice(0,2).forEach(function(l){wrap(l,tw).slice(0,2).forEach(function(w){y2+=ls*1.45;ctx.fillText(w,tx2,y2)})});
+      if(site||wa){ctx.font="700 "+Math.round(H*.05)+"px "+F.ar;ctx.fillStyle="#e11d1d";ctx.textAlign="right";ctx.direction="ltr";ctx.fillText([site,wa].filter(Boolean).join("   ·   "),tx2,H-p*.7);ctx.direction="rtl"}
+    } else {
+      var y=p;
+      // top row: logo left + brand name, tag right
+      if(logoOK){ctx.save();rr(Lx,y,logoS,logoS,logoS*.2);ctx.clip();ctx.drawImage(logo,Lx,y,logoS,logoS);ctx.restore()}
+      ctx.direction="ltr";ctx.textAlign="left";ctx.fillStyle="#c9ced6";ctx.font="700 "+Math.round(W*.027)+"px "+F.ar;ctx.fillText("Apex",Lx+logoS+W*.02,y+logoS*.45);ctx.font="500 "+Math.round(W*.02)+"px "+F.ar;ctx.fillStyle="#8b919c";ctx.fillText("Recruitment Agency",Lx+logoS+W*.02,y+logoS*.8);ctx.direction="rtl";
+      if(tagTxt){var ts2=Math.round(W*.034);ctx.font="800 "+ts2+"px "+F.ar;var tw3=ctx.measureText(tagTxt).width+ts2*1.6;ctx.fillStyle="#e11d1d";rr(R-tw3,y+logoS/2-ts2*.95,tw3,ts2*1.9,ts2*.95);ctx.fill();ctx.fillStyle="#fff";ctx.textAlign="right";ctx.fillText(tagTxt,R-ts2*.8,y+logoS/2+ts2*.3)}
+      y+=logoS+Math.round(H*(H>W?.05:.07));
+      var ctaH=cta?Math.round(W*.115):0,footH=(site||wa)?Math.round(W*.05):0,bottomPad=p;
+      var area=H-y-bottomPad-ctaH-footH-(ctaH?W*.03:0)-(footH?W*.02:0);
+      var tw4=R-Lx,big=(tp==="ask"||tp==="urgent"||tp==="quote");
+      var tf=fit(ttl,tw4,tp==="quote"?7:4,Math.round(W*(big?.108:.088)),Math.round(W*.045),900);
+      // details block: label (small) + value, laid out first so it always fits
+      var items=lines.map(function(l){var m=/^([^:：]{1,18})[:：]\s*(.+)$/.exec(l);return m?{k:m[1],v:m[2]}:{k:"",v:l}});
+      var fs=Math.round(W*.036),lay,linesH=0;
+      function layItems(){ctx.font="600 "+fs+"px "+F.ar;linesH=0;
+        lay=items.map(function(it){var wl=wrap(it.v,tw4-fs*1.2).slice(0,2);var h=(it.k?fs*.8:0)+wl.length*fs*1.35+fs*.45;linesH+=h;return{it:it,wl:wl,h:h}})}
+      layItems();
+      var tfH=function(){return tf.ls.length*tf.s*1.15};
+      var tf=fit(ttl,tw4,tp==="quote"?7:4,Math.round(W*(big?.108:.088)),Math.round(W*.045),900);
+      while(items.length&&fs>Math.round(W*.024)&&(tfH()+W*.04+linesH>area)){fs-=2;layItems()}
+      while(items.length&&tf.s>Math.round(W*.04)&&(tfH()+W*.04+linesH>area)){tf=fit(ttl,tw4,tp==="quote"?7:4,tf.s-4,Math.round(W*.04),900)}
+      ctx.fillStyle="#fff";ctx.textAlign="right";ctx.font="900 "+tf.s+"px "+F.ar;
+      var titleH=tfH(),block=titleH+(items.length?W*.04+linesH:0),yy=y+Math.max(0,(area-block)/2);
+      if(tp==="quote"){ctx.fillStyle="#e11d1d";ctx.font="900 "+Math.round(W*.2)+"px Georgia,serif";ctx.textAlign="right";ctx.fillText("\u201D",R,yy+W*.06);yy+=W*.06;ctx.fillStyle="#fff";ctx.font="900 "+tf.s+"px "+F.ar}
+      tf.ls.forEach(function(l){yy+=tf.s*1.15;ctx.fillText(l,R,yy)});
+      if(items.length){yy+=W*.03;
+        lay.forEach(function(o){
+          var it=o.it,isq=tp==="quote";
+          if(it.k){ctx.direction="rtl";ctx.textAlign="right";ctx.font="800 "+Math.round(fs*.8)+"px "+F.ar;ctx.fillStyle="#e11d1d";yy+=fs*.8;ctx.fillText(it.k,R,yy)}
+          var latin=(it.v.match(/[A-Za-z]/g)||[]).length>(it.v.match(/[\u0600-\u06FF]/g)||[]).length;
+          ctx.direction=latin?"ltr":"rtl";ctx.textAlign="right";ctx.font=(isq?"800 ":"600 ")+fs+"px "+F.ar;ctx.fillStyle=isq?"#e11d1d":"#e3e6ec";
+          o.wl.forEach(function(w){yy+=fs*1.35;ctx.fillText(w,R,yy)});
+          yy+=fs*.45;ctx.direction="rtl"});
+      }
+      // cta
+      var by=H-bottomPad-footH-(footH?W*.02:0)-ctaH;
+      if(cta){ctx.fillStyle="#e11d1d";rr(Lx,by,R-Lx,ctaH,ctaH*.28);ctx.fill();var cf=fit(cta,R-Lx-W*.06,1,Math.round(W*.05),Math.round(W*.03),800);ctx.fillStyle="#fff";ctx.textAlign="center";ctx.font="800 "+cf.s+"px "+F.ar;ctx.fillText(cf.ls[0]||"",(Lx+R)/2,by+ctaH/2+cf.s*.34)}
+      if(footH){ctx.direction="ltr";ctx.textAlign="center";ctx.fillStyle="#9aa0ab";ctx.font="700 "+Math.round(W*.03)+"px "+F.ar;ctx.fillText([site,wa].filter(Boolean).join("   ·   "),(Lx+R)/2,H-bottomPad+footH*.05);ctx.direction="rtl"}
+    }
+  }
+
+  function save(){try{localStorage.setItem("apexMaker",JSON.stringify({site:val('site'),wa:val('wa')}))}catch(e){}}
+  function load(){var o={};try{o=JSON.parse(localStorage.getItem("apexMaker")||"{}")}catch(e){}
+    $('site').value=o.site||location.host||"";$('wa').value=o.wa||"01115634954"}
+
+  function fromOffer(){
+    var i=$('off').value;if(i==="")return;var o=OFFERS[+i],hide=$('hide').checked;
+    $('tag').value=A.t("وظيفة جديدة","New job");
+    $('ttl').value=(hide?"":o.c+" - ")+o.t;
+    var wm={WFS:A.t("من المكتب","On-site"),Hybrid:A.t("هايبرد","Hybrid"),WFH:A.t("من البيت","Remote")}[o.w]||o.w;
+    var L=[];
+    if(o.loc)L.push(A.t("المكان: ","Location: ")+o.loc+(wm?" ("+wm+")":""));
+    if(o.pay)L.push(A.t("المرتب: ","Pay: ")+o.pay);
+    if(o.lang)L.push(A.t("اللغة: ","Language: ")+o.lang);
+    if(o.sh)L.push(A.t("المواعيد: ","Hours: ")+o.sh);
+    function cut(s){if(s.length<=75)return s;var t=s.slice(0,75),i=Math.max(t.lastIndexOf(" +"),t.lastIndexOf(";"),t.lastIndexOf(",")),j=t.lastIndexOf(" ");t=t.slice(0,i>35?i:(j>35?j:75));return t.replace(/[\s+;,]+$/,"")+"…"}
+    $('lns').value=L.map(cut).join("\n");
+    draw()}
+
+  function say(m){var ok=$('okm');ok.textContent=m;ok.classList.add('show')}
+  function blob(cb){cv.toBlob(cb,"image/png")}
+  $('dl').addEventListener('click',function(){
+    blob(function(b){var a=d.createElement('a');a.href=URL.createObjectURL(b);a.download="apex-"+tpl()+"-"+size()+".png";d.body.appendChild(a);a.click();a.remove();say(A.t("اتحمّلت ✓ دوّر عليها في التحميلات أو المعرض.","Downloaded ✓ check your downloads or gallery."))})});
+  if(navigator.canShare){$('shr').hidden=false;$('shr').addEventListener('click',function(){
+    blob(function(b){var f=new File([b],"apex-post.png",{type:"image/png"});if(navigator.canShare({files:[f]}))navigator.share({files:[f]}).catch(function(){});else say(A.t("المشاركة مش مدعومة هنا، استخدم التحميل.","Sharing is not supported here, use download."))})})}
+
+  ['tag','ttl','lns','cta','site','wa'].forEach(function(i){$(i).addEventListener('input',function(){save();draw()})});
+  $('tpl').addEventListener('change',function(){
+    var t=tpl();if(t==="cover"&&["sq","st"].indexOf(size())>-1)d.querySelector('input[name=sz][value=fb]').checked=true;
+    setFromTpl();draw()});
+  $('sz').addEventListener('change',draw);
+  $('off').addEventListener('change',fromOffer);$('hide').addEventListener('change',fromOffer);
+  A.onLang(function(){setFromTpl();draw()});
+  A.start();load();setFromTpl();
+  var go=function(){draw()};
+  if(d.fonts&&d.fonts.load){Promise.all([d.fonts.load("900 40px Cairo"),d.fonts.load("800 40px Cairo"),d.fonts.load("600 40px Cairo"),d.fonts.load("700 40px Cairo")]).then(go,go)}else go();
+  A.loadOffers(function(o){OFFERS=o;$('off').innerHTML='<option value="">—</option>'+o.map(function(x,i){return '<option value="'+i+'">'+A.esc(x.c+" — "+x.t)+'</option>'}).join("")},function(){});
+})();
+</script>
+</body>
+</html>
