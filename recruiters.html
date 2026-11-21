@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>الريكروترز والأوفرات - Apex</title><meta name="theme-color" content="#d91616"><meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="icon-192.png">
+<style>
+:root{--bg:#0a0a0b;--card:#141416;--tx:#f2f2f3;--mu:#a5a5ab;--acc:#d91616;--bd:#2a2a2e;--ok:#2ecc71;--warn:#f5b942;--bad:#ff6b6b;--blue:#4da3ff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;line-height:1.6;padding:16px 12px 60px}
+.w{max-width:760px;margin:0 auto}@media(min-width:1000px){.w{max-width:1000px}}
+header{text-align:center;border-bottom:2px solid var(--acc);padding-bottom:12px;margin-bottom:14px}
+header img{width:56px;height:56px;border-radius:14px;border:1px solid var(--bd)}
+h1{margin:6px 0 0;font-size:21px}h2{font-size:17px;margin:4px 0 10px}
+.mu{color:var(--mu);font-size:13px}
+.top{display:flex;gap:8px;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+.tabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto}
+.tabs button{flex:1;white-space:nowrap}
+.b{background:none;border:1px solid var(--bd);color:var(--tx);border-radius:10px;padding:8px 12px;font-size:14px;cursor:pointer;text-decoration:none;display:inline-block;font-family:inherit}
+.b.on,.b.p{background:linear-gradient(180deg,#f02a2a,#a50f0f);border:0;font-weight:700}
+.lk{color:var(--mu);text-decoration:none;font-size:14px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:12px 14px;margin-bottom:10px;border-inline-start:3px solid var(--c,var(--acc))}
+.card.click{cursor:pointer}.card.click:active{background:#1b1b1e}
+.row{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.name{font-weight:700;font-size:16px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(92px,1fr));gap:8px;margin:10px 0}
+.st{background:#0f0f11;border:1px solid var(--bd);border-radius:10px;padding:8px;text-align:center}
+.st b{display:block;font-size:20px}.st span{font-size:12px;color:var(--mu)}
+.pill{display:inline-block;border-radius:999px;padding:1px 9px;font-size:12px;border:1px solid var(--bd);color:var(--mu);margin-inline-end:4px}
+.badge{display:inline-block;border-radius:999px;padding:1px 9px;font-size:12px;color:var(--sc,#aaa);border:1px solid var(--sc,#555);background:color-mix(in srgb,var(--sc,#555) 16%,transparent)}
+.stc-new{--sc:#4da3ff}.stc-contacted{--sc:#f5b942}.stc-interview{--sc:#b57bff}.stc-accepted{--sc:#2ecc71}.stc-validated{--sc:#1abc9c}.stc-hired{--sc:#ffd24d}.stc-rejected{--sc:#ff5a5a}.stc-no_answer{--sc:#9aa0a6}
+input,select{width:100%;background:#0f0f11;color:var(--tx);border:1px solid var(--bd);border-radius:10px;padding:10px;font-size:15px;font-family:inherit;margin-bottom:10px}
+.empty{text-align:center;color:var(--mu);padding:30px 0}
+.ch{margin-inline-start:14px;border-inline-start:1px dashed var(--bd);padding-inline-start:10px;margin-top:6px}
+.cand{display:flex;gap:8px;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--bd);text-decoration:none;color:inherit}
+.cand:last-child{border-bottom:0}
+.cand small{display:block;color:var(--mu);font-size:12px}
+.open{font-size:12px;color:var(--blue);white-space:nowrap}
+</style></head><body><div class="w">
+<header><img src="logo.png" alt="" onerror="this.style.display='none'"><h1>الريكروترز والأوفرات</h1><div class="mu" id="me"></div></header>
+<div class="top"><a class="lk" href="team.html">&rarr; رجوع للتيم</a><a class="lk" href="ops.html">العمليات</a></div>
+<div id="app"><div class="empty">جاري التحميل...</div></div>
+</div>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+var C=window.APEX_CONFIG,sb=supabase.createClient(C.SUPABASE_URL,C.SUPABASE_ANON_KEY);
+var S={me:null,team:[],apps:[],tab:"rec",rid:null,offer:"",q:""};
+var ST=["new","contacted","interview","accepted","validated","hired","rejected","no_answer"];
+var STL={new:"جديد",contacted:"تم التواصل",interview:"انترفيو",accepted:"مقبول",validated:"متأكد",hired:"اتعيّن",rejected:"مرفوض",no_answer:"مردش"};
+var ROL={owner:"المالك",admin:"أدمن",unit_manager:"يونيت مانجر",team_leader:"تيم ليدر",senior_recruiter:"سينيور ريكروتر",recruiter:"ريكروتر"};
+var GOOD={interview:1,accepted:1,validated:1,hired:1};
+function $(i){return document.getElementById(i)}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function byId(id){return S.team.find(function(p){return p.id===id})}
+function cairoDay(d){return new Date(d||Date.now()).toLocaleDateString("en-CA",{timeZone:"Africa/Cairo"})}
+function fmt(d){try{return new Date(d).toLocaleDateString("ar-EG",{timeZone:"Africa/Cairo",day:"numeric",month:"short"})}catch(e){return""}}
+function badge(s){return'<span class="badge stc-'+esc(s)+'">'+esc(STL[s]||s||"")+'</span>'}
+
+/* ---- hierarchy ---- */
+function kidsOf(id){return S.team.filter(function(p){return p.parent_id===id})}
+function subtree(id){var ids={},q=[id],out=[];ids[id]=1;
+  while(q.length){var x=q.pop();kidsOf(x).forEach(function(k){if(!ids[k.id]){ids[k.id]=1;out.push(k);q.push(k.id)}})}return out}
+function uplineOf(id){var out={tl:null,um:null},x=byId(id),g=0;
+  while(x&&g++<8){if(x.role==="team_leader"&&!out.tl)out.tl=x;if(x.role==="unit_manager"&&!out.um)out.um=x;x=byId(x.parent_id)}return out}
+function appsOf(ids){var m={};ids.forEach(function(i){m[i]=1});return S.apps.filter(function(a){return a.recruiter_id&&m[a.recruiter_id]})}
+function agg(list){var r={total:0,today:0,d7:0,good:0,hired:0,by:{}},t=cairoDay(),w=Date.now()-7*864e5;
+  list.forEach(function(a){r.total++;r.by[a.status]=(r.by[a.status]||0)+1;
+    if(cairoDay(a.created_at)===t)r.today++;if(new Date(a.created_at).getTime()>=w)r.d7++;
+    if(GOOD[a.status])r.good++;if(a.status==="hired")r.hired++});return r}
+function stat(n,l){return'<div class="st"><b>'+n+'</b><span>'+l+'</span></div>'}
+function statusStrip(by){return ST.filter(function(s){return by[s]}).map(function(s){return'<span class="badge stc-'+s+'">'+STL[s]+' '+by[s]+'</span> '}).join("")}
+function candRow(a,showWho){var who=showWho&&byId(a.recruiter_id)?'<small>الريكروتر: '+esc(byId(a.recruiter_id).full_name)+'</small>':"";
+  var job=(a.job_company||a.job_title)?esc(a.job_company||"")+" · "+esc(a.job_title||""):"تقديم عام";
+  return'<a class="cand" href="team.html#cand='+esc(a.id)+'"><div><b>'+esc(a.full_name)+'</b><small>'+job+' · '+fmt(a.created_at)+'</small>'+who+'</div><div style="text-align:left">'+badge(a.status)+'<div class="open">فتح الكارت ←</div></div></a>'}
+
+/* ---- tab 1: recruiters ---- */
+function recList(){
+  var h='<input id="q" placeholder="ابحث باسم الريكروتر" value="'+esc(S.q)+'">';
+  var people=S.team.filter(function(p){return p.role!=="owner"&&p.role!=="admin"}),q=S.q.trim().toLowerCase();
+  var rows=people.map(function(p){return{p:p,a:agg(appsOf([p.id]))}}).filter(function(r){return!q||(r.p.full_name||"").toLowerCase().indexOf(q)>-1})
+    .sort(function(x,y){return y.a.total-x.a.total});
+  if(!rows.length)return h+'<div class="empty">مفيش نتائج.</div>';
+  return h+rows.map(function(r){var up=uplineOf(r.p.id);
+    return'<div class="card click" data-r="'+esc(r.p.id)+'"><div class="row"><div><div class="name">'+esc(r.p.full_name)+(r.p.active===false?' <span class="mu">(موقوف)</span>':'')+'</div>'+
+      '<span class="pill">'+(ROL[r.p.role]||r.p.role)+'</span>'+(up.tl&&up.tl.id!==r.p.id?'<span class="pill">ليدر: '+esc(up.tl.full_name)+'</span>':'')+'</div>'+
+      '<div style="text-align:center"><b style="font-size:24px">'+r.a.total+'</b><div class="mu">كانديديت</div></div></div>'+
+      '<div class="mu">النهارده '+r.a.today+' · آخر 7 أيام '+r.a.d7+' · انترفيو+ '+r.a.good+' · اتعيّن '+r.a.hired+'</div></div>'}).join("")}
+function recPage(id){var p=byId(id);if(!p)return'<div class="empty">الريكروتر مش موجود.</div>';
+  var list=appsOf([id]),a=agg(list),up=uplineOf(id),kids=subtree(id),ka=agg(appsOf(kids.map(function(k){return k.id})));
+  var h='<button class="b" data-back="1" style="margin-bottom:12px">← كل الريكروترز</button><div class="card"><div class="name" style="font-size:20px">'+esc(p.full_name)+'</div>'+
+    '<span class="pill">'+(ROL[p.role]||p.role)+'</span>'+(up.tl&&up.tl.id!==p.id?'<span class="pill">ليدر: '+esc(up.tl.full_name)+'</span>':'')+(up.um&&up.um.id!==p.id?'<span class="pill">يونيت: '+esc(up.um.full_name)+(up.um.unit_name?' ('+esc(up.um.unit_name)+')':'')+'</span>':'')+
+    '<div class="stats">'+stat(a.total,"إجمالي الكانديديت")+stat(a.today,"النهارده")+stat(a.d7,"آخر 7 أيام")+stat(a.good,"انترفيو فما فوق")+stat(a.hired,"اتعيّن")+'</div>'+
+    '<div>'+statusStrip(a.by)+'</div>'+
+    (kids.length?'<div class="mu" style="margin-top:8px">تحته '+kids.length+' شخص · كانديديت التيم كله: <b>'+(a.total+ka.total)+'</b></div>':'')+'</div>'+
+    '<div class="card"><h2>الكانديديت ('+list.length+')</h2>'+(list.length?list.map(function(x){return candRow(x,false)}).join(""):'<div class="mu">لسه مجابش حد.</div>')+'</div>';
+  return h}
+
+/* ---- tab 2: team counts ---- */
+function cnt(list,role){return list.filter(function(p){return p.role===role}).length}
+function teamPage(){
+  var ums=S.team.filter(function(p){return p.role==="unit_manager"}),h="";
+  ums.forEach(function(u){var all=subtree(u.id),tls=all.filter(function(p){return p.role==="team_leader"}),
+      rcs=all.filter(function(p){return p.role==="recruiter"||p.role==="senior_recruiter"}),a=agg(appsOf(all.concat([u]).map(function(p){return p.id})));
+    h+='<div class="card"><div class="name">'+esc(u.full_name)+(u.unit_name?' · '+esc(u.unit_name):'')+'</div><span class="pill">يونيت مانجر</span>'+
+      '<div class="stats">'+stat(all.length,"إجمالي الناس")+stat(tls.length,"تيم ليدر")+stat(rcs.length,"ريكروتر")+stat(a.total,"كانديديت")+stat(a.hired,"اتعيّن")+'</div>';
+    tls.forEach(function(t){var tk=subtree(t.id),ta=agg(appsOf(tk.concat([t]).map(function(p){return p.id})));
+      h+='<div class="ch"><div class="row"><div><b>'+esc(t.full_name)+'</b> <span class="pill">تيم ليدر</span></div><span class="mu">'+tk.length+' ريكروتر · '+ta.total+' كانديديت · '+ta.hired+' اتعيّن</span></div>'+
+        tk.map(function(r){var ra=agg(appsOf([r.id]));return'<div class="ch row" data-r="'+esc(r.id)+'" style="cursor:pointer"><span>'+esc(r.full_name)+'</span><span class="mu">'+ra.total+' كانديديت</span></div>'}).join("")+'</div>'});
+    var direct=kidsOf(u.id).filter(function(p){return p.role!=="team_leader"});
+    if(direct.length)h+='<div class="ch"><div class="mu">ريكروترز مباشرين ('+direct.length+')</div>'+direct.map(function(r){var ra=agg(appsOf([r.id]));return'<div class="ch row" data-r="'+esc(r.id)+'" style="cursor:pointer"><span>'+esc(r.full_name)+'</span><span class="mu">'+ra.total+' كانديديت</span></div>'}).join("")+'</div>';
+    h+='</div>'});
+  var free=S.team.filter(function(p){var par=byId(p.parent_id);return(p.role==="team_leader"||p.role==="recruiter"||p.role==="senior_recruiter")&&(!par||par.role==="owner"||par.role==="admin")});
+  if(free.length)h+='<div class="card"><div class="name">من غير يونيت ('+free.length+')</div>'+free.map(function(p){var pa=agg(appsOf(subtree(p.id).concat([p]).map(function(x){return x.id})));return'<div class="row ch" data-r="'+esc(p.id)+'" style="cursor:pointer"><span>'+esc(p.full_name)+' <span class="pill">'+(ROL[p.role]||p.role)+'</span></span><span class="mu">'+pa.total+' كانديديت</span></div>'}).join("")+'</div>';
+  var tot=S.team.filter(function(p){return p.role!=="owner"&&p.role!=="admin"});
+  return'<div class="card"><div class="stats">'+stat(cnt(S.team,"unit_manager"),"يونيت مانجر")+stat(cnt(S.team,"team_leader"),"تيم ليدر")+stat(tot.length-cnt(S.team,"unit_manager")-cnt(S.team,"team_leader"),"ريكروتر")+stat(tot.length,"إجمالي الفريق")+'</div></div>'+(h||'<div class="empty">لسه مفيش يونتات.</div>')}
+
+/* ---- tab 3: by offer ---- */
+function offerKey(a){return(a.job_company||a.job_title)?(a.job_company||"")+" · "+(a.job_title||""):"تقديم عام"}
+function offerPage(){
+  var m={};S.apps.forEach(function(a){var k=offerKey(a);m[k]=(m[k]||0)+1});
+  var keys=Object.keys(m).sort(function(x,y){return m[y]-m[x]});
+  var h='<select id="of"><option value="">— اختار الأوفر —</option>'+keys.map(function(k){return'<option value="'+esc(k)+'"'+(k===S.offer?' selected':'')+'>'+esc(k)+' ('+m[k]+')</option>'}).join("")+'</select>';
+  if(!S.offer)return h+'<div class="empty">اختار أوفر عشان تشوف أسماء المتقدمين عليه.</div>';
+  var list=S.apps.filter(function(a){return offerKey(a)===S.offer}),a=agg(list);
+  return h+'<div class="card"><div class="name">'+esc(S.offer)+'</div><div class="stats">'+stat(a.total,"متقدم")+stat(a.good,"انترفيو فما فوق")+stat(a.hired,"اتعيّن")+'</div><div>'+statusStrip(a.by)+'</div></div>'+
+    '<div class="card">'+list.map(function(x){return candRow(x,true)}).join("")+'</div>'}
+
+/* ---- shell ---- */
+function render(){
+  var tabs=[["rec","الريكروترز"],["team","الفريق"],["offer","حسب الأوفر"]];
+  var body=S.tab==="rec"?(S.rid?recPage(S.rid):recList()):S.tab==="team"?teamPage():offerPage();
+  $("app").innerHTML=(S.rid?'':'<div class="tabs">'+tabs.map(function(t){return'<button class="b'+(S.tab===t[0]?' on':'')+'" data-tab="'+t[0]+'">'+t[1]+'</button>'}).join("")+'</div>')+body;
+  var q=$("q");if(q)q.addEventListener("input",function(){S.q=q.value;var p=q.selectionStart;render();var n=$("q");n.focus();try{n.setSelectionRange(p,p)}catch(e){}});
+  var of=$("of");if(of)of.addEventListener("change",function(){S.offer=of.value;render()});
+}
+document.addEventListener("click",function(e){
+  var t=e.target.closest("[data-tab]");if(t){S.tab=t.getAttribute("data-tab");S.rid=null;history.replaceState(null,"","#"+S.tab);render();return}
+  if(e.target.closest("[data-back]")){S.rid=null;history.replaceState(null,"","#rec");render();return}
+  var r=e.target.closest("[data-r]");if(r){S.tab="rec";S.rid=r.getAttribute("data-r");history.replaceState(null,"","#r="+S.rid);window.scrollTo(0,0);render()}
+});
+async function loadAll(){
+  var p=await sb.from("profiles").select("*").order("created_at");S.team=p.data||[];
+  var all=[],from=0,step=1000;
+  for(;;){var r=await sb.from("applications").select("*").order("created_at",{ascending:false}).range(from,from+step-1);
+    if(r.error||!r.data)break;all=all.concat(r.data);if(r.data.length<step||all.length>=10000)break;from+=step}
+  S.apps=all}
+async function boot(){
+  var s=await sb.auth.getSession();
+  if(!s.data.session){$("app").innerHTML='<div class="empty">سجّل دخول من صفحة التيم الأول.<br><br><a class="b p" href="team.html">فتح صفحة التيم</a></div>';return}
+  var p=await sb.from("profiles").select("*").eq("id",s.data.session.user.id).maybeSingle();
+  if(p.error||!p.data){$("app").innerHTML='<div class="empty">الحساب مش متسجل في السيستم.</div>';return}
+  S.me=p.data;$("me").textContent=S.me.full_name+" · "+(ROL[S.me.role]||S.me.role);
+  await loadAll();
+  var h=location.hash,m=/#r=([\w-]+)/.exec(h);
+  if(m&&byId(m[1])){S.tab="rec";S.rid=m[1]}else if(/#team/.test(h))S.tab="team";else if(/#offer/.test(h))S.tab="offer";
+  render();
+}
+boot();
+</script></body></html>
