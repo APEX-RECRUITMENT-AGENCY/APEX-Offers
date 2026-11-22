@@ -329,7 +329,7 @@ function completeView(){
 function appView(){
   var me=S.me,h='<div class="card"><div class="name">'+esc(me.full_name)+' <span class="badge">'+T("ro")[me.role]+'</span></div>'+
   '<p class="mute" style="margin:8px 0 2px">'+T("myLink")+'</p><div class="link" dir="ltr">'+esc(base()+"index.html?ref="+me.ref_code)+'</div>'+
-  '<button class="btn sm" data-act="copylink">'+T("copy")+'</button></div>';
+  '<button class="btn sm" data-act="copylink">'+T("copy")+'</button> <a class="btn sm" target="_blank" rel="noopener" href="'+esc(base()+"joblinks?ref="+me.ref_code)+'">&#128279; '+(lang==="ar"?"لينكات الوظايف بكودي":"My job links")+'</a></div>';
   h+='<div class="tabs">'+'<button class="tab'+(S.tab==="apps"?" on":"")+'" data-tab="apps">'+T("cand")+' ('+S.apps.length+')</button>'+
   '<button class="tab'+(S.tab==="team"?" on":"")+'" data-tab="team">'+T("team")+' ('+S.team.length+')</button>'+
   (isRev()?'<button class="tab'+(S.tab==="vr"?" on":"")+'" data-tab="vr">&#127908; '+(lang==="ar"?"مراجعة الفويس":"Voice review")+' ('+(S.vq||[]).filter(function(a){return(a.voice_status||"pending")==="pending"}).length+')</button>':'')+

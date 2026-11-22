@@ -18,6 +18,11 @@
     <h1 data-ar="لينك كل وظيفة" data-en="Every job's link">لينك كل وظيفة</h1>
     <p class="lead" data-ar="اضغط «نسخ اللينك» أو «واتساب» جنب أي وظيفة وابعتها في الجروبات." data-en="Tap Copy link or WhatsApp next to any job and share it in groups.">اضغط «نسخ اللينك» أو «واتساب» جنب أي وظيفة وابعتها في الجروبات.</p>
   </div>
+  <div class="card" style="margin-bottom:14px">
+    <div class="fld"><label for="rc" data-ar="كود الريكروتر (بيتحط في كل لينك)" data-en="Recruiter code (added to every link)">كود الريكروتر (بيتحط في كل لينك)</label><input id="rc" type="text" dir="ltr" autocomplete="off" autocapitalize="off" placeholder="abc123"></div>
+    <div class="fld"><label for="sr" data-ar="مصدر اللينك (اختياري)" data-en="Link source (optional)">مصدر اللينك (اختياري)</label><select id="sr"><option value="">—</option><option value="fb">Facebook</option><option value="wa">WhatsApp</option><option value="li">LinkedIn</option><option value="tt">TikTok</option><option value="uni">University</option></select></div>
+    <p class="hint" id="rch" style="margin:6px 0 0"></p>
+  </div>
   <div class="fld"><label for="q" data-ar="دوّر (شركة أو وظيفة)" data-en="Search (company or job)">دوّر (شركة أو وظيفة)</label><input id="q" type="search" dir="auto"></div>
   <div class="ok" id="okm"></div>
   <div class="stack" id="list" style="margin-top:14px"></div>
@@ -27,12 +32,15 @@
 <script>
 (function(){
   var d=document,A=APEX,$=function(i){return d.getElementById(i)},ALL=[];
-  function url(o){return location.href.replace(/[^\/]*$/,"").replace(/[?#].*$/,"")+"job?id="+o.id}
+  function cleanRef(v){return String(v||"").replace(/[^A-Za-z0-9]/g,"").slice(0,20)}
+  function base(){return location.href.replace(/[?#].*$/,"").replace(/[^\/]*$/,"")}
+  function qs(o){var r=cleanRef($('rc').value),s=$('sr').value,a=["job="+o.id];if(r)a.push("ref="+r);if(s)a.push("src="+s);return a.join("&")}
+  function url(o){return base()+"offers?"+qs(o)}
   function msg(o){return o.t+" - "+o.c+(o.loc?" ("+o.loc+")":"")+"\n"+url(o)}
   function render(){
     var q=$('q').value.trim().toLowerCase();
     var rows=ALL.filter(function(o){return !q||(o.c+" "+o.t).toLowerCase().indexOf(q)>-1});
-    $('list').innerHTML=rows.map(function(o){var i=ALL.indexOf(o);return '<div class="card job"><h3 dir="auto">'+A.esc(o.t)+'</h3><div class="co">'+A.esc(o.c)+(o.loc?' · '+A.esc(o.loc):'')+'</div><div class="row" style="margin-top:12px"><button class="btn p sm" data-c="'+i+'" type="button">'+A.t("نسخ اللينك","Copy link")+'</button><button class="btn sm" data-w="'+i+'" type="button">'+A.t("واتساب","WhatsApp")+'</button><a class="btn sm" href="job?id='+o.id+'" target="_blank" rel="noopener">'+A.t("فتح","Open")+'</a></div></div>'}).join("")||'<p class="hint">'+A.t("مفيش نتايج.","No results.")+'</p>';
+    $('list').innerHTML=rows.map(function(o){var i=ALL.indexOf(o);return '<div class="card job"><h3 dir="auto">'+A.esc(o.t)+'</h3><div class="co">'+A.esc(o.c)+(o.loc?' · '+A.esc(o.loc):'')+'</div><div class="row" style="margin-top:12px"><button class="btn p sm" data-c="'+i+'" type="button">'+A.t("نسخ اللينك","Copy link")+'</button><button class="btn sm" data-w="'+i+'" type="button">'+A.t("واتساب","WhatsApp")+'</button><a class="btn sm" href="offers?'+qs(o)+'" target="_blank" rel="noopener">'+A.t("فتح","Open")+'</a></div></div>'}).join("")||'<p class="hint">'+A.t("مفيش نتايج.","No results.")+'</p>';
   }
   function say(m){var ok=$('okm');ok.textContent=m;ok.classList.add('show');clearTimeout(say.t);say.t=setTimeout(function(){ok.classList.remove('show')},2500)}
   $('list').addEventListener('click',function(e){
@@ -42,6 +50,10 @@
     if(b.dataset.w!=null){var u2="https://wa.me/?text="+encodeURIComponent(msg(ALL[+b.dataset.w])),w=null;try{w=window.open(u2,"_blank","noopener")}catch(x){}if(!w)location.href=u2}
   });
   $('q').addEventListener('input',render);
+  function hintRef(){var r=cleanRef($('rc').value),h=$('rch');h.textContent=r?A.t("اللينكات دلوقتي بتسجّل التقديم باسمك (الكود: "+r+").","Links now credit applications to your code ("+r+")."):A.t("حط كود الريكروتر بتاعك، من غيره التقديم مش هيتسجل لحد.","Enter your recruiter code, otherwise applications are not credited to anyone.")}
+  $('rc').value=A.getRef();hintRef();
+  $('rc').addEventListener('input',function(){var r=cleanRef(this.value);if(this.value!==r)this.value=r;try{localStorage.setItem("apexRefTool",r)}catch(e){}hintRef();render()});
+  $('sr').addEventListener('change',render);
   A.onLang(function(l){d.title=l==="ar"?"لينكات الوظايف | Apex":"Job links | Apex";render()});
   A.start();
   A.loadOffers(function(o){ALL=o;render()},function(){$('list').innerHTML='<div class="card"><p>'+A.t("مقدرناش نحمّل الوظايف. جرّب تاني.","Could not load jobs. Try again.")+'</p></div>'});
