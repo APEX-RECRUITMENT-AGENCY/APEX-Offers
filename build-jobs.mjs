@@ -75,7 +75,7 @@ function page(o){
 `}
 fs.rmSync("jobs",{recursive:true,force:true});fs.mkdirSync("jobs",{recursive:true});
 for(const o of list)fs.writeFileSync(`jobs/${o.id}.html`,page(o));
-const base=[["",1.0],["offers",0.9],["tools",0.6],["companies",0.6],["match",0.5],["english-test",0.5],["cv",0.5],["alerts",0.5],["refer",0.4],["scam-check",0.6]];
+const base=[["",1.0],["offers",0.9],["tools",0.6],["companies",0.6],["match",0.5],["english-test",0.5],["cv",0.5],["alerts",0.5],["refer",0.4],["scam-check",0.6],["ambassador",0.5]];
 const urls=base.map(([p,pr])=>`  <url>\n    <loc>${SITE}/${p}</loc>\n    <priority>${pr}</priority>\n  </url>`);
 for(const o of list)urls.push(`  <url>\n    <loc>${SITE}/jobs/${o.id}</loc>\n    <priority>0.7</priority>\n  </url>`);
 fs.writeFileSync("sitemap.xml",`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join("\n")}\n</urlset>\n`);

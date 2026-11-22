@@ -335,6 +335,7 @@ function appView(){
   (isRev()?'<button class="tab'+(S.tab==="vr"?" on":"")+'" data-tab="vr">&#127908; '+(lang==="ar"?"مراجعة الفويس":"Voice review")+' ('+(S.vq||[]).filter(function(a){return(a.voice_status||"pending")==="pending"}).length+')</button>':'')+
   (S.me?'<a class="tab" href="commission.html" style="text-decoration:none;color:inherit">&#128176; '+(lang==="ar"?"الكوميشن":"Commission")+'</a><a class="tab" href="ops.html" style="text-decoration:none;color:inherit">&#9881;&#65039; '+(lang==="ar"?"العمليات":"Operations")+(S.fuc?' <b style="background:var(--acc);border-radius:99px;padding:0 7px;font-size:12px">'+S.fuc+'</b>':'')+'</a>':'')+
   (canPanel()?'<button class="tab'+(S.tab==="pn"?" on":"")+'" data-tab="pn">&#128202; '+(lang==="ar"?"تقرير البانل":"Panel daily")+' ('+dTodayCnt()+')</button>':'')+
+  (RANK[me.role]<=1?'<button class="tab'+(S.tab==="amb"?" on":"")+'" data-tab="amb">&#127891; '+(lang==="ar"?"سفراء الجامعات":"Ambassadors")+'</button>':'')+
   '<button class="tab'+(S.tab==="jl"?" on":"")+'" data-tab="jl">&#128279; '+(lang==="ar"?"لينكات الوظايف":"Job links")+'</button>'+
   '<button class="tab'+(S.tab==="me"?" on":"")+'" data-tab="me">&#128100; '+(lang==="ar"?"بروفايلي":"Profile")+'</button>'+
   '<button class="tab'+(S.tab==="an"?" on":"")+'" data-tab="an">&#128226; '+(lang==="ar"?"الأخبار":"News")+'</button>'+
@@ -346,6 +347,7 @@ function renderList(){
   if(S.tab==="vr")setTimeout(autoEval,0);
   var el=$("list");if(!el)return;
   if(S.tab==="jl"){jlInit();return}
+  if(S.tab==="amb"){ambRender();return}
   if(S.tab==="apps")el.innerHTML=appsHTML();else if(S.tab==="vr")el.innerHTML=voiceHTML();else if(S.tab==="pn")el.innerHTML=dailyHTML();else if(S.tab==="an")el.innerHTML=annHTML();else if(S.tab==="me")el.innerHTML=profHTML();else if(S.tab==="nt"){el.innerHTML=notifHTML();var un=S.notifs.filter(function(n){return!n.read}).map(function(n){return n.id});if(un.length)sb.from("notifications").update({read:true}).in("id",un).then(function(){S.notifs.forEach(function(n){n.read=true});setNtCount()})}else if(S.tab==="team")el.innerHTML=teamHTML();else el.innerHTML=invHTML();
   applyGQ();
 }
@@ -721,6 +723,27 @@ document.addEventListener("click",function(e){var b=e.target.closest("[data-jlc]
   else{var o=JL.rows[+b.dataset.jlw],w=null,u2="https://wa.me/?text="+encodeURIComponent(o.t+" - "+o.c+(o.loc?" ("+o.loc+")":"")+"\n"+jlUrl(o));try{w=window.open(u2,"_blank","noopener")}catch(x){}if(!w)location.href=u2}});
 document.addEventListener("input",function(e){if(e.target.id==="jl_q"){JL.q=e.target.value;jlList()}});
 document.addEventListener("change",function(e){if(e.target.id==="jl_s"){JL.src=e.target.value;jlList()}});
+
+/* ---- campus ambassadors (owner/admin): code generator + leaderboard from applications tagged [src:amb-xxx] ---- */
+function ambCode(v){var h=String(v||"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,16).replace(/-+$/,"");return h?"amb-"+h:""}
+function ambLink(c){return base()+"offers?src="+c}
+function ambRender(){
+  var ar=lang==="ar",el=$("list");if(!el)return;
+  var m={};S.apps.forEach(function(a){var x=/\[src:(amb-[A-Za-z0-9_-]+)\]/.exec(a.experience||"");if(!x)return;var c=x[1],r=m[c]||(m[c]={c:c,n:0,ok:0,hired:0});r.n++;if(a.status==="accepted"||a.status==="validated"||a.status==="hired")r.ok++;if(a.status==="hired")r.hired++});
+  var rows=Object.keys(m).map(function(k){return m[k]}).sort(function(a,b){return b.n-a.n||b.ok-a.ok});
+  el.innerHTML='<div class="card"><div class="name">&#127891; '+(ar?"كود سفير جديد":"New ambassador code")+'</div>'+
+  '<div class="mute" style="margin-top:4px">'+(ar?"اكتب اسم السفير بحروف إنجليزي (مثلاً sara-azhar) وهيتعمل له كود ولينك. اعطيه الكود وهو يدخل صفحة /ambassador ويكتبه.":"Type the ambassador’s name in English letters (e.g. sara-azhar) to get a code and link. Give them the code; they enter it on the /ambassador page.")+'</div>'+
+  '<input id="am_h" type="text" dir="ltr" autocomplete="off" autocapitalize="off" placeholder="sara-azhar" style="margin-top:8px">'+
+  '<div id="am_o" style="margin-top:8px"></div></div>'+
+  '<div class="card"><div class="name">'+(ar?"ترتيب السفراء (من التقديمات)":"Ambassador leaderboard (from applications)")+'</div>'+
+  (rows.length?rows.map(function(r,i){return'<div class="row" style="align-items:center;padding:8px 0;border-bottom:1px solid var(--line)"><b style="width:26px">'+(i+1)+'</b><span dir="ltr" style="flex:1">'+esc(r.c)+'</span><span>'+r.n+' '+(ar?"تقديم":"apps")+(r.ok?' · '+r.ok+' ✅':'')+(r.hired?' · '+r.hired+' 🎉':'')+'</span><button class="btn sm" data-ambc="'+esc(r.c)+'">'+(ar?"نسخ اللينك":"Copy link")+'</button></div>'}).join(""):'<p class="mute" style="margin-top:8px">'+(ar?"لسه مفيش تقديمات جاية من سفراء.":"No applications from ambassadors yet.")+'</p>')+
+  '<p class="mute" style="margin-top:8px">'+(ar?"بيتحسب التقديم على الكود لما المتقدم يفتح لينك السفير. كل الأرقام من المرشحين اللي بتشوفهم.":"An application counts for a code when the applicant opens that ambassador’s link. Numbers come from the candidates you can see.")+'</p></div>';
+  ambOut();
+}
+function ambOut(){var o=$("am_o");if(!o)return;var c=ambCode(($("am_h")||{}).value),ar=lang==="ar";
+  o.innerHTML=c?'<div class="mute">'+(ar?"الكود:":"Code:")+' <b dir="ltr">'+esc(c)+'</b></div><div class="link" dir="ltr" style="margin-top:4px">'+esc(ambLink(c))+'</div><button class="btn sm" data-ambc="'+esc(c)+'" style="margin-top:6px">'+(ar?"نسخ اللينك":"Copy link")+'</button> <button class="btn sm" data-ambk="'+esc(c)+'">'+(ar?"نسخ الكود":"Copy code")+'</button>':""}
+document.addEventListener("input",function(e){if(e.target.id==="am_h")ambOut()});
+document.addEventListener("click",function(e){var b=e.target.closest("[data-ambc],[data-ambk]");if(!b)return;if(b.dataset.ambc)copy(ambLink(b.dataset.ambc));else copy(b.dataset.ambk)});
 /* ---- bulk interview message (select candidates, send one by one on WhatsApp) ---- */
 var SEL={},BK={co:"",n:"",ids:[],f:null,done:{}};
 function appsList(skipCo){var q=(S.q||"").toLowerCase();return S.apps.filter(function(a){return(!S.filter||a.status===S.filter)&&dayOk(a)&&(skipCo||!BK.co||a.job_company===BK.co)&&(!q||(a.full_name+" "+a.phone+" "+a.job_company+" "+a.job_title).toLowerCase().indexOf(q)>-1)})}
