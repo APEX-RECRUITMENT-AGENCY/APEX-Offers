@@ -80,6 +80,12 @@ select,input,textarea{border-color:#3a2a2c}
 select:focus,input:focus,textarea:focus{border-color:var(--acc)}
 .copy,.btn.pri,.sm.pri,.tab.on{background:linear-gradient(180deg,#f02a2a,#a50f0f);border-color:#ff4a4a;color:#fff;box-shadow:0 2px 10px rgba(217,22,22,.35)}
 .lnk{cursor:pointer;text-decoration:underline;text-decoration-color:var(--acc);text-underline-offset:4px}
+
+.bkm{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:60;display:flex;align-items:center;justify-content:center;padding:12px}
+.bkb{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;width:min(560px,100%);max-height:92vh;overflow:auto}
+.bkb label.mute{display:block;margin-top:8px}
+.bkq{display:flex;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.bkq.done{opacity:.5}
 </style>
 <link rel="manifest" href="manifest-team.json">
 <meta name="theme-color" content="#0a0a0b">
@@ -582,12 +588,12 @@ function appsHTML(){
   var cnt={};S.apps.forEach(function(a){cnt[a.status]=(cnt[a.status]||0)+1});
   var ar9=lang==="ar",h='<div class="card"><button class="btn sm" data-act="addcand">+ '+(ar9?"إضافة مرشح":"Add candidate")+'</button>'+(S.addOpen?addFormHTML():'')+'</div>'+'<input id="q" placeholder="'+esc(T("search"))+'" value="'+esc(S.q)+'" style="margin-bottom:10px"><div class="chips"><button class="chip'+(S.filter===""?" on":"")+'" data-f="">'+T("all")+' '+S.apps.length+'</button>';
   ST.forEach(function(s){h+='<button class="chip stc-'+s+(S.filter===s?" on":"")+'" data-f="'+s+'">'+stl(s)+' '+(cnt[s]||0)+'</button>'});
-  h+='</div>'+sfHTML();
-  var q=S.q.toLowerCase(),list=S.apps.filter(function(a){return(!S.filter||a.status===S.filter)&&dayOk(a)&&(!q||(a.full_name+" "+a.phone+" "+a.job_company+" "+a.job_title).toLowerCase().indexOf(q)>-1)});
+  h+='</div>'+sfHTML()+bkBar(appsList());
+  var list=appsList();
   if(!list.length)return h+'<p class="mute">'+T("none")+'</p>';
   var owner=S.me.role==="owner",boss=isBoss();
   list.forEach(function(a){
-    h+='<div class="card" data-id="'+a.id+'"><div class="row"><span class="name lnk" data-cand="'+a.id+'" style="flex:1">'+esc(a.full_name)+'</span><span class="mute">'+fmt(a.created_at)+'</span></div>'+
+    h+='<div class="card" data-id="'+a.id+'"><div class="row"><input type="checkbox" data-bk="'+a.id+'"'+(SEL[a.id]?' checked':'')+' style="width:22px;height:22px;padding:0;flex:none" aria-label="select"><span class="name lnk" data-cand="'+a.id+'" style="flex:1">'+esc(a.full_name)+'</span><span class="mute">'+fmt(a.created_at)+'</span></div>'+
     '<div class="mute">'+((a.job_company||a.job_title)?esc(a.job_company||"")+' · '+esc(a.job_title||""):(lang==="ar"?"تقديم عام":"General application"))+'</div>'+
     '<div class="row" style="margin:8px 0"><a class="btn sm" href="tel:'+esc(a.phone)+'" dir="ltr">'+T("call")+' '+esc(a.phone)+'</a><a class="btn sm" target="_blank" rel="noopener" href="https://wa.me/'+waNum(a.phone)+'">'+T("wa")+'</a><button class="btn sm" data-wat="'+a.id+'">&#128172; '+(lang==="ar"?"رسالة جاهزة":"Template")+'</button></div>'+(S.wat===a.id?watHTML(a):'')+
     (a.email?'<div class="mute" dir="ltr" style="text-align:start">'+esc(a.email)+'</div>':'')+(a.experience?'<div class="mute" style="margin-top:4px">'+(lang==="ar"?"الخبرة: ":"Experience: ")+esc(a.experience)+'</div>':'')+
@@ -684,6 +690,80 @@ async function upd(id,patch){
   if(r.error){toast(r.error.message);return false}
   var i=S.apps.findIndex(function(x){return x.id===id});if(i>-1)S.apps[i]=r.data;return true;
 }
+
+/* ---- bulk interview message (select candidates, send one by one on WhatsApp) ---- */
+var SEL={},BK={co:"",n:"",ids:[],f:null,done:{}};
+function appsList(){var q=(S.q||"").toLowerCase();return S.apps.filter(function(a){return(!S.filter||a.status===S.filter)&&dayOk(a)&&(!q||(a.full_name+" "+a.phone+" "+a.job_company+" "+a.job_title).toLowerCase().indexOf(q)>-1)})}
+function selIds(){return Object.keys(SEL).filter(function(k){return SEL[k]&&findCand(k)})}
+function bkBar(list){
+  var ar=lang==="ar",cs={};list.forEach(function(a){var c=a.job_company||"";if(c)cs[c]=(cs[c]||0)+1});
+  var o='<option value="">'+(ar?"كل الشركات":"All companies")+'</option>'+Object.keys(cs).sort().map(function(c){return'<option value="'+esc(c)+'"'+(BK.co===c?" selected":"")+'>'+esc(c)+' ('+cs[c]+')</option>'}).join("");
+  return'<div class="card" id="bkbar"><div class="name">&#9993; '+(ar?"رسالة إنترفيو لمجموعة":"Bulk interview message")+'</div>'+
+  '<div class="mute" style="margin-top:4px">'+(ar?"اختار الشركة ودوس “حدد”، أو علّم المرشحين بإيدك. التحديد بيشتغل على المرشحين الظاهرين دلوقتي.":"Pick a company and tap Select, or tick candidates by hand. Selection applies to the candidates shown now.")+'</div>'+
+  '<div class="grid2"><select id="bk_co">'+o+'</select><input id="bk_n" type="number" min="1" inputmode="numeric" placeholder="'+(ar?"عدد معين (اختياري): أول N":"Only the first N (optional)")+'" value="'+esc(BK.n)+'"></div>'+
+  '<div class="row" style="margin-top:8px"><button class="btn sm" data-bkact="sel">&#9745; '+(ar?"حدد":"Select")+'</button><button class="btn sm" data-bkact="clr">'+(ar?"امسح التحديد":"Clear")+'</button><button class="btn sm pri" data-bkact="open">&#9993; '+(ar?"ابعت رسالة للمحددين":"Message selected")+' (<span id="bk_cnt">'+selIds().length+'</span>)</button></div></div>';
+}
+function confHit(a){var co=sdN(a.job_company),ti=sdN(a.job_title),hit=null;CONF.forEach(function(x){if(!hit&&sdN(x[0])===co&&sdN(x[1])===ti)hit=x});return hit}
+function bkFields(){var g=function(i){var e=$(i);return e?e.value.trim():""};return{d:g("bk_d"),t:g("bk_t"),l:g("bk_l"),m:g("bk_m"),r:g("bk_r"),s:!!($("bk_s")&&$("bk_s").checked)}}
+function bkMsg(a,f){
+  var hit=confHit(a),offer=hit?hit[0]+" – "+hit[1]:[a.job_company,a.job_title].filter(Boolean).join(" – ");
+  var date="____",time="____";
+  if(f.d){var dd=new Date(f.d+"T12:00");if(!isNaN(dd))date=dd.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"})}
+  if(f.t){var hh=+f.t.slice(0,2),mm=f.t.slice(3,5);time=((hh%12)||12)+":"+mm+" "+(hh>=12?"PM":"AM")}
+  var loc=f.l||(hit&&hit[2])||"",maps=f.m||(hit&&hit[3])||"",rec=f.r||(hit&&hit[4])||"",first=String(a.full_name||"").trim().split(/\s+/)[0]||"";
+  var t="*Hello"+(first?" "+first:"")+" 👋🏻*\n\nHope you’re doing great! This is *"+S.me.full_name+"*, HR Recruiter at *Apex Recruitment Agency*. 🩶\n\n";
+  t+="Your interview"+(offer?" for *"+offer+"*":"")+" is scheduled for:\n\n📅 *Date:* "+date+"\n⏰ *Time:* "+time+"\n";
+  if(loc)t+="📍 *Location:* "+loc+"\n";
+  if(maps)t+="\n🗺️ *Google Maps:* "+maps+"\n";
+  t+="\n*Just let me know that you’ll be able to make it by replying “Confirmed 👍”* 😊\n\n";
+  if(rec)t+="Also, please mention that you were recruited by *“"+rec+"”* and make sure to write it on the application.\n\n";
+  t+="And if anything comes up or you need to reschedule, feel free to let me know.";
+  return t}
+function bkPreview(){var ids=selIds(),a=ids.length?findCand(ids[0]):null,p=$("bk_p");if(p)p.value=a?bkMsg(a,bkFields()):""}
+function bkOpen(){
+  var ar=lang==="ar",ids=selIds().filter(function(i){return waNum(findCand(i).phone).length>=8});
+  var skipped=selIds().length-ids.length;
+  if(!ids.length){toast(ar?"حدد مرشحين الأول":"Select candidates first");return}
+  BK.ids=ids;BK.done={};BK.f=null;
+  var first=findCand(ids[0]),h0=confHit(first),same=ids.every(function(i){return sdN(findCand(i).job_company)===sdN(first.job_company)});
+  var m=document.createElement("div");m.className="bkm";m.id="bkm";
+  m.innerHTML='<div class="bkb"><div class="row"><b>&#9993; '+(ar?"رسالة تحديد معاد الإنترفيو":"Interview schedule message")+'</b><button class="btn sm" data-bkact="close" style="margin-inline-start:auto">&#10005;</button></div>'+
+  '<div id="bk_form"><div class="mute" style="margin-top:6px">'+ids.length+(ar?" مرشح محدد":" candidates selected")+(skipped?" ("+skipped+(ar?" بدون رقم صالح اتشالوا)":" without a valid phone skipped)"):"")+'</div>'+
+  '<div class="grid2"><div><label class="mute">'+(ar?"التاريخ":"Date")+'</label><input id="bk_d" type="date" dir="ltr"></div><div><label class="mute">'+(ar?"الساعة":"Time")+'</label><input id="bk_t" type="time" dir="ltr"></div></div>'+
+  '<label class="mute">'+(ar?"المكان (فاضي = من بيانات كل شركة)":"Location (empty = each company’s saved location)")+'</label><input id="bk_l" dir="auto" value="'+esc(same&&h0&&h0[2]||"")+'">'+
+  '<label class="mute">Google Maps</label><input id="bk_m" dir="ltr" value="'+esc(same&&h0&&h0[3]||"")+'">'+
+  '<label class="mute">'+(ar?"اتعيّن عن طريق (اختياري)":"Recruited by (optional)")+'</label><input id="bk_r" dir="auto" value="'+esc(same&&h0&&h0[4]||"")+'">'+
+  '<label class="row" style="margin-top:10px;gap:8px"><input id="bk_s" type="checkbox" checked style="width:20px;height:20px;padding:0"><span>'+(ar?"احفظ ميعاد الإنترفيو على المرشحين":"Save the interview time on these candidates")+'</span></label>'+
+  '<label class="mute">'+(ar?"معاينة (أول مرشح)":"Preview (first candidate)")+'</label><textarea id="bk_p" rows="12" readonly dir="ltr" style="text-align:left"></textarea>'+
+  '<button class="btn pri" data-bkact="start" style="margin-top:10px;width:100%">'+(ar?"ابدأ الإرسال":"Start sending")+'</button></div><div id="bk_q" style="display:none"></div></div>';
+  document.body.appendChild(m);bkPreview()}
+function bkQueue(){
+  var ar=lang==="ar",n=BK.ids.length,d=BK.ids.filter(function(i){return BK.done[i]}).length,q=$("bk_q");if(!q)return;
+  q.innerHTML='<div class="row" style="margin:8px 0"><b>'+d+' / '+n+'</b><span class="mute">'+(ar?"دوس “التالي”، واتساب هيفتح بالرسالة جاهزة، دوس إرسال وارجع هنا.":"Tap Next, WhatsApp opens with the message ready, press send, then come back here.")+'</span></div>'+
+  (d<n?'<button class="btn pri" data-bkact="next" style="width:100%;margin-bottom:8px">&#9654; '+(ar?"التالي":"Next")+'</button>':'<div class="card" style="margin-bottom:8px">&#9989; '+(ar?"خلصت الكل":"All done")+'</div>')+
+  BK.ids.map(function(i){var a=findCand(i);if(!a)return"";var dn=BK.done[i];return'<div class="bkq'+(dn?" done":"")+'"><span style="flex:1">'+esc(a.full_name)+'<br><span class="mute" dir="ltr">'+esc(a.phone)+'</span></span><button class="btn sm'+(dn?"":" pri")+'" data-bksend="'+i+'">'+(dn?"&#10003; ":"&#128172; ")+(ar?(dn?"اتبعتت":"ابعت"):(dn?"Sent":"Send"))+'</button></div>'}).join("")}
+function bkSend(id){var a=findCand(id);if(!a||!BK.f)return;window.open("https://wa.me/"+waNum(a.phone)+"?text="+encodeURIComponent(bkMsg(a,BK.f)),"_blank");BK.done[id]=1;bkQueue()}
+document.addEventListener("click",async function(e){
+  var b=e.target.closest("[data-bkact],[data-bksend]");if(!b)return;var ar=lang==="ar",act=b.dataset.bkact;
+  if(b.dataset.bksend){bkSend(b.dataset.bksend);return}
+  if(act==="sel"){
+    var pool=appsList().filter(function(a){return(!BK.co||a.job_company===BK.co)&&waNum(a.phone).length>=8}),n=parseInt(BK.n,10);
+    if(n>0)pool=pool.slice(0,n);SEL={};pool.forEach(function(a){SEL[a.id]=true});renderList();
+    toast(pool.length+(ar?" مرشح اتحدد":" selected"));return}
+  if(act==="clr"){SEL={};renderList();return}
+  if(act==="open"){bkOpen();return}
+  if(act==="close"){var m=$("bkm");if(m)m.remove();return}
+  if(act==="next"){var nx=BK.ids.filter(function(i){return!BK.done[i]})[0];if(nx)bkSend(nx);return}
+  if(act==="start"){
+    var f=bkFields();if(!f.d||!f.t){toast(ar?"اكتب التاريخ والساعة":"Enter the date and time");return}
+    BK.f=f;
+    if(f.s){var iso=new Date(f.d+"T"+f.t).toISOString();b.disabled=true;for(var k=0;k<BK.ids.length;k++)await upd(BK.ids[k],{interview_at:iso});b.disabled=false}
+    $("bk_form").style.display="none";$("bk_q").style.display="block";bkQueue();return}
+});
+document.addEventListener("change",function(e){var t=e.target;
+  if(t.dataset&&t.dataset.bk){SEL[t.dataset.bk]=t.checked;var c=$("bk_cnt");if(c)c.textContent=selIds().length;return}
+  if(t.id==="bk_co"){BK.co=t.value}});
+document.addEventListener("input",function(e){var t=e.target;if(t.id==="bk_n"){BK.n=t.value;return}if(t.id&&t.id.indexOf("bk_")===0&&t.id!=="bk_p")bkPreview()});
 document.addEventListener("click",async function(e){
   var b=e.target.closest("[data-wconf],[data-wat],[data-wsend],[data-cndel],[data-act],[data-tab],[data-f],[data-copy],[data-toggle],[data-voice],[data-del],[data-ren],[data-vst],[data-vf],[data-nperm],[data-pdl],[data-pdh],[data-vls],[data-bell],[data-rv],[data-pp],[data-anpost],[data-andel],[data-cand],[data-rf]");if(!b)return;
   if(b.dataset.anpost){var at=$("an_t").value.trim(),ab2=$("an_b").value.trim();if(at.length<2||ab2.length<2){toast(lang==="ar"?"اكتب العنوان والخبر":"Write a title and message");return}var ar3=await sb.rpc("post_announcement",{p_title:at,p_body:ab2});if(ar3.error){toast(ar3.error.message);return}await loadAnns();renderList();toast(lang==="ar"?"اتنشر واتبعت للكل":"Posted");return}
