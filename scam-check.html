@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<title>تأكد من الوظيفة | Apex</title>
+<meta name="description" content="فحص مجاني لإعلان الوظيفة أو رسالة التوظيف: علامات النصب، وإزاي تتأكد إن الشركة حقيقية قبل ما تقدم أو تدفع أو تبعت بياناتك.">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="tools.css">
+<link rel="canonical" href="https://apex-ra.com/scam-check">
+<style>
+.chk{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.chk:last-child{border:0}
+.chk input{width:22px;height:22px;flex:none;margin-top:3px;accent-color:var(--accent)}
+.chk .t{flex:1}.chk .n{display:block;color:var(--mute);font-size:13px;line-height:1.6}
+.chk.auto{background:color-mix(in srgb,var(--warn) 10%,transparent);border-radius:12px;padding-inline:10px}
+.res{border-width:2px}
+.res.lo{border-color:var(--ok)}.res.mid{border-color:var(--warn)}.res.hi{border-color:var(--accent)}
+.res h2{font-size:22px;margin:8px 0}
+.res ul{margin:10px 0 0;padding-inline-start:20px}
+.res li{margin:4px 0}
+.tips li{margin:8px 0}
+textarea{min-height:130px;resize:vertical}
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<main class="wrap">
+  <div class="ph anim">
+    <div class="eyebrow" data-ar="أداة مجانية" data-en="Free tool">أداة مجانية</div>
+    <h1 data-ar="تأكد من الوظيفة قبل ما تقدم" data-en="Check a job before you apply">تأكد من الوظيفة قبل ما تقدم</h1>
+    <p class="lead" data-ar="وظايف النصب كتير. الصق نص الإعلان أو علّم على اللي ينطبق، وهتعرف العلامات اللي تستاهل الحذر. الفحص بيتم على جهازك ومفيش حاجة بتتبعت لأي حد." data-en="Job scams are common. Paste the ad text or tick what applies, and you'll see the warning signs. The check runs on your device and nothing is sent anywhere.">وظايف النصب كتير. الصق نص الإعلان أو علّم على اللي ينطبق، وهتعرف العلامات اللي تستاهل الحذر. الفحص بيتم على جهازك ومفيش حاجة بتتبعت لأي حد.</p>
+  </div>
+
+  <section class="card stack anim" style="margin-top:18px;animation-delay:.1s">
+    <div class="fld" style="margin-top:0"><label for="ad" data-ar="الصق نص الإعلان أو الرسالة (اختياري)" data-en="Paste the ad or message text (optional)">الصق نص الإعلان أو الرسالة (اختياري)</label><textarea id="ad" dir="auto"></textarea></div>
+    <p class="hint" id="found"></p>
+  </section>
+
+  <section class="card anim" style="margin-top:14px;animation-delay:.15s">
+    <h2 style="font-size:19px" data-ar="علّم على اللي ينطبق" data-en="Tick what applies">علّم على اللي ينطبق</h2>
+    <div id="list" style="margin-top:6px"></div>
+  </section>
+
+  <section class="card res lo anim" id="res" style="margin-top:14px;animation-delay:.2s" aria-live="polite"></section>
+
+  <div class="row" style="margin-top:14px">
+    <button class="btn p" id="send" type="button"><span data-ar="ابعتلنا الإعلان نراجعه" data-en="Send it to us for a look">ابعتلنا الإعلان نراجعه</span></button>
+    <button class="btn" id="copy" type="button"><span data-ar="نسخ النتيجة" data-en="Copy result">نسخ النتيجة</span></button>
+  </div>
+  <div class="ok" id="okm"></div>
+  <p class="hint" data-ar="النتيجة تقدير مبني على علامات شائعة، مش حكم نهائي ولا ضمان. حتى لو مفيش علامات، اتأكد من الشركة بنفسك قبل ما تدفع أو تبعت أوراقك." data-en="The result is an estimate based on common warning signs, not a verdict or a guarantee. Even with no flags, verify the company yourself before paying or sharing documents.">النتيجة تقدير مبني على علامات شائعة، مش حكم نهائي ولا ضمان. حتى لو مفيش علامات، اتأكد من الشركة بنفسك قبل ما تدفع أو تبعت أوراقك.</p>
+
+  <section class="card tips anim" style="margin-top:22px">
+    <h2 style="font-size:19px" data-ar="إزاي تتأكد إن الشركة حقيقية" data-en="How to verify a company">إزاي تتأكد إن الشركة حقيقية</h2>
+    <ul>
+      <li data-ar="دوّر على اسم الشركة في جوجل ولينكدإن. شوف إن ليها موقع وصفحة وموظفين حقيقيين." data-en="Search the company name on Google and LinkedIn. Look for a real website, page and employees.">دوّر على اسم الشركة في جوجل ولينكدإن. شوف إن ليها موقع وصفحة وموظفين حقيقيين.</li>
+      <li data-ar="اطلب عنوان المكتب وروح المقابلة هناك، أو على الأقل اعمل مكالمة فيديو. الشركة الحقيقية مش بتمانع." data-en="Ask for the office address and attend the interview there, or at least a video call. A real company won't mind.">اطلب عنوان المكتب وروح المقابلة هناك، أو على الأقل اعمل مكالمة فيديو. الشركة الحقيقية مش بتمانع.</li>
+      <li data-ar="الشركة اللي بتوظف مش بتاخد منك فلوس. ولا رسوم ملف ولا تأمين ولا كورس إجباري ولا جهاز." data-en="A company that hires does not charge you. No file fee, deposit, mandatory course or equipment.">الشركة اللي بتوظف مش بتاخد منك فلوس. ولا رسوم ملف ولا تأمين ولا كورس إجباري ولا جهاز.</li>
+      <li data-ar="متبعتش صورة البطاقة أو بيانات الكارت أو أي كود وصلك على موبايلك لحد قبل ما تتأكد من الشركة، وحتى بعد التعيين في الأوراق الرسمية بس." data-en="Never send your ID photo, card details or any code received on your phone before verifying the company, and later only in official onboarding paperwork.">متبعتش صورة البطاقة أو بيانات الكارت أو أي كود وصلك على موبايلك لحد قبل ما تتأكد من الشركة، وحتى بعد التعيين في الأوراق الرسمية بس.</li>
+      <li data-ar="قول لحد قريب منك إنت رايح فين وإيه الشركة." data-en="Tell someone close to you where you're going and which company.">قول لحد قريب منك إنت رايح فين وإيه الشركة.</li>
+    </ul>
+    <h2 style="font-size:19px;margin-top:18px" data-ar="لو دفعت أو بعت بياناتك بالفعل" data-en="If you already paid or shared your data">لو دفعت أو بعت بياناتك بالفعل</h2>
+    <ul>
+      <li data-ar="وقّف التواصل واحتفظ بالمحادثات وصور الإيصالات والإعلان." data-en="Stop contacting them and keep the chats, receipts and the ad.">وقّف التواصل واحتفظ بالمحادثات وصور الإيصالات والإعلان.</li>
+      <li data-ar="لو بعت بيانات كارت أو كود، كلّم البنك فوراً عشان يوقف الكارت." data-en="If you shared card details or a code, call your bank right away to block the card.">لو بعت بيانات كارت أو كود، كلّم البنك فوراً عشان يوقف الكارت.</li>
+      <li data-ar="بلّغ الموقع أو الجروب اللي نشر الإعلان، وبلّغ الجهات المختصة بجرائم الإنترنت في مصر." data-en="Report the site or group that posted the ad, and report it to the authorities that handle cybercrime in Egypt.">بلّغ الموقع أو الجروب اللي نشر الإعلان، وبلّغ الجهات المختصة بجرائم الإنترنت في مصر.</li>
+    </ul>
+  </section>
+</main>
+<div id="foot"></div>
+
+<script src="tools.js"></script>
+<script>
+(function(){
+  var d=document,A=APEX,$=function(i){return d.getElementById(i)};
+  /* w: weight (3 = serious on its own). re: patterns that auto-tick from pasted text. */
+  var F=[
+   {id:"fee",w:3,ar:"بيطلبوا فلوس قبل التعيين (رسوم ملف، تأمين، كورس، جهاز، شحن رصيد)",en:"They ask for money before hiring (file fee, deposit, course, equipment, top-up)",re:/(رسوم|تأمين|مصاريف|ادفع|دفع|سداد|اشتراك|deposit|fee\b|fees\b|registration fee|pay\s+(a|the)?\s*fee|training fee|رسوم تسجيل)/i},
+   {id:"sens",w:3,ar:"بيطلبوا صورة البطاقة أو بيانات كارت بنكي أو كود OTP أو باسورد",en:"They ask for ID photo, bank card details, an OTP code or a password",re:/(otp|cvv|باسورد|كلمة السر|كلمة المرور|كود التفعيل|رقم الكارت|بيانات الكارت|بطاقة بنكية|فيزا|password|card number)/i},
+   {id:"pay",w:2,ar:"المرتب أو الأرباح مبالغ فيها (آلاف في اليوم، أو مرتب كبير بدون خبرة)",en:"Pay or earnings look exaggerated (thousands a day, or a big salary with no experience)",re:/((اربح|اكسب|تكسب|تربح|earn)[^\n]{0,40}(يومي|يوميا|يوميًا|في اليوم|daily|per day|a day))|(\d{2,3}\s*(الف|ألف)\s*(جنيه)?\s*(في الشهر|شهري)[^\n]{0,40}(بدون خبرة|من البيت))/i},
+   {id:"mlm",w:2,ar:"شغل من البيت من نوع: تسويق شبكي، فوركس، عملات رقمية، مشاهدة إعلانات، أو ضغط على لينكات",en:"Work-from-home of the type: network marketing, forex, crypto, watching ads or clicking links",re:/(تسويق شبكي|فوركس|forex|crypto|عملات رقمية|بيتكوين|مشاهدة (الاعلانات|الإعلانات)|ضغط على|network marketing|mlm|click ads|watch ads|dropship)/i},
+   {id:"chat",w:2,ar:"التعيين أو المقابلة كله على واتساب أو تليجرام، ومفيش مقابلة حقيقية",en:"Hiring or the interview happens only on WhatsApp or Telegram, with no real interview",re:/(تليجرام|تيليجرام|telegram|بدون مقابلة|no interview|تعيين فوري|مقبول فورا|مقبول فوراً|hired immediately|instant hiring)/i},
+   {id:"guar",w:2,ar:"بيضمنوا التعيين أو الأرباح (100% مضمون)",en:"They guarantee a job or earnings (100% guaranteed)",re:/(مضمون|ضمان|100\s*%|guaranteed|guarantee)/i},
+   {id:"link",w:2,ar:"بيطلبوا تحمّل تطبيق أو تدخل على لينك غريب أو تسجّل على موقع تاني",en:"They ask you to download an app, open a strange link or register on another site",re:/(حمّل التطبيق|حمل التطبيق|نزل التطبيق|download (the )?app|install|bit\.ly|tinyurl|t\.me\/)/i},
+   {id:"noco",w:2,ar:"مفيش اسم شركة واضح ولا عنوان مكتب، أو الاسم مش بيظهر في أي مكان تاني",en:"No clear company name or office address, or the name appears nowhere else"},
+   {id:"mail",w:1,ar:"التواصل من إيميل شخصي (جيميل/ياهو) أو رقم موبايل شخصي بدل إيميل الشركة",en:"Contact is from a personal email (Gmail/Yahoo) or personal number instead of a company email"},
+   {id:"urg",w:1,ar:"ضغط واستعجال (عاجل جداً، أماكن محدودة، النهارده بس)",en:"Pressure and urgency (very urgent, limited spots, today only)",re:/(عاجل جدا|عاجل جداً|الحق|أماكن محدودة|اماكن محدودة|النهارده بس|اليوم فقط|limited spots|today only|act now|hurry)/i},
+   {id:"vague",w:1,ar:"وصف الوظيفة غامض أو مليان أخطاء، ومفيش مهام ولا مؤهلات واضحة",en:"The job description is vague or full of mistakes, with no clear duties or requirements"},
+   {id:"unasked",w:1,ar:"الرسالة جتلك من غير ما تقدم على الوظيفة",en:"The message reached you although you never applied"}
+  ];
+  var st={};F.forEach(function(f){st[f.id]={on:false,auto:false}});
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function draw(){
+    $('list').innerHTML=F.map(function(f){var s=st[f.id];
+      return '<label class="chk'+(s.auto?' auto':'')+'"><input type="checkbox" data-id="'+f.id+'"'+(s.on?' checked':'')+'><span class="t">'+esc(A.t(f.ar,f.en))+(s.auto?'<span class="n">'+esc(A.t("لقيناها في النص اللي لصقته، راجعها.","Found in the text you pasted, please review."))+'</span>':'')+'</span></label>'}).join('');
+  }
+  function level(){
+    var sum=0,crit=false,n=0;F.forEach(function(f){if(st[f.id].on){n++;sum+=f.w;if(f.w>=3)crit=true}});
+    return {sum:sum,crit:crit,n:n}
+  }
+  function report(){
+    var L=level(),ticked=F.filter(function(f){return st[f.id].on});
+    var k=L.crit||L.sum>=4?"hi":(L.sum>=2?"mid":"lo"),title,body;
+    if(k==="hi"){title=A.t("خطر عالي: الأغلب نصب","High risk: likely a scam");body=A.t("متدفعش ومتبعتش أي بيانات. لو لسه مش متأكد، اتأكد من الشركة بالطرق اللي تحت.","Do not pay or send any data. If you're still unsure, verify the company using the steps below.")}
+    else if(k==="mid"){title=A.t("فيه علامات تستاهل الحذر","Some warning signs");body=A.t("متكملش قبل ما تتأكد من الشركة وتقابلهم في مكتب حقيقي.","Don't continue until you've verified the company and met them at a real office.")}
+    else if(L.n===0){title=A.t("مفيش علامات ظاهرة","No obvious signs");body=A.t("ده مش ضمان. اتأكد من الشركة وبلاش تدفع أو تبعت بيانات حساسة.","That's not a guarantee. Verify the company and never pay or share sensitive data.")}
+    else{title=A.t("علامة بسيطة","A minor sign");body=A.t("اتأكد من الشركة قبل ما تكمل.","Verify the company before continuing.")}
+    return {k:k,title:title,body:body,ticked:ticked}
+  }
+  function show(){
+    var r=report(),el=$('res');el.className='card res anim '+r.k;
+    var pill=r.k==="hi"?'<span class="pill r">'+esc(A.t("خطر","Risk"))+'</span>':(r.k==="mid"?'<span class="pill w">'+esc(A.t("انتبه","Careful"))+'</span>':'<span class="pill ok">'+esc(A.t("هادي","Calm"))+'</span>');
+    el.innerHTML=pill+'<h2>'+esc(r.title)+'</h2><p style="margin:0">'+esc(r.body)+'</p>'+(r.ticked.length?'<ul>'+r.ticked.map(function(f){return'<li>'+esc(A.t(f.ar,f.en))+'</li>'}).join('')+'</ul>':'');
+  }
+  function scan(){
+    var t=$('ad').value,hit=0;
+    F.forEach(function(f){var m=!!(f.re&&t&&f.re.test(t)),prev=st[f.id].auto;if(m){st[f.id].on=true;st[f.id].auto=true;hit++}else if(prev){st[f.id].on=false;st[f.id].auto=false}});
+    $('found').textContent=t.trim()?(hit?A.t("لقينا "+hit+" علامة في النص وعلّمناها. راجعها وشيل اللي مش صح.","Found "+hit+" sign(s) in the text and ticked them. Review and untick any that are wrong."):A.t("مالقيناش علامات واضحة في النص، علّم يدوي على اللي تلاحظه.","No obvious signs found in the text. Tick anything you notice manually.")):'';
+    draw();show();
+  }
+  var tm;$('ad').addEventListener('input',function(){clearTimeout(tm);tm=setTimeout(scan,300)});
+  $('list').addEventListener('change',function(e){var i=e.target.dataset&&e.target.dataset.id;if(!i)return;st[i].on=e.target.checked;if(!e.target.checked)st[i].auto=false;show()});
+  function text(){
+    var r=report(),ad=$('ad').value.trim().slice(0,700);
+    var s=A.t("فحص وظيفة (Apex)\nالنتيجة: ","Job check (Apex)\nResult: ")+r.title;
+    if(r.ticked.length)s+="\n"+r.ticked.map(function(f){return"- "+A.t(f.ar,f.en)}).join("\n");
+    if(ad)s+="\n\n"+A.t("نص الإعلان:","Ad text:")+"\n"+ad;
+    return s}
+  $('send').addEventListener('click',function(){A.openWA(A.t("أهلاً، عايز رأيكم في الإعلان ده قبل ما أقدم:\n\n","Hi, I'd like your opinion on this ad before I apply:\n\n")+text())});
+  $('copy').addEventListener('click',function(){var t=text(),ok=$('okm');
+    function done(){ok.textContent=A.t("اتنسخت ✓","Copied ✓");ok.classList.add('show')}
+    try{navigator.clipboard.writeText(t).then(done,function(){ok.textContent=t;ok.classList.add('show')})}catch(e){ok.textContent=t;ok.classList.add('show')}});
+  A.onLang(function(l){d.title=l==="ar"?"تأكد من الوظيفة | Apex":"Check a job | Apex";draw();show()});
+  A.start();draw();show();
+})();
+</script>
+</body>
+</html>
