@@ -1,0 +1,25 @@
+name: Build job pages
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+  push:
+    paths:
+      - "tools-build/**"
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node tools-build/build-jobs.mjs
+      - name: Commit changes
+        run: |
+          git config user.name "apex-bot"
+          git config user.email "bot@apex-ra.com"
+          git add -A jobs sitemap.xml
+          git diff --cached --quiet || (git commit -m "Update job pages" && git push)

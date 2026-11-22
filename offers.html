@@ -87,6 +87,7 @@ select:focus,input:focus,textarea:focus{border-color:var(--acc)}
 <meta name="theme-color" content="#0a0a0b">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <link rel="apple-touch-icon" href="icon-192.png">
+<link rel="canonical" href="https://apex-ra.com/offers">
 </head>
 <body>
 <div class="wrap">
@@ -321,6 +322,7 @@ $("alist").addEventListener("click",function(e){
 window.addEventListener("load",function(){
   var CF=window.APEX_CONFIG||{},sbc=null,g=function(i){return document.getElementById(i)};
   try{var rf=new URLSearchParams(location.search).get("ref");if(rf)localStorage.setItem("apexRef",rf.replace(/[^A-Za-z0-9]/g,"").slice(0,20))}catch(e){}
+  try{var sr=new URLSearchParams(location.search).get("src");if(sr)localStorage.setItem("apexSrc",sr.replace(/[^A-Za-z0-9_-]/g,"").slice(0,20))}catch(e){}
   try{if(CF.SUPABASE_URL&&CF.SUPABASE_ANON_KEY&&window.supabase)sbc=window.supabase.createClient(CF.SUPABASE_URL,CF.SUPABASE_ANON_KEY)}catch(e){}
   if(!sbc)return;
   var ab=g("applyBtn"),apm=g("apm"),msg=g("a_m"),btn=g("a_s");
@@ -438,7 +440,7 @@ window.addEventListener("load",function(){
         if(up2.error){btn.disabled=false;msg.textContent="Voice upload failed, try again · فشل رفع الفويس، حاول تاني";return}}}
     var ref=g("a_rc").value.replace(/[^A-Za-z0-9]/g,"").toLowerCase();if(!ref){msg.className="";msg.textContent="Recruiter code is required \u00b7 \u0644\u0627\u0632\u0645 \u0643\u0648\u062f \u0627\u0644\u0631\u064a\u0643\u0631\u0648\u062a\u0631";return}
     var age=parseInt(g("a_a").value,10);
-    var r=await sbc.rpc("submit_application",{p_name:g("a_n").value.trim(),p_phone:g("a_p").value.trim(),p_age:isNaN(age)?null:age,p_grad:g("a_g").value,p_english:g("a_e").value,p_company:cur.c,p_title:cur.t,p_ref:ref,p_voice:vp,p_voice_secs:vMode==="c"?R1.secs:0,p_voice_link:vMode==="r"?vlink:null,p_voice2:vp2,p_voice_secs2:vMode==="c"&&needL?R2.secs:0,p_voice_link2:vMode==="r"&&needL?vlink2:null,p_voice_lang:needL||null,p_email:g("a_m2").value.trim(),p_experience:g("a_x").value.trim()});
+    var r=await sbc.rpc("submit_application",{p_name:g("a_n").value.trim(),p_phone:g("a_p").value.trim(),p_age:isNaN(age)?null:age,p_grad:g("a_g").value,p_english:g("a_e").value,p_company:cur.c,p_title:cur.t,p_ref:ref,p_voice:vp,p_voice_secs:vMode==="c"?R1.secs:0,p_voice_link:vMode==="r"?vlink:null,p_voice2:vp2,p_voice_secs2:vMode==="c"&&needL?R2.secs:0,p_voice_link2:vMode==="r"&&needL?vlink2:null,p_voice_lang:needL||null,p_email:g("a_m2").value.trim(),p_experience:(g("a_x").value.trim().slice(0,975)+(function(){try{var q=localStorage.getItem("apexSrc");return q?" [src:"+q+"]":""}catch(e){return ""}})()).trim()});
     if(r.error&&/recruiter code/i.test(r.error.message||"")){btn.disabled=false;msg.textContent="Invalid recruiter code, ask your recruiter \u00b7 \u0643\u0648\u062f \u0627\u0644\u0631\u064a\u0643\u0631\u0648\u062a\u0631 \u063a\u0644\u0637\u060c \u0627\u0633\u0623\u0644 \u0627\u0644\u0631\u064a\u0643\u0631\u0648\u062a\u0631 \u0628\u062a\u0627\u0639\u0643";return}
     if(r.error){btn.disabled=false;msg.textContent="Could not send. Check your data and try again \u00b7 \u062d\u0627\u0648\u0644 \u062a\u0627\u0646\u064a";return}
     var tk=(typeof r.data==="string"&&/^[0-9a-f-]{36}$/i.test(r.data))?r.data:"";
