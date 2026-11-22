@@ -104,6 +104,8 @@ select:focus,input:focus,textarea:focus{border-color:var(--acc)}
     <select id="fl" aria-label="Language"><option value="">All languages</option><option>English</option><option>French</option><option>Spanish</option><option>Dutch</option><option>Portuguese</option><option>Italian</option></select>
     <select id="fv" aria-label="Language level"><option value="">All levels</option><option>A2</option><option>B1</option><option>B2</option><option>B2+</option><option>C1</option><option>C2 / Native</option></select>
     <select id="fw" aria-label="Work mode"><option value="">All work modes</option><option>WFS</option><option>WFH</option><option>Hybrid</option></select>
+    <select id="fc" aria-label="City"><option value="">All cities</option><option value="Cairo">Cairo</option><option value="Giza">Giza</option><option value="Alexandria">Alexandria</option></select>
+    <select id="fa" aria-label="My age"><option value="">My age (any)</option><option>18</option><option>19</option><option>20</option><option>21</option><option>22</option><option>23</option><option>24</option><option>25</option><option>26</option><option>27</option><option>28</option><option>29</option><option>30</option><option>31</option><option>32</option><option>33</option><option>34</option><option>35</option><option>36</option><option>37</option><option>38</option><option>39</option><option>40</option><option>41</option><option>42</option><option>43</option><option>44</option><option>45</option></select>
   </div>
   <div class="count"><span><b id="n">0</b> offers shown</span><span>Copy-ready details</span></div>
 </header>
@@ -191,6 +193,17 @@ function langs(o){var s=(o.lang||"").toLowerCase();return LANGS.filter(function(
 function lvls(o){var s=String(o.lang||""),r=[],m,re=/\b([ABC][12])(\+?)/gi;while((m=re.exec(s))){var t=m[1].toUpperCase()+m[2];if(t==="C2")t="C2 / Native";if(r.indexOf(t)<0)r.push(t)}if(/native|fluent/i.test(s)&&r.indexOf("C2 / Native")<0)r.push("C2 / Native");return r}
 function grads(o){var s=(o.grad||"").toLowerCase().replace(/undergrad\w*|students?/g,"#u"),r=[];
   if(/grad/.test(s))r.push("Grads");if(s.indexOf("#u")>-1)r.push("Undergrads");if(/dropout/.test(s))r.push("Dropouts");if(/gap/.test(s))r.push("Gap years");return r}
+var CITY={Cairo:["cairo","القاهرة","القاهره","maadi","المعادي","nasr city","مدينة نصر","heliopolis","مصر الجديدة","new cairo","القاهرة الجديدة","tagamoa","التجمع","rehab","الرحاب","madinaty","مدينتي","shorouk","الشروق","obour","العبور","downtown","وسط البلد","zamalek","الزمالك","mokattam","المقطم","shubra","شبرا","abbasia","العباسية","ain shams","عين شمس","new capital","العاصمة"],
+Giza:["giza","الجيزة","الجيزه","dokki","الدقي","mohandessin","المهندسين","haram","الهرم","faisal","فيصل","6th of october","6 october","october","أكتوبر","اكتوبر","sheikh zayed","الشيخ زايد","zayed","smart village","السمارت","agouza","العجوزة","imbaba","إمبابة","امبابة","hadayek","حدائق"],
+Alexandria:["alexandria","alex","الإسكندرية","الاسكندرية","الاسكندريه","سموحة","smouha","miami","ميامي","sidi gaber","سيدي جابر","stanley","ستانلي","borg el arab","برج العرب"]};
+function inCity(o,c){var s=String(o.loc||"").toLowerCase();return (CITY[c]||[]).some(function(k){return s.indexOf(k)>-1})}
+/* age text like "21-30", "up to 30", "+21", "25": returns [min,max] (null = no limit) */
+function ageRange(o){var s=String(o.age||""),n=(s.match(/\d{2}/g)||[]).map(Number);
+  if(!n.length)return [null,null];
+  if(n.length>=2)return [Math.min(n[0],n[1]),Math.max(n[0],n[1])];
+  if(/\+|from|min|over|above|older|فوق|من\s*\d/i.test(s)&&!/up to|max|under|below|until|حتى|لحد/i.test(s))return [n[0],null];
+  return [null,n[0]]}
+function ageOk(o,a){var r=ageRange(o);return (r[0]==null||a>=r[0])&&(r[1]==null||a<=r[1])}
 function fillCo(){
   var sel=$("fco"),v=sel.value,cs=[];
   OFFERS.forEach(function(o){if(o.c&&cs.indexOf(o.c)<0)cs.push(o.c)});cs.sort();
@@ -202,8 +215,8 @@ try{JOB=(new URLSearchParams(location.search).get("job")||"").replace(/[^a-z0-9]
 function jobId(o){var x=5381,i,k=(o.c+"|"+o.t+"|"+(o.loc||"")).toLowerCase();for(i=0;i<k.length;i++)x=((x<<5)+x+k.charCodeAt(i))>>>0;return x.toString(36)}
 function match(o){
   if(JOB)return jobId(o)===JOB;
-  var q=$("q").value.toLowerCase(),co=$("fco").value,g=$("fg").value,l=$("fl").value,w=$("fw").value,v=$("fv").value;
-  return (!q||(o.t+" "+o.c+" "+o.loc).toLowerCase().indexOf(q)>-1)&&(!co||o.c===co)&&(!g||grads(o).indexOf(g)>-1)&&(!l||langs(o).indexOf(l)>-1)&&(!w||o.w===w)&&(!v||lvls(o).indexOf(v)>-1);
+  var q=$("q").value.toLowerCase(),ct=$("fc").value,ag=+$("fa").value||0,co=$("fco").value,g=$("fg").value,l=$("fl").value,w=$("fw").value,v=$("fv").value;
+  return (!q||(o.t+" "+o.c+" "+o.loc).toLowerCase().indexOf(q)>-1)&&(!co||o.c===co)&&(!g||grads(o).indexOf(g)>-1)&&(!l||langs(o).indexOf(l)>-1)&&(!w||o.w===w)&&(!v||lvls(o).indexOf(v)>-1)&&(!ct||inCity(o,ct))&&(!ag||ageOk(o,ag));
 }
 function render(){
   var list=OFFERS.filter(match),h="";
@@ -235,7 +248,7 @@ function copy(){
   function fb(){var a=document.createElement("textarea");a.value=s;document.body.appendChild(a);a.select();try{document.execCommand("copy");ok()}catch(e){toast("Copy failed. Select the text manually.")}a.remove()}
   if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(s).then(ok,fb)}else fb();
 }
-["q","fco","fg","fl","fv","fw"].forEach(function(i){$(i).addEventListener("input",render)});
+["q","fco","fg","fl","fv","fw","fc","fa"].forEach(function(i){$(i).addEventListener("input",render)});
 $("oneall").addEventListener("click",function(e){e.preventDefault();JOB="";$("one").style.display="none";$("modal").classList.remove("open");render()});
 $("grid").addEventListener("click",function(e){var c=e.target.closest(".card");if(c)open_(c.dataset.i)});
 $("close").onclick=function(){$("modal").classList.remove("open")};
