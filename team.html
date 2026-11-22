@@ -588,7 +588,7 @@ function appsHTML(){
   var cnt={};S.apps.forEach(function(a){cnt[a.status]=(cnt[a.status]||0)+1});
   var ar9=lang==="ar",h='<div class="card"><button class="btn sm" data-act="addcand">+ '+(ar9?"إضافة مرشح":"Add candidate")+'</button>'+(S.addOpen?addFormHTML():'')+'</div>'+'<input id="q" placeholder="'+esc(T("search"))+'" value="'+esc(S.q)+'" style="margin-bottom:10px"><div class="chips"><button class="chip'+(S.filter===""?" on":"")+'" data-f="">'+T("all")+' '+S.apps.length+'</button>';
   ST.forEach(function(s){h+='<button class="chip stc-'+s+(S.filter===s?" on":"")+'" data-f="'+s+'">'+stl(s)+' '+(cnt[s]||0)+'</button>'});
-  h+='</div>'+sfHTML()+bkBar(appsList());
+  h+='</div>'+sfHTML()+bkBar(appsList(true));
   var list=appsList();
   if(!list.length)return h+'<p class="mute">'+T("none")+'</p>';
   var owner=S.me.role==="owner",boss=isBoss();
@@ -693,7 +693,7 @@ async function upd(id,patch){
 
 /* ---- bulk interview message (select candidates, send one by one on WhatsApp) ---- */
 var SEL={},BK={co:"",n:"",ids:[],f:null,done:{}};
-function appsList(){var q=(S.q||"").toLowerCase();return S.apps.filter(function(a){return(!S.filter||a.status===S.filter)&&dayOk(a)&&(!q||(a.full_name+" "+a.phone+" "+a.job_company+" "+a.job_title).toLowerCase().indexOf(q)>-1)})}
+function appsList(skipCo){var q=(S.q||"").toLowerCase();return S.apps.filter(function(a){return(!S.filter||a.status===S.filter)&&dayOk(a)&&(skipCo||!BK.co||a.job_company===BK.co)&&(!q||(a.full_name+" "+a.phone+" "+a.job_company+" "+a.job_title).toLowerCase().indexOf(q)>-1)})}
 function selIds(){return Object.keys(SEL).filter(function(k){return SEL[k]&&findCand(k)})}
 function bkBar(list){
   var ar=lang==="ar",cs={};list.forEach(function(a){var c=a.job_company||"";if(c)cs[c]=(cs[c]||0)+1});
@@ -762,7 +762,7 @@ document.addEventListener("click",async function(e){
 });
 document.addEventListener("change",function(e){var t=e.target;
   if(t.dataset&&t.dataset.bk){SEL[t.dataset.bk]=t.checked;var c=$("bk_cnt");if(c)c.textContent=selIds().length;return}
-  if(t.id==="bk_co"){BK.co=t.value}});
+  if(t.id==="bk_co"){BK.co=t.value;renderList()}});
 document.addEventListener("input",function(e){var t=e.target;if(t.id==="bk_n"){BK.n=t.value;return}if(t.id&&t.id.indexOf("bk_")===0&&t.id!=="bk_p")bkPreview()});
 document.addEventListener("click",async function(e){
   var b=e.target.closest("[data-wconf],[data-wat],[data-wsend],[data-cndel],[data-act],[data-tab],[data-f],[data-copy],[data-toggle],[data-voice],[data-del],[data-ren],[data-vst],[data-vf],[data-nperm],[data-pdl],[data-pdh],[data-vls],[data-bell],[data-rv],[data-pp],[data-anpost],[data-andel],[data-cand],[data-rf]");if(!b)return;
