@@ -704,21 +704,10 @@ function bkBar(list){
   '<div class="row" style="margin-top:8px"><button class="btn sm" data-bkact="sel">&#9745; '+(ar?"حدد":"Select")+'</button><button class="btn sm" data-bkact="clr">'+(ar?"امسح التحديد":"Clear")+'</button><button class="btn sm pri" data-bkact="open">&#9993; '+(ar?"ابعت رسالة للمحددين":"Message selected")+' (<span id="bk_cnt">'+selIds().length+'</span>)</button></div></div>';
 }
 function confHit(a){var co=sdN(a.job_company),ti=sdN(a.job_title),hit=null;CONF.forEach(function(x){if(!hit&&sdN(x[0])===co&&sdN(x[1])===ti)hit=x});return hit}
-function bkFields(){var g=function(i){var e=$(i);return e?e.value.trim():""};return{d:g("bk_d"),t:g("bk_t"),l:g("bk_l"),m:g("bk_m"),r:g("bk_r"),s:!!($("bk_s")&&$("bk_s").checked)}}
+function bkFields(){var e=$("bk_d");return{d:e?e.value.trim():"today"}}
 function bkMsg(a,f){
-  var hit=confHit(a),offer=hit?hit[0]+" – "+hit[1]:[a.job_company,a.job_title].filter(Boolean).join(" – ");
-  var date="____",time="____";
-  if(f.d){var dd=new Date(f.d+"T12:00");if(!isNaN(dd))date=dd.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"})}
-  if(f.t){var hh=+f.t.slice(0,2),mm=f.t.slice(3,5);time=((hh%12)||12)+":"+mm+" "+(hh>=12?"PM":"AM")}
-  var loc=f.l||(hit&&hit[2])||"",maps=f.m||(hit&&hit[3])||"",rec=f.r||(hit&&hit[4])||"",first=String(a.full_name||"").trim().split(/\s+/)[0]||"";
-  var t="*Hello"+(first?" "+first:"")+" 👋🏻*\n\nHope you’re doing great! This is *"+S.me.full_name+"*, HR Recruiter at *Apex Recruitment Agency*. 🩶\n\n";
-  t+="Your interview"+(offer?" for *"+offer+"*":"")+" is scheduled for:\n\n📅 *Date:* "+date+"\n⏰ *Time:* "+time+"\n";
-  if(loc)t+="📍 *Location:* "+loc+"\n";
-  if(maps)t+="\n🗺️ *Google Maps:* "+maps+"\n";
-  t+="\n*Just let me know that you’ll be able to make it by replying “Confirmed 👍”* 😊\n\n";
-  if(rec)t+="Also, please mention that you were recruited by *“"+rec+"”* and make sure to write it on the application.\n\n";
-  t+="And if anything comes up or you need to reschedule, feel free to let me know.";
-  return t}
+  var first=String(a.full_name||"").trim().split(/\s+/)[0]||"",co=String(a.job_company||"").trim(),me1=String(S.me.full_name||"").trim().split(/\s+/)[0]||S.me.full_name,ti=String(a.job_title||"").trim();
+  return "Hello"+(first?" "+first:"")+",\n\nThis is "+me1+" from the "+(co?co+" ":"")+"recruitment team. We reviewed your profile and would like to invite you to a short interview for the "+(ti?ti+" ":"")+"position.\n\n📅 Date: "+(f.d||"today")+"\n\nPlease confirm if this works for you, or let me know a better time.\n\nBest regards,\n"+me1+(co?" | "+co:"")}
 function bkPreview(){var ids=selIds(),a=ids.length?findCand(ids[0]):null,p=$("bk_p");if(p)p.value=a?bkMsg(a,bkFields()):""}
 function bkOpen(){
   var ar=lang==="ar",ids=selIds().filter(function(i){return waNum(findCand(i).phone).length>=8});
@@ -729,11 +718,7 @@ function bkOpen(){
   var m=document.createElement("div");m.className="bkm";m.id="bkm";
   m.innerHTML='<div class="bkb"><div class="row"><b>&#9993; '+(ar?"رسالة تحديد معاد الإنترفيو":"Interview schedule message")+'</b><button class="btn sm" data-bkact="close" style="margin-inline-start:auto">&#10005;</button></div>'+
   '<div id="bk_form"><div class="mute" style="margin-top:6px">'+ids.length+(ar?" مرشح محدد":" candidates selected")+(skipped?" ("+skipped+(ar?" بدون رقم صالح اتشالوا)":" without a valid phone skipped)"):"")+'</div>'+
-  '<div class="grid2"><div><label class="mute">'+(ar?"التاريخ":"Date")+'</label><input id="bk_d" type="date" dir="ltr"></div><div><label class="mute">'+(ar?"الساعة":"Time")+'</label><input id="bk_t" type="time" dir="ltr"></div></div>'+
-  '<label class="mute">'+(ar?"المكان (فاضي = من بيانات كل شركة)":"Location (empty = each company’s saved location)")+'</label><input id="bk_l" dir="auto" value="'+esc(same&&h0&&h0[2]||"")+'">'+
-  '<label class="mute">Google Maps</label><input id="bk_m" dir="ltr" value="'+esc(same&&h0&&h0[3]||"")+'">'+
-  '<label class="mute">'+(ar?"اتعيّن عن طريق (اختياري)":"Recruited by (optional)")+'</label><input id="bk_r" dir="auto" value="'+esc(same&&h0&&h0[4]||"")+'">'+
-  '<label class="row" style="margin-top:10px;gap:8px"><input id="bk_s" type="checkbox" checked style="width:20px;height:20px;padding:0"><span>'+(ar?"احفظ ميعاد الإنترفيو على المرشحين":"Save the interview time on these candidates")+'</span></label>'+
+  '<label class="mute">'+(ar?"اليوم (بيظهر في الرسالة)":"Day (shown in the message)")+'</label><input id="bk_d" dir="auto" value="today">'+
   '<label class="mute">'+(ar?"معاينة (أول مرشح)":"Preview (first candidate)")+'</label><textarea id="bk_p" rows="12" readonly dir="ltr" style="text-align:left"></textarea>'+
   '<button class="btn pri" data-bkact="start" style="margin-top:10px;width:100%">'+(ar?"ابدأ الإرسال":"Start sending")+'</button></div><div id="bk_q" style="display:none"></div></div>';
   document.body.appendChild(m);bkPreview()}
@@ -755,9 +740,7 @@ document.addEventListener("click",async function(e){
   if(act==="close"){var m=$("bkm");if(m)m.remove();return}
   if(act==="next"){var nx=BK.ids.filter(function(i){return!BK.done[i]})[0];if(nx)bkSend(nx);return}
   if(act==="start"){
-    var f=bkFields();if(!f.d||!f.t){toast(ar?"اكتب التاريخ والساعة":"Enter the date and time");return}
-    BK.f=f;
-    if(f.s){var iso=new Date(f.d+"T"+f.t).toISOString();b.disabled=true;for(var k=0;k<BK.ids.length;k++)await upd(BK.ids[k],{interview_at:iso});b.disabled=false}
+    BK.f=bkFields();
     $("bk_form").style.display="none";$("bk_q").style.display="block";bkQueue();return}
 });
 document.addEventListener("change",function(e){var t=e.target;
