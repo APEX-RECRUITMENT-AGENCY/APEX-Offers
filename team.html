@@ -25,7 +25,7 @@ a{color:#c4c8cc}
 .btn:hover,.tab:hover,.chip:hover{border-color:var(--acc)}
 .btn.pri:hover,.copy:hover,.sm.pri:hover{filter:brightness(1.12)}
 .chip.on,.tab.on{border-color:var(--acc)}
-.hc{background:#141416;border:1px solid #2a2a2e;border-radius:16px;padding:14px;margin-bottom:12px}.hc .name{font-size:15px}.hc a.btn,.hc .name.lnk{text-decoration:none;border-bottom:0}.hc .btn.pri{background:#d91616;border-color:#d91616;color:#fff;border-radius:10px}
+.hc{background:#141416;border:1px solid #2a2a2e;border-radius:16px;padding:14px;margin-bottom:12px}.hc .ln{padding:10px 0;border-top:1px solid #2a2a2e}.hc .ln:first-of-type{margin-top:8px}.pill{border-radius:999px;padding:1px 10px;font-size:12px;font-weight:700;display:inline-block}.hc .mute,.hc .ln .mute{font-size:13px}.hc .name{font-size:15px}.hc a.btn,.hc .name.lnk,.hc .lnk{text-decoration:none;border-bottom:0;cursor:pointer}.hc .btn.pri{background:#d91616;border-color:#d91616;color:#fff;border-radius:10px}
 .card:hover{border-color:var(--acc)}
 h1,h2{letter-spacing:.01em}
 html{background:var(--bg)}body{min-height:100vh;background:radial-gradient(1200px 500px at 50% -10%,#1d1112 0,transparent 60%) no-repeat,var(--bg)}
@@ -812,9 +812,9 @@ async function homeLoad(){
   if(HM.busy)return;HM.busy=true;
   var td=hmToday(),mo=td.slice(0,7)+"-01",jobs=[];
   jobs.push(sb.rpc("followups").then(function(r){HM.fu=r.error?[]:(r.data||[])}));
-  jobs.push(sb.rpc("goals_report",{p_month:mo}).then(function(r){var l=r.error?[]:(r.data||[]);HM.goal=l.find(function(x){return x.user_id===S.me.id})||null}));
+  jobs.push(sb.rpc("goals_report",{p_month:mo}).then(function(r){var l=r.error?[]:(r.data||[]);HM.goal=l.find(function(x){return x.user_id===S.me.id})||null;HM.team=l.length?{target:l.reduce(function(s,x){return s+(x.target||0)},0),hires:l.reduce(function(s,x){return s+(x.hires||0)},0)}:null}));
+  if(isBoss()||S.me.role==="team_leader"||S.me.role==="unit_manager")jobs.push(sb.rpc("daily_report",{p_day:td}).then(function(r){HM.day=r.error?null:r.data}));
   if(isBoss()){
-    jobs.push(sb.rpc("daily_report",{p_day:td}).then(function(r){HM.day=r.error?null:r.data}));
     jobs.push(sb.rpc("open_questions_count").then(function(r){HM.q=r.error?0:(r.data||0)}));
     jobs.push(sb.rpc("open_team_apps_count").then(function(r){HM.ta=r.error?0:(r.data||0)}));
   }
@@ -822,52 +822,76 @@ async function homeLoad(){
   HM.busy=false;HM.t=Date.now();if(S.tab==="home")homeRender()}
 function hmReason(r){var ar=lang==="ar",m={reminder:ar?"تذكير متابعة":"Follow-up reminder",interview_done:ar?"الإنترفيو خلص، سجّل النتيجة":"Interview done, record the result",accepted_idle:ar?"مقبول ومتحركش":"Accepted, no movement",idle_new:ar?"جديد من +يوم من غير مكالمة":"New 1+ day, not called",idle:ar?"ساكت +2 يوم":"Quiet 2+ days"};return m[r]||r}
 function hmBox(n,t,go,col,bad){return'<'+(go?'button data-hgo="'+go+'"':'div')+' class="hc" style="text-align:center;padding:12px 6px;margin:0;'+(bad?"border-color:#5a1a1a;":"")+'font:inherit;color:inherit;width:100%;cursor:'+(go?"pointer":"default")+'"><div style="font-size:26px;font-weight:800;'+(col?"color:"+col:"")+'">'+n+'</div><div class="mute">'+t+'</div></'+(go?'button':'div')+'>'}
-function hmWho(a,extra){var ar=lang==="ar";return'<div class="row" style="padding:9px 0;border-top:1px solid #2a2a2e;align-items:center"><div style="flex:1;min-width:0"><span class="name lnk" data-cand="'+a.id+'">'+esc(a.full_name)+'</span><div class="mute">'+esc(a.job||[a.job_company,a.job_title].filter(Boolean).join(" · "))+(extra?" · "+extra:"")+'</div></div>'+(a.phone?'<a class="btn sm pri" href="tel:'+esc(a.phone)+'">'+(ar?"اتصل":"Call")+'</a>':'')+'</div>'}
+function hmWho(a,extra,btn){var ar=lang==="ar";return'<div class="ln"><div class="row" style="justify-content:space-between;gap:10px"><div style="flex:1;min-width:0"><b class="lnk" data-cand="'+a.id+'">'+esc(a.full_name)+'</b><div class="mute">'+(extra||"")+'</div></div>'+(btn||(a.phone?'<a class="btn sm pri" href="tel:'+esc(a.phone)+'">'+(ar?"اتصل":"Call")+'</a>':''))+'</div></div>'}
+function hmJob(a){return esc(a.job||[a.job_company,a.job_title].filter(Boolean).join(" · "))}
+function hmCard(title,right,body,bad){return'<div class="hc"'+(bad?' style="border-color:#5a1a1a"':'')+'><div class="row" style="justify-content:space-between"><b>'+title+'</b><span class="mute">'+(right||"")+'</span></div>'+body+'</div>'}
+function hmBar(p,col){return'<div style="height:10px;background:#242428;border-radius:99px;margin-top:10px;overflow:hidden"><div style="width:'+p+'%;height:100%;background:'+(col||"#2ecc71")+';border-radius:99px"></div></div>'}
+function hmDay(d){var x=new Date(d);return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0")}
+function hmTiles(b,c){c=c||3;var r=b.length%c;if(r&&b.length>c)b[b.length-1]=b[b.length-1].replace('style="','style="grid-column:span '+(c-r+1)+';');return'<div style="display:grid;grid-template-columns:repeat('+c+',1fr);gap:8px;margin:0 0 12px">'+b.join("")+'</div>'}
 function homeRender(){
   var ar=lang==="ar",el=$("list");if(!el)return;
   if(!HM.t&&!HM.busy)homeLoad();else if(HM.t&&Date.now()-HM.t>60000&&!HM.busy)homeLoad();
-  var boss=isBoss(),role=S.me.role,tl=(role==="team_leader"||role==="unit_manager"),h="";
-  var nameOfRole=T("ro")[role]||role;
-  h+='<div class="row" style="justify-content:space-between;margin-bottom:12px"><div><div style="font-weight:800;font-size:18px">'+(ar?"أهلاً ":"Hi ")+esc((S.me.full_name||"").split(" ")[0])+'</div><div class="mute">'+new Date().toLocaleDateString(ar?"ar-EG":"en-GB",{weekday:"long",day:"numeric",month:"long"})+'</div></div><div style="text-align:left"><span class="badge">'+esc(nameOfRole)+'</span><div><button class="btn sm" data-act="copylink" style="margin-top:6px">'+(ar?"انسخ لينكك":"Copy my link")+'</button></div></div></div>';
-  var fu=HM.fu||[],newApps=S.apps.filter(function(a){return a.status==="new"}),acc=S.apps.filter(function(a){return a.status==="accepted"});
+  var boss=isBoss(),role=S.me.role,tl=(role==="team_leader"||role==="unit_manager"),me=S.me,h="",now=Date.now(),td=hmToday();
+  var rec=!boss&&!tl,mine=rec?S.apps.filter(function(a){return a.recruiter_id===me.id}):S.apps;
+  var fu=HM.fu||[],newApps=mine.filter(function(a){return a.status==="new"}),acc=S.apps.filter(function(a){return a.status==="accepted"});
   var vq=isRev()?(S.vq||[]).filter(function(a){return(a.voice_status||"pending")==="pending"}):[];
-  var td=hmToday(),iv=S.apps.filter(function(a){if(!a.interview_at)return false;var d=new Date(a.interview_at);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")===td&&a.status!=="rejected"}).sort(function(a,b){return new Date(a.interview_at)-new Date(b.interview_at)});
-  /* top numbers */
-  var boxes=[];
-  if(boss){boxes.push(hmBox(HM.q,ar?"أسئلة محتاجة رد":"Questions to answer","ops","#ff6b6b",HM.q>0));boxes.push(hmBox(HM.ta,ar?"طلبات انضمام":"Join requests","team","#f5b942"))}
-  if(isRev())boxes.push(hmBox(vq.length,ar?"فويس مستني مراجعة":"Voice to review","vr","#b57bff",vq.length>0));
-  boxes.push(hmBox(fu.length,ar?"متابعات ومكالمات":"Follow-ups & calls","",fu.length?"#ff6b6b":"",fu.length>0));
-  boxes.push(hmBox(newApps.length,ar?"جداد لسه":"New, not touched","apps","#4da3ff"));
-  boxes.push(hmBox(iv.length,ar?"إنترفيو النهاردة":"Interviews today","","#f5b942"));
-  if(boss)boxes.push(hmBox(acc.length,ar?"مقبولين مستنيين التحقق":"Accepted, awaiting validation","apps","#2ecc71"));
-  var rem=boxes.length%3;if(rem&&boxes.length>3){boxes[boxes.length-1]=boxes[boxes.length-1].replace('style="','style="grid-column:span '+(rem===1?3:2)+';')}
-  h+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 12px">'+boxes.join("")+'</div>';
-  /* goal */
-  if(HM.goal&&HM.goal.target){var pc=Math.min(100,Math.round(HM.goal.hires*100/HM.goal.target));h+='<div class="hc"><div class="row" style="justify-content:space-between"><b>'+(ar?"هدفك هذا الشهر":"Your goal this month")+'</b><span class="mute">'+HM.goal.hires+' / '+HM.goal.target+'</span></div><div style="height:10px;background:var(--line);border-radius:99px;margin-top:10px;overflow:hidden"><div style="width:'+pc+'%;height:100%;background:#2ecc71;border-radius:99px"></div></div></div>'}
-  /* voice review (reviewer) */
-  if(isRev()&&vq.length){h+='<div class="hc" style="border-color:#4a2f6a"><div class="row" style="justify-content:space-between"><b>&#127908; '+(ar?"مراجعة الفويس":"Voice review")+'</b><button class="btn sm pri" data-hgo="vr">'+(ar?"ابدأ المراجعة":"Start reviewing")+' ('+vq.length+')</button></div><div class="mute" style="margin-top:4px">'+(ar?"الأقدم مستني من ":"Oldest waiting since ")+fmt(vq.slice().sort(function(a,b){return new Date(a.created_at)-new Date(b.created_at)})[0].created_at)+'</div></div>'}
-  /* calls / follow-ups */
-  h+='<div class="hc"><div class="row" style="justify-content:space-between"><b>&#128222; '+(ar?"المكالمات والمتابعات":"Calls & follow-ups")+'</b><span class="mute">'+fu.length+'</span></div>';
-  if(!fu.length)h+='<div class="mute" style="margin-top:6px">'+(HM.t?(ar?"مفيش حاجة متأخرة، تمام ✅":"Nothing overdue ✅"):(ar?"بنحمّل…":"Loading…"))+'</div>';
-  fu.slice(0,4).forEach(function(a){h+=hmWho(a,hmReason(a.reason)+(boss&&a.recruiter_name?" · "+esc(a.recruiter_name):""))});
-  if(fu.length>4)h+='<div class="mute" style="margin-top:8px">+ '+(fu.length-4)+(ar?" كمان في تبويب المرشحين":" more in the candidates tab")+'</div>';
-  h+='</div>';
-  /* new, waiting for the first call */
-  if(newApps.length){var old=newApps.slice().sort(function(a,b){return new Date(a.created_at)-new Date(b.created_at)}).slice(0,3);
-    h+='<div class="hc"><div class="row" style="justify-content:space-between"><b>&#127381; '+(ar?"جداد مستنيين أول مكالمة":"New, waiting for the first call")+'</b><span class="mute">'+newApps.length+'</span></div>';
-    old.forEach(function(a){var hrs=Math.max(0,Math.round((Date.now()-new Date(a.created_at))/36e5));h+=hmWho(a,(ar?"من ":"")+(hrs>=24?Math.round(hrs/24)+(ar?" يوم":" d"):hrs+(ar?" ساعة":" h"))+(ar?"":" ago"))});
-    h+='</div>'}
-  /* interviews today */
-  if(iv.length){h+='<div class="hc"><b>&#128197; '+(ar?"إنترفيوهات النهاردة":"Today’s interviews")+'</b>';iv.slice(0,8).forEach(function(a){h+=hmWho(a,new Date(a.interview_at).toLocaleTimeString(ar?"ar-EG":"en-US",{hour:"numeric",minute:"2-digit"}))});h+='</div>'}
-  /* validation (boss) */
-  if(boss&&acc.length){h+='<div class="hc"><div class="row" style="justify-content:space-between"><b>&#128737;&#65039; '+(ar?"مقبولين مستنيين التحقق":"Accepted, awaiting validation")+'</b><span class="mute">'+acc.length+'</span></div>';acc.slice(0,3).forEach(function(a){h+=hmWho(a,"")});h+='</div>'}
-  /* today numbers + team activity (boss) */
-  if(boss&&HM.day){var d=HM.day;h+='<div class="hc"><b>'+(ar?"النهاردة":"Today")+'</b><div class="mute" style="margin-top:6px">'+d.new_apps+(ar?" تقديم · ":" new · ")+d.to_contacted+(ar?" تواصل · ":" contacted · ")+d.to_interview+(ar?" إنترفيو · ":" interview · ")+d.to_accepted+(ar?" مقبول · ":" accepted · ")+d.to_hired+(ar?" اتعيّن":" hired")+'</div>';
-    if(d.per_recruiter&&d.per_recruiter.length){h+='<div style="margin-top:8px">';d.per_recruiter.slice(0,6).forEach(function(r){h+='<div class="row" style="justify-content:space-between;padding:4px 0"><span>'+esc(r.name)+'</span><span class="mute">'+r.new+(ar?" جديد · ":" new · ")+r.actions+(ar?" حركة":" actions")+'</span></div>'});h+='</div>'}
-    if(d.inactive&&d.inactive.length)h+='<div class="mute" style="margin-top:6px;color:#ff8a80">'+(ar?"من غير نشاط: ":"No activity: ")+esc(d.inactive.join("، "))+'</div>';h+='</div>'}
-  /* team leader: who has pending follow-ups */
-  if(tl&&fu.length){var by={};fu.forEach(function(a){var k=a.recruiter_name||"-";by[k]=(by[k]||0)+1});h+='<div class="hc"><b>'+(ar?"متابعات متأخرة عند الفريق":"Overdue follow-ups by team member")+'</b>'+Object.keys(by).sort(function(a,b){return by[b]-by[a]}).map(function(k){return'<div class="row" style="justify-content:space-between;padding:4px 0"><span>'+esc(k)+'</span><b>'+by[k]+'</b></div>'}).join("")+'</div>'}
+  var iv=mine.filter(function(a){return a.interview_at&&hmDay(a.interview_at)===td&&a.status!=="rejected"}).sort(function(a,b){return new Date(a.interview_at)-new Date(b.interview_at)});
+  var late=fu.filter(function(a){return a.reason!=="reminder"&&a.reason!=="idle_new"}).length;
+  var greet=ar?(rec?"أهلاً يا ":"أهلاً يا ")+esc((me.full_name||"").split(" ")[0]):"Hi "+esc((me.full_name||"").split(" ")[0]);
+  var pc=boss?"background:#2a2410;color:#ffd24d":tl?"background:#12233a;color:#4da3ff":"background:#2a1214;color:#ff6b6b";
+  var sub=tl&&!boss?(ar?"فريقك: "+Math.max(0,S.team.filter(function(p){return p.active!==false&&p.id!==me.id}).length)+" ريكروترز":""):greet;
+  h+='<div class="row" style="justify-content:space-between;margin-bottom:12px"><div><div style="font-weight:800;font-size:18px;letter-spacing:.04em">APEX <span style="color:#d91616">· '+(ar?"الرئيسية":"Home")+'</span></div><div class="mute">'+sub+'</div></div><div style="text-align:left"><span class="pill" style="'+pc+'">'+esc(T("ro")[role]||role)+'</span><div><button class="btn sm" data-act="copylink" style="margin-top:6px">'+(ar?"انسخ لينكك":"Copy my link")+'</button></div></div></div>';
+  /* ---------- follow-ups card (recruiter + owner: the people who make calls) ---------- */
+  function fuCard(){var body='';
+    body+='<div style="font-size:38px;font-weight:800;line-height:1.1;margin-top:4px">'+fu.length+'</div>';
+    if(!fu.length)body+='<div class="mute" style="margin-top:6px">'+(HM.t?(ar?"مفيش حاجة متأخرة، تمام":"Nothing overdue"):(ar?"بنحمّل…":"Loading…"))+'</div>';
+    fu.slice(0,3).forEach(function(a){body+=hmWho(a,hmJob(a)+" · "+hmReason(a.reason))});
+    if(fu.length>3)body+='<div class="mute" style="margin-top:8px">+ '+(fu.length-3)+(ar?" كمان في تبويب المرشحين":" more")+'</div>';
+    return'<div class="hc"'+(late?' style="border-color:#5a1a1a"':'')+'><div class="row" style="justify-content:space-between"><div style="font-weight:800;font-size:16px">'+(ar?"متابعات النهاردة":"Today’s follow-ups")+'</div>'+(late?'<span class="pill" style="background:#3a1212;color:#ff6b6b">'+late+(ar?" متأخرة":" late")+'</span>':'')+'</div>'+body+'</div>'}
+  function goalCard(g,lbl){if(!g||!g.target)return'';var p=Math.min(100,Math.round(g.hires*100/g.target)),dl=new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate()-new Date().getDate();
+    return hmCard(lbl,g.hires+(ar?" من ":" of ")+g.target+(ar?" تعيينات":" hires"),hmBar(p)+'<div class="mute" style="margin-top:6px">'+(ar?"فاضل "+Math.max(0,g.target-g.hires)+" تعيينات و"+dl+" أيام":Math.max(0,g.target-g.hires)+" left · "+dl+" days")+'</div>')}
+  function voiceCard(){if(!vq.length)return'';return'<div class="hc" style="border-color:#4a2f6a"><div class="row" style="justify-content:space-between"><b>'+(ar?"مراجعة الفويس":"Voice review")+'</b><button class="btn sm pri" data-hgo="vr">'+(ar?"ابدأ المراجعة":"Start")+' ('+vq.length+')</button></div><div class="mute" style="margin-top:4px">'+(ar?"الأقدم مستني من ":"Oldest since ")+fmt(vq.slice().sort(function(a,b){return new Date(a.created_at)-new Date(b.created_at)})[0].created_at)+'</div></div>'}
+  function callNow(){if(!newApps.length)return'';var l=newApps.slice().sort(function(a,b){return new Date(b.created_at)-new Date(a.created_at)}).slice(0,3),b='';
+    l.forEach(function(a){var hrs=Math.max(0,Math.round((now-new Date(a.created_at))/36e5));b+=hmWho(a,(ar?"قدّم من ":"Applied ")+(hrs>=24?Math.round(hrs/24)+(ar?" يوم":" d"):hrs+(ar?" ساعة":" h"))+" · "+esc(a.job_company||""))});
+    return hmCard(ar?"اتصل بيهم دلوقتي":"Call now","",b)}
+  function ivCard(){if(!iv.length)return'';var b='';iv.slice(0,3).forEach(function(a){b+=hmWho(a,new Date(a.interview_at).toLocaleTimeString(ar?"ar-EG":"en-US",{hour:"numeric",minute:"2-digit"})+" · "+hmJob(a))});return hmCard(ar?"إنترفيوهات النهاردة":"Today’s interviews",iv.length,b)}
+  function rateCard(){var w=now-7*864e5,l=S.apps.filter(function(a){return a.call_rated_by===me.id&&a.call_rated_at&&new Date(a.call_rated_at)>w&&a.call_lang&&a.call_voice&&a.call_attitude});if(!l.length)return'';var av=l.reduce(function(s,a){return s+(a.call_lang+a.call_voice+a.call_attitude)/3},0)/l.length;
+    return'<div class="hc row" style="justify-content:space-between"><div><b>'+(ar?"تقييماتك للمكالمات":"Your call ratings")+'</b><div class="mute">'+(ar?"آخر 7 أيام · ":"Last 7 days · ")+l.length+(ar?" تقييمات":" ratings")+'</div></div><div style="font-size:26px;font-weight:800;color:#f5b942">'+av.toFixed(1)+'<span class="mute" style="font-size:14px"> /5</span></div></div>'}
+  var stuck=S.apps.filter(function(a){return a.status==="new"&&now-new Date(a.created_at)>864e5}),newToday=S.apps.filter(function(a){return hmDay(a.created_at)===td});
+  var nm={};S.team.forEach(function(p){nm[p.id]=p.full_name});
+  if(rec){
+    h+=fuCard();
+    h+=hmTiles([hmBox(newApps.length,ar?"جداد ليك":"New for you","apps","#4da3ff"),hmBox(iv.length,ar?"إنترفيو النهاردة":"Interviews today","","#b57bff"),hmBox(mine.filter(function(a){return a.status==="contacted"}).length,ar?"مستني رد":"Awaiting reply","","#f5b942")]);
+    h+=goalCard(HM.goal,ar?"هدف الشهر":"Monthly goal")+voiceCard()+callNow()+ivCard()+rateCard();
+  }else if(tl&&!boss){
+    h+=hmTiles([hmBox(newToday.length,ar?"تقديم جديد النهاردة":"New today","apps",""),hmBox(stuck.length,ar?"واقفين +24 ساعة":"Stuck 24h+","apps","#ff6b6b",stuck.length>0),hmBox(fu.length,ar?"متابعات متأخرة":"Overdue follow-ups","","#f5b942")]);
+    var per=hmTeamAct(newToday,nm);
+    if(per.length){var mx=Math.max.apply(null,per.map(function(r){return r.n}))||1,b='';per.slice(0,8).forEach(function(r){b+='<div class="ln row"><span style="width:78px">'+esc(r.name)+'</span><div style="height:8px;background:#242428;border-radius:99px;overflow:hidden;flex:1"><div style="width:'+Math.round(r.n*100/mx)+'%;height:100%;background:'+(r.n===0?"#2a2a2e":"#4da3ff")+';border-radius:99px"></div></div><b style="width:22px;text-align:left">'+r.n+'</b></div>'});h+=hmCard(ar?"نشاط الفريق النهاردة":"Team activity today",ar?"حركات":"actions",b)}
+    if(stuck.length){var b2='';stuck.slice(0,3).forEach(function(a){var rn=nm[a.recruiter_id]||"";b2+=hmWho(a,(rn?(ar?"مع ":"With ")+esc(rn)+" · ":"")+(ar?"جديد من ":"new ")+Math.round((now-new Date(a.created_at))/864e5)+(ar?" يوم":" d"),a.recruiter_id?'<button class="btn sm pri" data-hnudge="'+a.id+'">'+(ar?"نبّه ":"Nudge ")+esc((rn||"").split(" ")[0])+'</button>':'')});h+=hmCard(ar?"واقفين من أكتر من 24 ساعة":"Stuck over 24h",ar?"اتحرك عليهم":"",b2,true)}
+    h+=goalCard(HM.team,ar?"هدف الفريق هذا الشهر":"Team goal")+voiceCard();
+  }else{
+    h+=hmTiles([hmBox(HM.q,ar?"أسئلة محتاجة رد":"Questions to answer","ops","#ff6b6b",HM.q>0),hmBox(HM.ta,ar?"طلبات انضمام":"Join requests","team","#f5b942"),hmBox(fu.length,ar?"متابعات متأخرة":"Overdue follow-ups","","#4da3ff")]);
+    h+=voiceCard()+fuCard()+callNow()+ivCard();
+    var d=HM.day;if(d)h+=hmTiles([hmBox(d.new_apps,ar?"تقديم":"New","",""),hmBox(d.to_interview,ar?"إنترفيو":"Interview","","#b57bff"),hmBox(d.to_accepted,ar?"مقبول":"Accepted","","#2ecc71"),hmBox(d.to_hired,ar?"اتعيّن":"Hired","","#ffd24d")],4);
+    if(acc.length){var b3='';acc.slice(0,3).forEach(function(a){b3+=hmWho(a,hmJob(a))});h+=hmCard(ar?"مقبولين مستنيين التحقق":"Accepted, awaiting validation",acc.length,b3)}
+    var w=now-7*864e5,wk=S.apps.filter(function(a){return new Date(a.created_at)>w}),cm={};wk.forEach(function(a){var c=a.job_company||(ar?"تقديم عام":"General"),o=cm[c]||(cm[c]={n:0,h:0});o.n++;if(a.status==="hired")o.h++});
+    var cl=Object.keys(cm).sort(function(a,b){return cm[b].n-cm[a].n}).slice(0,3);
+    if(cl.length){var b4='';cl.forEach(function(c){b4+='<div class="ln row" style="justify-content:space-between"><span>'+esc(c)+'</span><span class="mute">'+cm[c].n+(ar?" تقديم · ":" apps · ")+cm[c].h+(ar?" معيّنين":" hired")+'</span></div>'});h+=hmCard(ar?"أقوى الشركات هذا الأسبوع":"Top companies this week","",b4)}
+    var tb='',per2=d&&d.per_recruiter&&d.per_recruiter.length?d.per_recruiter.slice().sort(function(a,b){return b.actions-a.actions}):[];
+    if(per2.length)tb+='<div class="ln row" style="justify-content:space-between"><span>'+(ar?"الأنشط":"Most active")+'</span><span><b>'+esc(per2[0].name)+'</b> <span class="mute">· '+per2[0].actions+(ar?" حركة":" actions")+'</span></span></div>';
+    if(d&&d.inactive&&d.inactive.length)tb+='<div class="ln row" style="justify-content:space-between"><span>'+(ar?"من غير نشاط النهاردة":"No activity today")+'</span><span class="pill" style="background:#3a1212;color:#ff6b6b">'+esc(d.inactive.join("، "))+'</span></div>';
+    var sm={},amb=0;wk.forEach(function(a){var x=/\[src:([A-Za-z0-9_-]+)\]/.exec(a.experience||"");if(!x)return;if(x[1].indexOf("amb-")===0)amb++;else sm[x[1]]=(sm[x[1]]||0)+1});
+    var sp=[];if(amb)sp.push((ar?"سفراء ":"Ambassadors ")+amb);Object.keys(sm).sort(function(a,b){return sm[b]-sm[a]}).slice(0,2).forEach(function(k){sp.push(esc(k)+" "+sm[k])});
+    if(sp.length)tb+='<div class="ln row" style="justify-content:space-between"><span>'+(ar?"مصادر التقديم":"Sources")+'</span><span class="mute">'+sp.join(" · ")+'</span></div>';
+    if(tb)h+='<div class="hc"><b>'+(ar?"الفريق":"Team")+'</b>'+tb+'</div>';
+  }
   el.innerHTML=h}
+function hmTeamAct(newToday,nm){var d=HM.day,out=[];if(d&&d.per_recruiter&&d.per_recruiter.length)out=d.per_recruiter.map(function(r){return{name:r.name,n:r.actions}});
+  else{var c={};newToday.forEach(function(a){if(a.recruiter_id)c[a.recruiter_id]=(c[a.recruiter_id]||0)+1});out=S.team.filter(function(p){return p.role==="recruiter"||p.role==="senior_recruiter"}).map(function(p){return{name:p.full_name,n:c[p.id]||0}})}
+  return out.sort(function(a,b){return b.n-a.n})}
+document.addEventListener("click",async function(e){var b=e.target.closest("[data-hnudge]");if(!b)return;var a=findCand(b.dataset.hnudge);if(!a||!a.recruiter_id)return;b.disabled=true;
+  var r=await sb.from("notifications").insert({user_id:a.recruiter_id,kind:"announcement",cand_name:(lang==="ar"?"تنبيه: ":"Nudge: ")+a.full_name,note:lang==="ar"?"المرشح ده واقف من أكتر من 24 ساعة، اتحرك عليه.":"This candidate has been waiting 24h+. Please follow up."});
+  toast(r&&r.error?(lang==="ar"?"ماقدرتش أبعت التنبيه":"Could not send"):(lang==="ar"?"اتبعت التنبيه":"Nudge sent"))});
 document.addEventListener("click",function(e){var b=e.target.closest("[data-hgo]");if(!b)return;var g=b.dataset.hgo;if(g==="ops"){location.href="ops.html";return}S.tab=g;S.cand=null;render()});
 /* ---- bulk interview message (select candidates, send one by one on WhatsApp) ---- */
 var SEL={},BK={co:"",n:"",ids:[],f:null,done:{}};
