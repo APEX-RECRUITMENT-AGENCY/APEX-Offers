@@ -337,6 +337,7 @@ function appView(){
   (S.me?'<a class="tab" href="commission.html" style="text-decoration:none;color:inherit">&#128176; '+(lang==="ar"?"الكوميشن":"Commission")+'</a><a class="tab" href="ops.html" style="text-decoration:none;color:inherit">&#9881;&#65039; '+(lang==="ar"?"العمليات":"Operations")+(S.fuc?' <b style="background:var(--acc);border-radius:99px;padding:0 7px;font-size:12px">'+S.fuc+'</b>':'')+'</a>':'')+
   (canPanel()?'<button class="tab'+(S.tab==="pn"?" on":"")+'" data-tab="pn">&#128202; '+(lang==="ar"?"تقرير البانل":"Panel daily")+' ('+dTodayCnt()+')</button>':'')+
   (RANK[me.role]<=1?'<button class="tab'+(S.tab==="wk"?" on":"")+'" data-tab="wk">&#128202; '+(lang==="ar"?"تقرير الأسبوع":"Weekly report")+'</button>':'')+
+  (isBoss()?'<button class="tab'+(S.tab==="cl"?" on":"")+'" data-tab="cl">&#128279; '+(lang==="ar"?"لينكات الشركات":"Company links")+'</button>':'')+
   (RANK[me.role]<=1?'<button class="tab'+(S.tab==="amb"?" on":"")+'" data-tab="amb">&#127891; '+(lang==="ar"?"سفراء الجامعات":"Ambassadors")+'</button>':'')+
   '<button class="tab'+(S.tab==="jl"?" on":"")+'" data-tab="jl">&#128279; '+(lang==="ar"?"لينكات الوظايف":"Job links")+'</button>'+
   '<button class="tab'+(S.tab==="me"?" on":"")+'" data-tab="me">&#128100; '+(lang==="ar"?"بروفايلي":"Profile")+'</button>'+
@@ -351,6 +352,7 @@ function renderList(){
   if(S.tab==="jl"){jlInit();return}
   if(S.tab==="home"){homeRender();return}
   if(S.tab==="amb"){ambRender();return}
+  if(S.tab==="cl"){clRender();if(!CL.rows&&!CL.busy)clLoad();return}
   if(S.tab==="wk"){wkRender();if(!WK.data&&!WK.busy&&!WK.err)wkLoad();return}
   if(S.tab==="apps")el.innerHTML=appsHTML();else if(S.tab==="vr")el.innerHTML=voiceHTML();else if(S.tab==="pn")el.innerHTML=dailyHTML();else if(S.tab==="an")el.innerHTML=annHTML();else if(S.tab==="me")el.innerHTML=profHTML();else if(S.tab==="nt"){el.innerHTML=notifHTML();var un=S.notifs.filter(function(n){return!n.read}).map(function(n){return n.id});if(un.length)sb.from("notifications").update({read:true}).in("id",un).then(function(){S.notifs.forEach(function(n){n.read=true});setNtCount()})}else if(S.tab==="team")el.innerHTML=teamHTML();else el.innerHTML=invHTML();
   applyGQ();
@@ -595,7 +597,7 @@ function sfHTML(){var ar=lang==="ar";return'<div class="row" style="margin:0 0 1
  '<button class="btn sm" data-act="sfsave">&#128190; '+(ar?"احفظ الفلتر":"Save filter")+'</button></div>'}
 function appsHTML(){
   var cnt={};S.apps.forEach(function(a){cnt[a.status]=(cnt[a.status]||0)+1});
-  var ar9=lang==="ar",h='<div class="card"><button class="btn sm" data-act="addcand">+ '+(ar9?"إضافة مرشح":"Add candidate")+'</button>'+(S.addOpen?addFormHTML():'')+'</div>'+'<input id="q" placeholder="'+esc(T("search"))+'" value="'+esc(S.q)+'" style="margin-bottom:10px"><div class="chips"><button class="chip'+(S.filter===""?" on":"")+'" data-f="">'+T("all")+' '+S.apps.length+'</button>';
+  var ar9=lang==="ar",h='<div class="card"><button class="btn sm" data-act="addcand">+ '+(ar9?"إضافة مرشح":"Add candidate")+'</button>'+(S.addOpen?addFormHTML():'')+'</div>'+'<input id="q" placeholder="'+esc(T("search"))+'" value="'+esc(S.q)+'" style="margin-bottom:10px">'+sqChipsHTML()+'<div class="chips"><button class="chip'+(S.filter===""?" on":"")+'" data-f="">'+T("all")+' '+S.apps.length+'</button>';
   ST.forEach(function(s){h+='<button class="chip stc-'+s+(S.filter===s?" on":"")+'" data-f="'+s+'">'+stl(s)+' '+(cnt[s]||0)+'</button>'});
   h+='</div>'+sfHTML()+bkBar(appsList(true));
   var list=appsList();
@@ -815,6 +817,7 @@ async function homeLoad(){
   jobs.push(sb.rpc("goals_report",{p_month:mo}).then(function(r){var l=r.error?[]:(r.data||[]);HM.goal=l.find(function(x){return x.user_id===S.me.id})||null;HM.team=l.length?{target:l.reduce(function(s,x){return s+(x.target||0)},0),hires:l.reduce(function(s,x){return s+(x.hires||0)},0)}:null}));
   if(isBoss()||S.me.role==="team_leader"||S.me.role==="unit_manager")jobs.push(sb.rpc("daily_report",{p_day:td}).then(function(r){HM.day=r.error?null:r.data}));
   if(isBoss()){
+    jobs.push(sb.rpc("hire_reviews_report").then(function(r){CL.rev=r.error?null:r.data}));
     jobs.push(sb.rpc("open_questions_count").then(function(r){HM.q=r.error?0:(r.data||0)}));
     jobs.push(sb.rpc("open_team_apps_count").then(function(r){HM.ta=r.error?0:(r.data||0)}));
   }
@@ -877,6 +880,7 @@ function homeRender(){
     var w=now-7*864e5,wk=S.apps.filter(function(a){return new Date(a.created_at)>w}),cm={};wk.forEach(function(a){var c=a.job_company||(ar?"تقديم عام":"General"),o=cm[c]||(cm[c]={n:0,h:0});o.n++;if(a.status==="hired")o.h++});
     var cl=Object.keys(cm).sort(function(a,b){return cm[b].n-cm[a].n}).slice(0,3);
     if(cl.length){var b4='';cl.forEach(function(c){b4+='<div class="ln row" style="justify-content:space-between"><span>'+esc(c)+'</span><span class="mute">'+cm[c].n+(ar?" تقديم · ":" apps · ")+cm[c].h+(ar?" معيّنين":" hired")+'</span></div>'});h+=hmCard(ar?"أقوى الشركات هذا الأسبوع":"Top companies this week","",b4)}
+    if(CL.rev&&CL.rev.n)h+='<div class="hc row" style="justify-content:space-between"><div><b>'+(ar?"تقييم المرشحين للايجينسي":"Candidates rating the agency")+'</b><div class="mute">'+CL.rev.n+(ar?" تقييم":" ratings")+'</div></div><div style="font-size:26px;font-weight:800;color:#f5b942">'+CL.rev.avg+'<span class="mute" style="font-size:14px"> /5</span></div></div>';
     var tb='',per2=d&&d.per_recruiter&&d.per_recruiter.length?d.per_recruiter.slice().sort(function(a,b){return b.actions-a.actions}):[];
     if(per2.length)tb+='<div class="ln row" style="justify-content:space-between"><span>'+(ar?"الأنشط":"Most active")+'</span><span><b>'+esc(per2[0].name)+'</b> <span class="mute">· '+per2[0].actions+(ar?" حركة":" actions")+'</span></span></div>';
     if(d&&d.inactive&&d.inactive.length)tb+='<div class="ln row" style="justify-content:space-between"><span>'+(ar?"من غير نشاط النهاردة":"No activity today")+'</span><span class="pill" style="background:#3a1212;color:#ff6b6b">'+esc(d.inactive.join("، "))+'</span></div>';
@@ -893,9 +897,72 @@ document.addEventListener("click",async function(e){var b=e.target.closest("[dat
   var r=await sb.from("notifications").insert({user_id:a.recruiter_id,kind:"announcement",cand_name:(lang==="ar"?"تنبيه: ":"Nudge: ")+a.full_name,note:lang==="ar"?"المرشح ده واقف من أكتر من 24 ساعة، اتحرك عليه.":"This candidate has been waiting 24h+. Please follow up."});
   toast(r&&r.error?(lang==="ar"?"ماقدرتش أبعت التنبيه":"Could not send"):(lang==="ar"?"اتبعت التنبيه":"Nudge sent"))});
 document.addEventListener("click",function(e){var b=e.target.closest("[data-hgo]");if(!b)return;var g=b.dataset.hgo;if(g==="ops"){location.href="ops.html";return}S.tab=g;S.cand=null;render()});
+/* ---- smart search: type a sentence, it becomes filters (rules only; nothing is sent anywhere) ---- */
+function nrm(s){return String(s||"").toLowerCase().replace(/[ً-ٟ]/g,"").replace(/[أإآ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي")}
+function sq(q){
+  var raw=String(q||""),t=nrm(raw),chips=[],tests=[],ar=lang==="ar";
+  function eat(re,label,fn){var m=re.exec(t);if(!m)return false;t=(t.slice(0,m.index)+" "+t.slice(m.index+m[0].length)).replace(/\s+/g," ");chips.push({raw:m[0].trim(),label:label(m)});tests.push(fn(m));return true}
+  var N=function(x){return +String(x).replace(/[٠-٩]/g,function(d){return"٠١٢٣٤٥٦٧٨٩".indexOf(d)})};
+  eat(/(?:^|\s)(?:اقل من|تحت|under|below|<)\s*([0-9٠-٩]{2})/,function(m){return(ar?"سن أقل من ":"Age under ")+N(m[1])},function(m){var n=N(m[1]);return function(a){var g=parseInt(a.age,10);return g>0&&g<n}});
+  eat(/(?:^|\s)(?:اكتر من|فوق|over|above|>)\s*([0-9٠-٩]{2})(?!\d)(?!\s*(?:\/|من 5))/,function(m){return(ar?"سن أكبر من ":"Age over ")+N(m[1])},function(m){var n=N(m[1]);return function(a){var g=parseInt(a.age,10);return g>n}});
+  var st=[["مقبول|accepted","accepted","مقبول","Accepted"],["اتعين|معين|hired|متعين","hired","اتعيّن","Hired"],["مرفوض|rejected","rejected","مرفوض","Rejected"],["انترفيو|interview","interview","إنترفيو","Interview"],["تم التواصل|contacted|اتواصل","contacted","تم التواصل","Contacted"],["جديد|جداد|new\\b","new","جديد","New"]];
+  st.some(function(s){return eat(new RegExp("(?:^|\\s)(?:"+s[0]+")[^\\s]*"),function(){return ar?s[2]:s[3]},function(){return function(a){return a.status===s[1]}})});
+  if(!eat(/(?:^|\s)(?:النهارده|اليوم|today)/,function(){return ar?"النهاردة":"Today"},function(){return function(a){return new Date(a.created_at).toDateString()===new Date().toDateString()}}))
+  if(!eat(/(?:^|\s)(?:امبارح|yesterday)/,function(){return ar?"إمبارح":"Yesterday"},function(){return function(a){var d=new Date();d.setDate(d.getDate()-1);return new Date(a.created_at).toDateString()===d.toDateString()}}))
+  if(!eat(/(?:^|\s)(?:الاسبوع|اسبوع|week)/,function(){return ar?"آخر 7 أيام":"Last 7 days"},function(){return function(a){return Date.now()-new Date(a.created_at)<=7*864e5}}))
+  eat(/(?:^|\s)(?:الشهر|month)/,function(){return ar?"آخر 30 يوم":"Last 30 days"},function(){return function(a){return Date.now()-new Date(a.created_at)<=30*864e5}});
+  [["جيز|giza|اكتوبر|october|زايد|zayed|دقي|dokki|6th","الجيزة","Giza"],["قاهر|cairo|مدينه نصر|nasr|معادي|maadi|مصر الجديده|heliopolis","القاهرة","Cairo"],["اسكندر|alex","الإسكندرية","Alexandria"]].some(function(c){return eat(new RegExp("(?:^|\\s)(?:ال)?(?:"+c[0]+")[^\\s]*"),function(){return ar?c[1]:c[2]},function(m){var re=new RegExp(c[0]);return function(a){return re.test(nrm(a.location))}})});
+  eat(/(?:^|\s)(?:من غير خبره|بدون خبره|مفيش خبره|no experience|fresh)/,function(){return ar?"من غير خبرة":"No experience"},function(){return function(a){var x=String(a.experience||"").replace(/\[src:[^\]]*\]/g,"").trim();return !x||/^(no|none|n\/a|لا|مفيش|-)/i.test(x)}});
+  eat(/(?:^|\s)(?:عنده خبره|ليه خبره|خبره|with experience)(?!\s*\w)/,function(){return ar?"عنده خبرة":"Has experience"},function(){return function(a){var x=String(a.experience||"").replace(/\[src:[^\]]*\]/g,"").trim();return x&&!/^(no|none|n\/a|لا|مفيش|-)/i.test(x)}});
+  eat(/(?:^|\s)(?:انجليزي|english)\s*(?:كويس|قوي|ممتاز|strong|good)/,function(){return ar?"إنجليزي قوي":"Strong English"},function(){return function(a){return /(b2|c1|c2|advanced|fluent|upper|ممتاز|قوي|كويس)/i.test(nrm(a.english_level))}});
+  eat(/(?:^|\s)(?:\b|)([abc][12])(?:\s|$)/,function(m){return(ar?"إنجليزي ":"English ")+m[1].toUpperCase()},function(m){var l=m[1];return function(a){return nrm(a.english_level).indexOf(l)>-1}});
+  eat(/(?:^|\s)(?:تقييم|rating)\s*(?:المكالمه\s*)?(?:فوق|اكتر من|over|above|>)\s*([1-5](?:\.\d)?)/,function(m){return(ar?"تقييم أكبر من ":"Rating over ")+m[1]},function(m){var n=parseFloat(m[1]);return function(a){return a.call_lang&&a.call_voice&&a.call_attitude&&(a.call_lang+a.call_voice+a.call_attitude)/3>n}});
+  var cos={};S.apps.forEach(function(a){if(a.job_company)cos[a.job_company]=1});
+  Object.keys(cos).sort(function(a,b){return b.length-a.length}).some(function(c){var cn=nrm(c);if(cn.length<2)return false;var i=(" "+t+" ").indexOf(" "+cn+" ");if(i<0)return false;t=(" "+t+" ").replace(" "+cn+" "," ").trim();chips.push({raw:c,label:c});tests.push(function(a){return nrm(a.job_company)===cn});return true});
+  var rest=(" "+t+" ").replace(/\s(?:في|ف|and|in|the|من|و|عند|ليهم|اللي)(?=\s)/g," ").replace(/\s+/g," ").trim();
+  return{chips:chips,rest:rest,ok:function(a){for(var i=0;i<tests.length;i++)if(!tests[i](a))return false;return !rest||nrm(a.full_name+" "+a.phone+" "+a.job_company+" "+a.job_title).indexOf(rest)>-1}}}
+function sqChipsHTML(){var p=sq(S.q);if(!p.chips.length)return"";return'<div class="row" style="margin:-4px 0 8px;gap:6px;flex-wrap:wrap"><span class="mute">'+(lang==="ar"?"فهمت:":"Understood:")+'</span>'+p.chips.map(function(c,i){return'<button class="chip on" data-sqx="'+i+'">'+esc(c.label)+' &times;</button>'}).join("")+'</div>'}
+document.addEventListener("click",function(e){var b=e.target.closest("[data-sqx]");if(!b)return;var c=sq(S.q).chips[+b.dataset.sqx];if(!c)return;var low=S.q.toLowerCase(),i=low.indexOf(c.raw.toLowerCase());if(i<0){S.q="";}else S.q=(S.q.slice(0,i)+" "+S.q.slice(i+c.raw.length)).replace(/\s+/g," ").trim();renderList()});
+/* ---- weekly Excel per company ---- */
+function xlLoad(){return window.XLSX?Promise.resolve():new Promise(function(ok,no){var s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js";s.onload=ok;s.onerror=no;document.head.appendChild(s)})}
+function xlRows(list){var tm={};S.team.forEach(function(p){tm[p.id]=p.full_name});return list.map(function(a){return{Name:a.full_name||"",Phone:a.phone||"",Job:a.job_title||"",Applied:a.created_at?new Date(a.created_at).toLocaleDateString("en-GB"):"",Interview:a.interview_at?new Date(a.interview_at).toLocaleString("en-GB",{day:"numeric",month:"short",hour:"numeric",minute:"2-digit"}):"",Status:a.status||"",Recruiter:tm[a.recruiter_id]||""}})}
+async function xlExport(co,per){
+  var ar=lang==="ar",days=per==="all"?99999:(per==="30"?30:7),now=Date.now();
+  var inR=function(a){return now-new Date(a.created_at)<=days*864e5||(a.interview_at&&Math.abs(now-new Date(a.interview_at))<=days*864e5)};
+  var cos=co?[co]:Object.keys(S.apps.reduce(function(m,a){if(a.job_company)m[a.job_company]=1;return m},{})).sort();
+  var sheets=cos.map(function(c){return[c,S.apps.filter(function(a){return a.job_company===c&&inR(a)})]}).filter(function(x){return x[1].length});
+  if(!sheets.length){toast(ar?"مفيش مرشحين في الفترة دي":"No candidates in that period");return}
+  try{await xlLoad()}catch(e){toast(ar?"ماقدرتش أحمّل مكتبة الإكسل (النت؟)":"Could not load the Excel library");return}
+  var wb=XLSX.utils.book_new(),sum=sheets.map(function(x){var l=x[1];return{Company:x[0],Candidates:l.length,Interview:l.filter(function(a){return a.interview_at||["interview","accepted","validated","hired"].indexOf(a.status)>-1}).length,Accepted:l.filter(function(a){return["accepted","validated","hired"].indexOf(a.status)>-1}).length,Hired:l.filter(function(a){return a.status==="hired"}).length}});
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(sum),"Summary");
+  var used={Summary:1};
+  sheets.forEach(function(x){var n=x[0].replace(/[\\\/\?\*\[\]:]/g," ").slice(0,28)||"Sheet",k=n,i=2;while(used[k])k=n.slice(0,26)+" "+(i++);used[k]=1;var ws=XLSX.utils.json_to_sheet(xlRows(x[1]));ws["!cols"]=[{wch:24},{wch:15},{wch:26},{wch:12},{wch:20},{wch:12},{wch:16}];XLSX.utils.book_append_sheet(wb,ws,k)});
+  var d=new Date().toISOString().slice(0,10);XLSX.writeFile(wb,"Apex_"+(co?co.replace(/[^A-Za-z0-9_-]+/g,"_"):"All_Companies")+"_"+d+".xlsx");toast(ar?"اتنزّل الملف":"File downloaded")}
+document.addEventListener("click",function(e){var b=e.target.closest("[data-xl]");if(!b)return;var p=$("xl_p"),c=b.dataset.xl==="co"?($("bk_co")||{}).value||BK.co||"":"";if(b.dataset.xl==="co"&&!c){toast(lang==="ar"?"اختار شركة الأول":"Pick a company first");return}xlExport(c,p?p.value:"7")});
+/* ---- company links tab (owner/admin) + candidate ratings of the agency ---- */
+var CL={rows:null,rev:null,busy:false};
+function clBase(){return base()+"company.html?k="}
+async function clLoad(){if(CL.busy)return;CL.busy=true;try{var r=await sb.from("company_links").select("*");CL.rows=r.error?[]:(r.data||[]);CL.err=r.error?r.error.message:"";var v=await sb.rpc("hire_reviews_report");CL.rev=v.error?null:v.data}catch(e){CL.rows=CL.rows||[]}CL.busy=false;if(S.tab==="cl")clRender()}
+function clRender(){
+  var el=$("list");if(!el)return;var ar=lang==="ar",h="";
+  h+='<div class="card"><div class="name">&#128279; '+(ar?"لينكات الشركات":"Company links")+'</div><div class="mute" style="margin-top:4px">'+(ar?"لينك خاص لكل شركة تشوف منه مرشحينها وحالتهم. الاسم الأول وأول حرف بس، من غير تليفون ولا ملاحظات. تقدر توقف اللينك أو تغيّره في أي وقت.":"A private link per company to see its candidates and stages. First name + initial only; no phone or notes. You can turn off or change a link any time.")+'</div>'+(CL.err?'<div class="mute" style="color:#ff8a80;margin-top:6px">'+(ar?"شغّل ملف company_rating.sql في Supabase الأول.":"Run company_rating.sql in Supabase first.")+'</div>':'')+'</div>';
+  if(CL.rev&&CL.rev.n){h+='<div class="card"><div class="row" style="justify-content:space-between"><b>&#11088; '+(ar?"تقييم المرشحين للايجينسي":"Candidates rating the agency")+'</b><span style="font-size:22px;font-weight:800;color:#f5b942">'+CL.rev.avg+' <span class="mute" style="font-size:13px">/5 · '+CL.rev.n+'</span></span></div>'+(CL.rev.recent||[]).slice(0,5).map(function(x){return'<div style="padding:8px 0;border-top:1px solid var(--line)"><b>'+esc(x.name)+'</b> <span class="mute">'+esc(x.company||"")+'</span> <span style="color:#f5b942">'+"&#9733;".repeat(x.stars)+'</span>'+(x.comment?'<div class="mute">'+esc(x.comment)+(x.consent?(ar?" · مسموح ننشره":" · OK to publish"):"")+'</div>':'')+'</div>'}).join("")+'</div>'}
+  var by={};(CL.rows||[]).forEach(function(r){by[nrm(r.company)]=r});
+  var cos={};S.apps.forEach(function(a){if(a.job_company)cos[a.job_company]=(cos[a.job_company]||0)+1});
+  Object.keys(cos).sort().forEach(function(c){var r=by[nrm(c)],url=r?clBase()+r.token:"";
+    h+='<div class="card"><div class="row" style="justify-content:space-between"><b>'+esc(c)+'</b><span class="mute">'+cos[c]+(ar?" مرشح":" cand.")+(r&&!r.active?(ar?" · موقوف":" · off"):"")+'</span></div>';
+    if(r&&r.active)h+='<div class="link" dir="ltr" style="margin-top:8px;word-break:break-all">'+esc(url)+'</div><div class="row" style="margin-top:8px"><button class="btn sm pri" data-clact="copy" data-co="'+esc(c)+'">'+(ar?"نسخ":"Copy")+'</button><button class="btn sm" data-clact="wa" data-co="'+esc(c)+'">'+T("wa")+'</button><button class="btn sm" data-clact="new" data-co="'+esc(c)+'">'+(ar?"لينك جديد":"New link")+'</button><button class="btn sm" data-clact="off" data-co="'+esc(c)+'">'+(ar?"إيقاف":"Turn off")+'</button></div>';
+    else h+='<div class="row" style="margin-top:8px"><button class="btn sm pri" data-clact="new" data-co="'+esc(c)+'">'+(ar?"اعمل لينك":"Create link")+'</button></div>';
+    h+='</div>'});
+  el.innerHTML=h}
+document.addEventListener("click",async function(e){var b=e.target.closest("[data-clact]");if(!b)return;var c=b.dataset.co,act=b.dataset.clact,ar=lang==="ar",r=(CL.rows||[]).find(function(x){return nrm(x.company)===nrm(c)});
+  if(act==="copy"&&r){copy(clBase()+r.token);return}
+  if(act==="wa"&&r){window.open("https://wa.me/?text="+encodeURIComponent((ar?"ده لينك متابعة مرشحين "+c+" مع Apex:\n":"Your candidate report with Apex:\n")+clBase()+r.token),"_blank","noopener");return}
+  if(act==="new"){if(r&&!confirm(ar?"اللينك القديم هيقف. تكمل؟":"The old link will stop working. Continue?"))return;var x=await sb.from("company_links").upsert({company:r?r.company:c,token:(crypto.randomUUID?crypto.randomUUID():null),active:true},{onConflict:"company"});if(x.error){toast(ar?"فشل. شغّل ملف SQL الأول":"Failed. Run the SQL file first");return}await clLoad();toast(ar?"تمام":"Done");return}
+  if(act==="off"&&r){if(!confirm(ar?"توقف اللينك ده؟":"Turn this link off?"))return;await sb.from("company_links").update({active:false}).eq("company",r.company);await clLoad()}});
 /* ---- bulk interview message (select candidates, send one by one on WhatsApp) ---- */
 var SEL={},BK={co:"",n:"",ids:[],f:null,done:{}};
-function appsList(skipCo){var q=(S.q||"").toLowerCase();return S.apps.filter(function(a){return(!S.filter||a.status===S.filter)&&dayOk(a)&&(skipCo||!BK.co||a.job_company===BK.co)&&(!q||(a.full_name+" "+a.phone+" "+a.job_company+" "+a.job_title).toLowerCase().indexOf(q)>-1)})}
+function appsList(skipCo){var P=sq(S.q);return S.apps.filter(function(a){return(!S.filter||a.status===S.filter)&&dayOk(a)&&(skipCo||!BK.co||a.job_company===BK.co)&&P.ok(a)})}
 function selIds(){return Object.keys(SEL).filter(function(k){return SEL[k]&&findCand(k)})}
 function bkBar(list){
   var ar=lang==="ar",cs={};list.forEach(function(a){var c=a.job_company||"";if(c)cs[c]=(cs[c]||0)+1});
@@ -903,6 +970,7 @@ function bkBar(list){
   return'<div class="card" id="bkbar"><div class="name">&#9993; '+(ar?"رسالة إنترفيو لمجموعة":"Bulk interview message")+'</div>'+
   '<div class="mute" style="margin-top:4px">'+(ar?"اختار الشركة ودوس “حدد”، أو علّم المرشحين بإيدك. التحديد بيشتغل على المرشحين الظاهرين دلوقتي.":"Pick a company and tap Select, or tick candidates by hand. Selection applies to the candidates shown now.")+'</div>'+
   '<div class="grid2"><select id="bk_co">'+o+'</select><input id="bk_n" type="number" min="1" inputmode="numeric" placeholder="'+(ar?"عدد معين (اختياري): أول N":"Only the first N (optional)")+'" value="'+esc(BK.n)+'"></div>'+
+  '<div class="row" style="margin-top:8px"><select id="xl_p" style="width:auto"><option value="7">'+(ar?"آخر 7 أيام":"Last 7 days")+'</option><option value="30">'+(ar?"آخر 30 يوم":"Last 30 days")+'</option><option value="all">'+(ar?"كله":"All time")+'</option></select><button class="btn sm" data-xl="co">&#128202; '+(ar?"إكسل للشركة المختارة":"Excel: chosen company")+'</button><button class="btn sm" data-xl="all">&#128202; '+(ar?"إكسل كل الشركات":"Excel: all companies")+'</button></div>'+
   '<div class="row" style="margin-top:8px"><button class="btn sm" data-bkact="sel">&#9745; '+(ar?"حدد":"Select")+'</button><button class="btn sm" data-bkact="clr">'+(ar?"امسح التحديد":"Clear")+'</button><button class="btn sm pri" data-bkact="open">&#9993; '+(ar?"ابعت رسالة للمحددين":"Message selected")+' (<span id="bk_cnt">'+selIds().length+'</span>)</button></div></div>';
 }
 function confHit(a){var co=sdN(a.job_company),ti=sdN(a.job_title),hit=null;CONF.forEach(function(x){if(!hit&&sdN(x[0])===co&&sdN(x[1])===ti)hit=x});return hit}

@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Candidate Report - Apex</title><meta name="theme-color" content="#d91616"><meta name="robots" content="noindex,nofollow">
+<style>
+:root{--bg:#0a0a0b;--card:#141416;--ink:#e6e8ea;--mute:#9a9ea3;--line:#2b2d31;--acc:#d91616;--ok:#6fd08c;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;padding:16px}
+.w{max-width:620px;margin:0 auto}header{text-align:center;margin:8px 0 18px}header img{width:64px;height:64px;border-radius:16px}header h1{font-size:20px;margin:8px 0 0}header p{margin:2px 0 0;color:var(--mute);font-size:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}
+.g{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}.g .card{text-align:center;padding:12px 6px;margin:0}.g b{display:block;font-size:26px}.mu{color:var(--mute);font-size:13px}
+.r{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}.r:first-of-type{border-top:0}
+.p{border-radius:999px;padding:1px 10px;font-size:12px;font-weight:700;white-space:nowrap}
+.interview{background:#12233a;color:#4da3ff}.accepted{background:#12301f;color:#2ecc71}.hired{background:#2a2410;color:#ffd24d}.rejected{background:#2b2d31;color:#9a9ea3}
+</style></head><body><div class="w">
+<header><img src="icon-192.png" alt="Apex"><h1 id="t">Candidate report</h1><p>Apex Recruitment Agency</p></header>
+<div id="app" class="mu" style="text-align:center">Loading...</div>
+</div>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+var C=window.APEX_CONFIG,sb=supabase.createClient(C.SUPABASE_URL,C.SUPABASE_ANON_KEY),$=function(i){return document.getElementById(i)};
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+var TOK=(new URLSearchParams(location.search).get("k")||"").trim(),UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+var LBL={interview:"Interview stage",accepted:"Accepted",hired:"Hired",rejected:"Not selected"};
+function fd(v){return new Date(v).toLocaleDateString("en-GB",{timeZone:"Africa/Cairo",day:"numeric",month:"short"})}
+function ft(v){return new Date(v).toLocaleString("en-GB",{timeZone:"Africa/Cairo",day:"numeric",month:"short",hour:"numeric",minute:"2-digit"})}
+async function load(){
+  if(!UUID.test(TOK)){$("app").textContent="This link is not valid.";return}
+  var r=await sb.rpc("company_view",{p_token:TOK});
+  if(r.error){$("app").textContent="Could not load. Please refresh.";return}
+  if(!r.data){$("app").textContent="This link is not valid or was turned off.";return}
+  var d=r.data,c=d.counts||{},rows=d.rows||[];
+  $("t").textContent=d.company+" - candidate report";document.title=d.company+" - Apex";
+  var h='<div class="g"><div class="card"><b>'+(c.interview||0)+'</b><span class="mu">Reached interview</span></div><div class="card"><b style="color:#2ecc71">'+(c.accepted||0)+'</b><span class="mu">Accepted</span></div><div class="card"><b style="color:#ffd24d">'+(c.hired||0)+'</b><span class="mu">Hired</span></div></div>';
+  h+='<div class="card">';
+  if(!rows.length)h+='<div class="mu" style="text-align:center">No candidates to show yet.</div>';
+  rows.forEach(function(x){h+='<div class="r"><div style="text-align:left"><b>'+esc(x.who)+'</b><div class="mu">'+esc(x.title||"")+(x.interview_at?" · Interview "+ft(x.interview_at):" · Applied "+fd(x.applied))+'</div></div><span class="p '+esc(x.stage)+'">'+esc(LBL[x.stage]||x.stage)+'</span></div>'});
+  h+='</div><div class="mu" style="text-align:center">Names are shortened for privacy. Contact Apex for full details.</div>';
+  $("app").className="";$("app").innerHTML=h}
+load();
+</script></body></html>
