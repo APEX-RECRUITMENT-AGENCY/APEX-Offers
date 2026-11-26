@@ -105,7 +105,7 @@ select:focus,input:focus,textarea:focus{border-color:var(--acc)}
     <select id="fv" aria-label="Language level"><option value="">All levels</option><option>A2</option><option>B1</option><option>B2</option><option>B2+</option><option>C1</option><option>C2 / Native</option></select>
     <select id="fw" aria-label="Work mode"><option value="">All work modes</option><option>WFS</option><option>WFH</option><option>Hybrid</option></select>
     <select id="fc" aria-label="City"><option value="">All cities</option><option value="Cairo">Cairo</option><option value="Giza">Giza</option><option value="Alexandria">Alexandria</option></select>
-    <select id="fa" aria-label="My age"><option value="">My age (any)</option><option>18</option><option>19</option><option>20</option><option>21</option><option>22</option><option>23</option><option>24</option><option>25</option><option>26</option><option>27</option><option>28</option><option>29</option><option>30</option><option>31</option><option>32</option><option>33</option><option>34</option><option>35</option><option>36</option><option>37</option><option>38</option><option>39</option><option>40</option><option>41</option><option>42</option><option>43</option><option>44</option><option>45</option></select><select id="fx" aria-label="Experience"><option value="">Experience (any)</option><option value="no">No experience needed</option><option value="yes">Experience required</option></select>
+    <select id="fa" aria-label="My age"><option value="">My age (any)</option><option>18</option><option>19</option><option>20</option><option>21</option><option>22</option><option>23</option><option>24</option><option>25</option><option>26</option><option>27</option><option>28</option><option>29</option><option>30</option><option>31</option><option>32</option><option>33</option><option>34</option><option>35</option><option>36</option><option>37</option><option>38</option><option>39</option><option>40</option><option>41</option><option>42</option><option>43</option><option>44</option><option>45</option></select><select id="fx" aria-label="Experience"><option value="">Experience (any)</option><option value="no">No experience needed</option><option value="yes">Experience required</option></select><select id="fs" aria-label="Sort"><option value="p">Sort: Priority</option><option value="n">Sort: Newest</option><option value="a">Sort: Company A-Z</option></select>
   </div>
   <div class="count"><span><b id="n">0</b> offers shown</span><span>Copy-ready details</span></div>
 </header>
@@ -219,8 +219,14 @@ function match(o){
   var xp=$("fx").value,q=$("q").value.toLowerCase(),ct=$("fc").value,ag=+$("fa").value||0,co=$("fco").value,g=$("fg").value,l=$("fl").value,w=$("fw").value,v=$("fv").value;
   return (!q||(o.t+" "+o.c+" "+o.loc).toLowerCase().indexOf(q)>-1)&&(!co||o.c===co)&&(!g||grads(o).indexOf(g)>-1)&&(!l||langs(o).indexOf(l)>-1)&&(!w||o.w===w)&&(!v||lvls(o).indexOf(v)>-1)&&(!ct||inCity(o,ct))&&(!ag||ageOk(o,ag))&&(!xp||expKind(o)===xp);
 }
+function sorted(l){var m=$("fs")?$("fs").value:"p",ix=function(o){return OFFERS.indexOf(o)};
+  if(JOB)return l;
+  if(m==="n")return l.slice().sort(function(a,b){return ix(b)-ix(a)});
+  if(m==="a")return l.slice().sort(function(a,b){return String(a.c).localeCompare(String(b.c))||ix(a)-ix(b)});
+  var pv=function(o){var n=parseFloat(o.pr);return isNaN(n)?1e9:n};
+  return l.slice().sort(function(a,b){return pv(a)-pv(b)||ix(a)-ix(b)})}
 function render(){
-  var list=OFFERS.filter(match),h="";
+  var list=sorted(OFFERS.filter(match)),h="";
   list.forEach(function(o){
     h+='<button class="card" data-i="'+OFFERS.indexOf(o)+'"><h3>'+esc(o.t)+'</h3><div class="co">'+esc(o.c)+(shown(o.loc)?' &middot; '+esc(o.loc):'')+'</div><div class="tags"><span class="tag">'+esc(o.w)+'</span>'+langs(o).map(function(x){return '<span class="tag">'+x+'</span>'}).join("")+lvls(o).map(function(x){return '<span class="tag">'+x+'</span>'}).join("")+grads(o).map(function(x){return '<span class="tag">'+x+'</span>'}).join("")+'</div><div class="pay">'+esc(o.pay)+'</div></button>';
   });
@@ -249,7 +255,7 @@ function copy(){
   function fb(){var a=document.createElement("textarea");a.value=s;document.body.appendChild(a);a.select();try{document.execCommand("copy");ok()}catch(e){toast("Copy failed. Select the text manually.")}a.remove()}
   if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(s).then(ok,fb)}else fb();
 }
-["q","fco","fg","fl","fv","fw","fc","fa","fx"].forEach(function(i){$(i).addEventListener("input",render)});
+["q","fco","fg","fl","fv","fw","fc","fa","fx","fs"].forEach(function(i){$(i).addEventListener("input",render)});
 $("oneall").addEventListener("click",function(e){e.preventDefault();JOB="";$("one").style.display="none";$("modal").classList.remove("open");render()});
 $("grid").addEventListener("click",function(e){var c=e.target.closest(".card");if(c)open_(c.dataset.i)});
 $("close").onclick=function(){$("modal").classList.remove("open")};
@@ -269,7 +275,7 @@ function parseCSV(t){var rows=[],r=[],f="",q=false,i,ch;
     else if(ch==="\n"||ch==="\r"){if(ch==="\r"&&t[i+1]==="\n")i++;r.push(f);f="";rows.push(r);r=[]}
     else f+=ch}
   if(f!==""||r.length){r.push(f);rows.push(r)}return rows}
-var MAP={"status":"status","company":"c","position":"t","work mode":"w","location":"loc","salary / package":"pay","working hours":"sh","experience":"exp","language and level":"lang","graduation status":"grad","nationality":"nat","age":"age","transportation":"tr","interview":"iv","link":"link","notes":"note"};
+var MAP={"status":"status","company":"c","position":"t","work mode":"w","location":"loc","salary / package":"pay","working hours":"sh","experience":"exp","language and level":"lang","graduation status":"grad","nationality":"nat","age":"age","transportation":"tr","interview":"iv","link":"link","notes":"note","priority":"pr","الأولوية":"pr","الاولوية":"pr"};
 function fromCSV(t){
   var rows=parseCSV(t);if(rows.length<2)return [];
   var hd=rows[0].map(function(h){return MAP[h.trim().toLowerCase()]||null}),out=[];
