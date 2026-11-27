@@ -219,11 +219,14 @@ function match(o){
   var xp=$("fx").value,q=$("q").value.toLowerCase(),ct=$("fc").value,ag=+$("fa").value||0,co=$("fco").value,g=$("fg").value,l=$("fl").value,w=$("fw").value,v=$("fv").value;
   return (!q||(o.t+" "+o.c+" "+o.loc).toLowerCase().indexOf(q)>-1)&&(!co||o.c===co)&&(!g||grads(o).indexOf(g)>-1)&&(!l||langs(o).indexOf(l)>-1)&&(!w||o.w===w)&&(!v||lvls(o).indexOf(v)>-1)&&(!ct||inCity(o,ct))&&(!ag||ageOk(o,ag))&&(!xp||expKind(o)===xp);
 }
+var PRI={};try{PRI=JSON.parse(localStorage.getItem("apexPri")||"{}")}catch(e){}
+function prKey(o){return String(o.c||"").trim().toLowerCase()+"|"+String(o.t||"").trim().toLowerCase()}
+function loadPri(){try{var C=window.APEX_CONFIG;if(!C||!C.SUPABASE_URL)return;fetch(C.SUPABASE_URL+"/rest/v1/offer_priority?select=k,pr",{headers:{apikey:C.SUPABASE_ANON_KEY,Authorization:"Bearer "+C.SUPABASE_ANON_KEY}}).then(function(r){return r.ok?r.json():null}).then(function(rows){if(!rows)return;var m={};rows.forEach(function(x){m[x.k]=x.pr});PRI=m;try{localStorage.setItem("apexPri",JSON.stringify(m))}catch(e){}render()}).catch(function(){})}catch(e){}}
 function sorted(l){var m=$("fs")?$("fs").value:"p",ix=function(o){return OFFERS.indexOf(o)};
   if(JOB)return l;
   if(m==="n")return l.slice().sort(function(a,b){return ix(b)-ix(a)});
   if(m==="a")return l.slice().sort(function(a,b){return String(a.c).localeCompare(String(b.c))||ix(a)-ix(b)});
-  var pv=function(o){var n=parseFloat(o.pr);return isNaN(n)?1e9:n};
+  var pv=function(o){var k=prKey(o);var n=PRI[k]!=null?PRI[k]:parseFloat(o.pr);return isNaN(n)?1e9:n};
   return l.slice().sort(function(a,b){return pv(a)-pv(b)||ix(a)-ix(b)})}
 function render(){
   var list=sorted(OFFERS.filter(match)),h="";
@@ -291,7 +294,7 @@ function loadSheet(){
     .then(function(t){var out=fromCSV(t);if(!out.length)throw 0;OFFERS=out;fillCo();render();try{localStorage.setItem("apexCSV",t)}catch(e){}})
     .catch(function(){});
 }
-loadSheet();
+loadSheet();loadPri();
 
 // ---- Admin (visible only to people who can edit this artifact) ----
 var edIdx=-1,dirty=false;

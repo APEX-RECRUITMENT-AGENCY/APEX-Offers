@@ -334,6 +334,7 @@ function appView(){
   '<button class="btn sm" data-act="copylink">'+T("copy")+'</button></div>';
   h+='<div class="tabs">'+'<button class="tab'+(S.tab==="home"?" on":"")+'" data-tab="home">&#127968; '+(lang==="ar"?"الرئيسية":"Home")+'</button>'+'<button class="tab'+(S.tab==="apps"?" on":"")+'" data-tab="apps">'+T("cand")+' ('+S.apps.length+')</button>'+
   '<button class="tab'+(S.tab==="team"?" on":"")+'" data-tab="team">'+T("team")+' ('+S.team.length+')</button>'+
+  (isBoss()?'<button class="tab'+(S.tab==="pri"?" on":"")+'" data-tab="pri">&#11088; '+(lang==="ar"?"الأولوية":"Priority")+'</button>':'')+
   (isRev()?'<button class="tab'+(S.tab==="vr"?" on":"")+'" data-tab="vr">&#127908; '+(lang==="ar"?"مراجعة الفويس":"Voice review")+' ('+(S.vq||[]).filter(function(a){return(a.voice_status||"pending")==="pending"}).length+')</button>':'')+
   (S.me?'<a class="tab" href="commission.html" style="text-decoration:none;color:inherit">&#128176; '+(lang==="ar"?"الكوميشن":"Commission")+'</a><a class="tab" href="ops.html" style="text-decoration:none;color:inherit">&#9881;&#65039; '+(lang==="ar"?"العمليات":"Operations")+(S.fuc?' <b style="background:var(--acc);border-radius:99px;padding:0 7px;font-size:12px">'+S.fuc+'</b>':'')+'</a>':'')+
   (canPanel()?'<button class="tab'+(S.tab==="pn"?" on":"")+'" data-tab="pn">&#128202; '+(lang==="ar"?"تقرير البانل":"Panel daily")+' ('+dTodayCnt()+')</button>':'')+
@@ -353,6 +354,7 @@ function renderList(){
   if(S.tab==="jl"){jlInit();return}
   if(S.tab==="home"){homeRender();return}
   if(S.tab==="amb"){ambRender();return}
+  if(S.tab==="pri"){tpRender();if(!TP.rows&&!TP.busy)tpLoad();return}
   if(S.tab==="cl"){clRender();if(!CL.rows&&!CL.busy)clLoad();return}
   if(S.tab==="wk"){wkRender();if(!WK.data&&!WK.busy&&!WK.err)wkLoad();return}
   if(S.tab==="apps")el.innerHTML=appsHTML();else if(S.tab==="vr")el.innerHTML=voiceHTML();else if(S.tab==="pn")el.innerHTML=dailyHTML();else if(S.tab==="an")el.innerHTML=annHTML();else if(S.tab==="me")el.innerHTML=profHTML();else if(S.tab==="nt"){el.innerHTML=notifHTML();var un=S.notifs.filter(function(n){return!n.read}).map(function(n){return n.id});if(un.length)sb.from("notifications").update({read:true}).in("id",un).then(function(){S.notifs.forEach(function(n){n.read=true});setNtCount()})}else if(S.tab==="team")el.innerHTML=teamHTML();else el.innerHTML=invHTML();
@@ -1042,6 +1044,21 @@ function pinnedHTML(){var seen=annSeen(),l=(S.anns||[]).filter(function(a){retur
   return l.map(function(a){return'<div class="hc" style="border-color:#6b4a12"><div class="row" style="justify-content:space-between;gap:8px"><b>&#128204; '+esc(a.title)+'</b><button class="btn sm" data-annseen="'+a.id+'">'+(ar?"تمام":"Got it")+'</button></div><div style="margin-top:6px;white-space:pre-wrap">'+esc(a.body)+'</div></div>'}).join("")}
 document.addEventListener("click",async function(e){var s=e.target.closest("[data-annseen]");if(s){var l=annSeen();l.push(s.dataset.annseen);try{localStorage.setItem("apexAnnSeen",JSON.stringify(l.slice(-50)))}catch(x){}homeRender();return}
   var p=e.target.closest("[data-anpin]");if(!p)return;var a=(S.anns||[]).find(function(x){return x.id===p.dataset.anpin});if(!a)return;var r=await sb.from("announcements").update({pinned:!a.pinned}).eq("id",a.id);if(r.error){toast(lang==="ar"?"شغّل ملف team_tools.sql الأول":"Run team_tools.sql first");return}a.pinned=!a.pinned;render()});
+/* ---- offer priority (order on the public Offers page) ---- */
+var TP={rows:null,busy:false};
+function prK(o){return String(o.c||"").trim().toLowerCase()+"|"+String(o.t||"").trim().toLowerCase()}
+async function tpLoad(){if(TP.busy)return;TP.busy=true;try{var r=await sb.from("offer_priority").select("*");TP.err=r.error?r.error.message:"";TP.rows=r.error?[]:(r.data||[])}catch(e){TP.rows=[]}TP.busy=false;if(S.tab==="pri")tpRender()}
+function tpOrder(){var m={};(TP.rows||[]).forEach(function(x){m[x.k]=x.pr});return TOFF.map(function(o,i){return{o:o,i:i,p:m[prK(o)]!=null?m[prK(o)]:1e9}}).sort(function(a,b){return a.p-b.p||a.i-b.i}).map(function(x){return x.o})}
+function tpRender(){var el=$("list");if(!el)return;var ar=lang==="ar",ord=tpOrder(),has={};(TP.rows||[]).forEach(function(x){has[x.k]=1});
+  var h='<div class="card"><div class="name">&#11088; '+(ar?"ترتيب الأوفرز بالأولوية":"Offer priority")+'</div><div class="mute" style="margin-top:4px">'+(ar?"رتّب الوظايف زي ما عايزها تظهر في صفحة الأوفرز للمرشحين. فوق = الأول. ▲▼ يحرّك خطوة، ⏫ يرفعها لأول القايمة.":"Order the jobs as you want candidates to see them on the Offers page. Top = first. ▲▼ moves one step, ⏫ moves it to the top.")+'</div>'+(TP.err?'<div class="mute" style="color:#ff8a80;margin-top:6px">'+(ar?"شغّل ملف offer_priority.sql في Supabase الأول.":"Run offer_priority.sql in Supabase first.")+'</div>':'')+(!TOFF.length?'<div class="mute" style="margin-top:6px">'+(ar?"بنحمّل الوظايف من الشيت…":"Loading jobs from the sheet…")+'</div>':'')+
+    '<div class="row" style="margin-top:8px"><button class="btn sm" data-tp="reset">'+(ar?"رجّع الترتيب الأصلي":"Reset to sheet order")+'</button></div></div>';
+  ord.forEach(function(o,i){h+='<div class="card" style="padding:10px 12px"><div class="row" style="gap:8px"><span class="pill" style="background:'+(has[prK(o)]?"#12301f;color:#2ecc71":"#242428;color:#9a9ea3")+'">'+(i+1)+'</span><div style="flex:1;min-width:0"><b>'+esc(o.t)+'</b><div class="mute">'+esc(o.c)+(o.loc?" · "+esc(o.loc):"")+'</div></div><div class="row" style="gap:4px;flex:none"><button class="btn sm" data-tp="top" data-i="'+i+'">&#9195;</button><button class="btn sm" data-tp="up" data-i="'+i+'">&#9650;</button><button class="btn sm" data-tp="dn" data-i="'+i+'">&#9660;</button></div></div></div>'});
+  el.innerHTML=h}
+document.addEventListener("click",async function(e){var b=e.target.closest("[data-tp]");if(!b)return;var ar=lang==="ar",act=b.dataset.tp;
+  if(act==="reset"){if(!confirm(ar?"ترجّع الترتيب بتاع الشيت؟":"Go back to the sheet order?"))return;var d=await sb.from("offer_priority").delete().neq("k","");if(d.error){toast(ar?"فشل. شغّل offer_priority.sql":"Failed. Run offer_priority.sql");return}TP.rows=[];tpRender();toast(ar?"اترجّع":"Reset");return}
+  var ord=tpOrder(),i=+b.dataset.i,o=ord.splice(i,1)[0];var j=act==="top"?0:act==="up"?Math.max(0,i-1):Math.min(ord.length,i+1);ord.splice(j,0,o);
+  var rows=ord.map(function(x,n){return{k:prK(x),company:x.c,title:x.t,pr:n+1,updated_at:new Date().toISOString()}});
+  TP.rows=rows;tpRender();var r=await sb.from("offer_priority").upsert(rows,{onConflict:"k"});if(r.error){toast(ar?"ماتحفظش. شغّل offer_priority.sql":"Not saved. Run offer_priority.sql");TP.rows=null;tpLoad()}});
 /* ---- bulk interview message (select candidates, send one by one on WhatsApp) ---- */
 var SEL={},BK={co:"",n:"",ids:[],f:null,done:{}};
 function appsList(skipCo){var P=sq(S.q);return S.apps.filter(function(a){return(!S.filter||a.status===S.filter)&&dayOk(a)&&(skipCo||!BK.co||a.job_company===BK.co)&&P.ok(a)})}

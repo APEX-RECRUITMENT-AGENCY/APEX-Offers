@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<title>ورشة Train to Hire at Call Centers | Apex</title>
+<meta name="description" content="ورشة مجانية للطلاب: CV، إنترفيو إنجليزي، ومهارات المكالمات، وترشيح المتميزين لفرص شغل في الكول سنتر. تنظيم Apex.">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="tools.css">
+<link rel="canonical" href="https://apex-ra.com/workshop">
+<style>
+.pts li{margin:8px 0}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:480px){.two{grid-template-columns:1fr}}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:18px}
+.fact{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.fact b{display:block;font-family:var(--head);font-size:13px;color:var(--accent);margin-bottom:4px}
+.fact span{font-size:15px}
+.steps{counter-reset:s;list-style:none;padding:0;margin:0}
+.steps li{counter-increment:s;display:flex;gap:12px;margin:12px 0;align-items:flex-start}
+.steps li::before{content:counter(s);flex:none;width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-family:var(--head);font-weight:800;display:grid;place-items:center}
+details{border-top:1px solid var(--line);padding:12px 0}details:first-of-type{border-top:0}
+summary{cursor:pointer;font-family:var(--head);font-weight:700}
+details p{margin:8px 0 0;color:var(--mute)}
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<main class="wrap">
+  <div class="ph anim">
+    <div class="eyebrow" data-ar="ورشة مجانية للطلاب" data-en="Free student workshop">ورشة مجانية للطلاب</div>
+    <h1 dir="ltr" style="text-align:start">Train to Hire<br>at Call Centers</h1>
+    <p class="lead" data-ar="اتعلّم إزاي تدخل شغل الكول سنتر: CV صح، إنترفيو إنجليزي، ومهارات المكالمات. والمتميزين بيتم ترشيحهم لفرص شغل حقيقية." data-en="Learn how to get into call-center work: a proper CV, the English interview, and phone skills. Standout attendees are referred to real job openings.">اتعلّم إزاي تدخل شغل الكول سنتر: CV صح، إنترفيو إنجليزي، ومهارات المكالمات. والمتميزين بيتم ترشيحهم لفرص شغل حقيقية.</p>
+    <div class="facts">
+      <div class="fact"><b data-ar="السعر" data-en="Price">السعر</b><span data-ar="مجانًا" data-en="Free">مجانًا</span></div>
+      <div class="fact"><b data-ar="الموعد" data-en="Date">الموعد</b><span id="fd"></span></div>
+      <div class="fact"><b data-ar="المكان" data-en="Venue">المكان</b><span id="fp"></span></div>
+      <div class="fact"><b data-ar="مين يحضر" data-en="Who can join">مين يحضر</b><span data-ar="طلاب وخريجين جدد" data-en="Students & fresh grads">طلاب وخريجين جدد</span></div>
+    </div>
+    <div class="row" style="margin-top:18px"><a class="btn p" href="#reg"><span data-ar="سجّل مكانك" data-en="Reserve your seat">سجّل مكانك</span></a></div>
+  </div>
+
+  <section class="card anim" style="margin-top:18px;animation-delay:.1s">
+    <h2 style="font-size:19px" data-ar="هتتعلم إيه" data-en="What you'll learn">هتتعلم إيه</h2>
+    <ul class="pts">
+      <li data-ar="شغل الكول سنتر إيه بالظبط، والفرص المتاحة فيه للطلاب والخريجين." data-en="What call-center work actually is, and the opportunities for students and graduates.">شغل الكول سنتر إيه بالظبط، والفرص المتاحة فيه للطلاب والخريجين.</li>
+      <li data-ar="تكتب CV احترافي يعدّي فلترة الـHR." data-en="Write a professional CV that gets through HR screening.">تكتب CV احترافي يعدّي فلترة الـHR.</li>
+      <li data-ar="تجهّز لإنترفيو الإنجليزي والأسئلة اللي بتتكرر." data-en="Prepare for the English interview and the questions that keep coming up.">تجهّز لإنترفيو الإنجليزي والأسئلة اللي بتتكرر.</li>
+      <li data-ar="مهارات التعامل مع العميل على التليفون." data-en="Phone skills for handling customers.">مهارات التعامل مع العميل على التليفون.</li>
+      <li data-ar="ترشيح المتميزين لفرص تدريب وتوظيف حقيقية." data-en="Referral of standout attendees to real training and hiring opportunities.">ترشيح المتميزين لفرص تدريب وتوظيف حقيقية.</li>
+    </ul>
+    <p class="hint" data-ar="الورشة مجانية، والترشيح بيعتمد على أداءك وعلى متطلبات كل شركة. مفيش وعد بتعيين." data-en="The workshop is free. Referrals depend on your performance and each company's requirements. Hiring is not guaranteed.">الورشة مجانية، والترشيح بيعتمد على أداءك وعلى متطلبات كل شركة. مفيش وعد بتعيين.</p>
+  </section>
+
+  <section class="card anim" style="margin-top:14px;animation-delay:.15s">
+    <h2 style="font-size:19px" data-ar="الطريق من الورشة للشغل" data-en="From workshop to job">الطريق من الورشة للشغل</h2>
+    <ol class="steps">
+      <li data-ar="تحضر الورشة وتتدرّب على الـCV والإنترفيو والمكالمات." data-en="Attend the workshop and practise your CV, interview and calls.">تحضر الورشة وتتدرّب على الـCV والإنترفيو والمكالمات.</li>
+      <li data-ar="فريق Apex بيتابع أداءك ويراجع الـCV بتاعك." data-en="The Apex team reviews your performance and your CV.">فريق Apex بيتابع أداءك ويراجع الـCV بتاعك.</li>
+      <li data-ar="المتميزين بيتم ترشيحهم للوظايف المناسبة من وظايف Apex." data-en="Standout attendees are referred to suitable openings from Apex's job list.">المتميزين بيتم ترشيحهم للوظايف المناسبة من وظايف Apex.</li>
+    </ol>
+    <div class="row" style="margin-top:6px"><a class="btn sm" href="offers"><span data-ar="شوف الوظايف المتاحة" data-en="See current openings">شوف الوظايف المتاحة</span></a></div>
+  </section>
+
+  <section class="card anim" style="margin-top:14px;animation-delay:.2s">
+    <h2 style="font-size:19px" data-ar="مين بيقدّم الورشة" data-en="Who is running it">مين بيقدّم الورشة</h2>
+    <p style="margin:8px 0 0" data-ar="Apex ايجينسي توظيف متخصصة في الكول سنتر. بنساعد المرشحين يقدّموا على الوظايف ونتابع معاهم لحد الإنترفيو." data-en="Apex is a recruitment agency specialised in call centers. We help candidates apply for jobs and follow up with them through to the interview.">Apex ايجينسي توظيف متخصصة في الكول سنتر. بنساعد المرشحين يقدّموا على الوظايف ونتابع معاهم لحد الإنترفيو.</p>
+  </section>
+
+  <section class="card stack anim" id="reg" style="margin-top:14px;animation-delay:.25s">
+    <h2 style="font-size:19px" data-ar="سجّل حضورك" data-en="Register to attend">سجّل حضورك</h2>
+    <div class="fld" style="margin-top:0"><label for="nm" data-ar="الاسم" data-en="Name">الاسم</label><input id="nm" type="text" dir="auto" autocomplete="name"></div>
+    <div class="two">
+      <div class="fld" style="margin-top:0"><label for="fc" data-ar="الكلية والسنة" data-en="Faculty and year">الكلية والسنة</label><input id="fc" type="text" dir="auto"></div>
+      <div class="fld" style="margin-top:0"><label for="en" data-ar="مستوى الإنجليزي" data-en="English level"><span>مستوى الإنجليزي</span></label>
+        <select id="en"><option value="" data-ar="اختار" data-en="Choose">اختار</option><option>A2</option><option>B1</option><option>B2</option><option>C1</option></select></div>
+    </div>
+    <div class="err" id="err" role="alert"></div>
+    <button class="btn p" id="go" type="button"><span data-ar="ابعت التسجيل على واتساب" data-en="Send registration on WhatsApp">ابعت التسجيل على واتساب</span></button>
+  </section>
+
+  <section class="card anim" style="margin-top:14px;animation-delay:.3s">
+    <h2 style="font-size:19px" data-ar="أسئلة شائعة" data-en="FAQ">أسئلة شائعة</h2>
+    <details><summary data-ar="الورشة بفلوس؟" data-en="Does it cost anything?">الورشة بفلوس؟</summary><p data-ar="لأ، مجانية بالكامل." data-en="No, it is completely free.">لأ، مجانية بالكامل.</p></details>
+    <details><summary data-ar="لازم أكون خريج؟" data-en="Do I need to be a graduate?">لازم أكون خريج؟</summary><p data-ar="لأ، الطلاب ومن في سنة التخرج مرحّب بيهم. بعض الشركات بتشترط التخرج وده بنوضحه في كل وظيفة." data-en="No. Students and final-year students are welcome. Some companies require graduation; this is shown on each job.">لأ، الطلاب ومن في سنة التخرج مرحّب بيهم. بعض الشركات بتشترط التخرج وده بنوضحه في كل وظيفة.</p></details>
+    <details><summary data-ar="لازم إنجليزي قوي؟" data-en="Do I need strong English?">لازم إنجليزي قوي؟</summary><p data-ar="كل شركة ليها مستوى مطلوب، وغالبًا B2 أو أعلى. هتعرف مستواك الحقيقي وتشتغل عليه." data-en="Each company has its own level, usually B2 or higher. You'll learn where you stand and work on it.">كل شركة ليها مستوى مطلوب، وغالبًا B2 أو أعلى. هتعرف مستواك الحقيقي وتشتغل عليه.</p></details>
+    <details><summary data-ar="هل الورشة بتضمن شغل؟" data-en="Does it guarantee a job?">هل الورشة بتضمن شغل؟</summary><p data-ar="لأ. بنجهّزك وبنرشّح المتميزين، والقرار النهائي للشركة." data-en="No. We prepare you and refer standout attendees; the final decision is the company's.">لأ. بنجهّزك وبنرشّح المتميزين، والقرار النهائي للشركة.</p></details>
+  </section>
+</main>
+<div id="foot"></div>
+
+<script src="tools.js"></script>
+<script>
+(function(){
+  var d=document,A=APEX,$=function(i){return d.getElementById(i)};
+  /* EDIT THESE when the faculty confirms. Leave empty to show "to be announced". */
+  var EVENT={date_ar:"",date_en:"",place_ar:"",place_en:""};
+  function facts(){var ar=A.lang()==="ar";
+    $('fd').textContent=(ar?EVENT.date_ar:EVENT.date_en)||(ar?"يتم الإعلان قريبًا":"To be announced");
+    $('fp').textContent=(ar?EVENT.place_ar:EVENT.place_en)||(ar?"قاعة محاضرات بالكلية":"Faculty lecture hall")}
+  $('go').addEventListener('click',function(){
+    var n=$('nm').value.trim(),f=$('fc').value.trim(),e=$('en').value;
+    if(n.length<2||f.length<2){$('err').textContent=A.t("اكتب اسمك وكليتك.","Enter your name and faculty.");return}
+    $('err').textContent='';
+    A.openWA(A.t("أهلاً، عايز أسجّل في ورشة Train to Hire at Call Centers.\n\nالاسم: ","Hi, I'd like to register for the Train to Hire at Call Centers workshop.\n\nName: ")+n+A.t("\nالكلية والسنة: ","\nFaculty and year: ")+f+(e?A.t("\nالإنجليزي: ","\nEnglish level: ")+e:""));
+  });
+  A.onLang(function(l){d.title=l==="ar"?"ورشة Train to Hire at Call Centers | Apex":"Train to Hire at Call Centers Workshop | Apex";facts()});
+  A.start();facts();
+})();
+</script>
+</body>
+</html>
